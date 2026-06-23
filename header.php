@@ -94,7 +94,7 @@
         <div class="pointer-events-none absolute left-1/2 top-0 h-24 w-[600px] -translate-x-1/2 animate-header-glow rounded-full bg-gradient-to-r from-violet-300/30 via-violet-400/40 to-violet-500/30 blur-3xl"></div>
 
         <div id="snel-header" class="relative mx-auto max-w-5xl">
-            <header class="relative flex items-center justify-between rounded-full border border-white/30 bg-white/90 px-4 py-2.5 shadow-lg backdrop-blur-xl md:px-6">
+            <header class="relative flex items-center justify-between rounded-full border border-gray-200 bg-white px-4 py-2.5 shadow-lg md:px-6">
                 <div class="flex items-center gap-3 md:gap-6">
                     <!-- Mobile menu toggle -->
                     <button
@@ -198,7 +198,7 @@
 
                             <div
                                 id="snel-lang-popover"
-                                class="invisible absolute right-0 top-full z-50 mt-2 w-56 origin-top-right scale-95 overflow-hidden rounded-2xl bg-white/90 opacity-0 backdrop-blur-xl shadow-[0px_4px_8px_rgba(34,42,53,0.05),0px_0px_0px_1px_rgba(34,42,53,0.04),0px_1px_5px_-4px_rgba(19,19,22,0.7)] transition-all duration-200 ease-out"
+                                class="invisible absolute right-0 top-full z-50 mt-2 w-56 origin-top-right scale-95 overflow-hidden rounded-2xl bg-white opacity-0 shadow-[0px_4px_8px_rgba(34,42,53,0.05),0px_0px_0px_1px_rgba(34,42,53,0.04),0px_1px_5px_-4px_rgba(19,19,22,0.7)] transition-all duration-200 ease-out"
                                 role="menu">
                                 <div class="py-1" id="snel-lang-list">
                                     <?php foreach ($langs as $lang) :
