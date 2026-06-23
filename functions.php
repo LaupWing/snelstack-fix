@@ -7,6 +7,7 @@ require get_template_directory() . '/inc/translations/language.php';
 require get_template_directory() . '/inc/partners/index.php';
 require get_template_directory() . '/inc/cases/index.php';
 require get_template_directory() . '/inc/services/index.php';
+require get_template_directory() . '/inc/posts/index.php';
 require get_template_directory() . '/src/blocks/helpers/index.php';
 
 add_action('after_setup_theme', function () {
