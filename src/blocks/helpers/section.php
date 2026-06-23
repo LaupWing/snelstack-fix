@@ -4,22 +4,55 @@ defined('ABSPATH') || exit;
 if (! function_exists('snel_mesh')) {
     function snel_mesh(string $fade = 'from-white'): string
     {
-        $blobs = [
-            ['color' => 'bg-violet-400/50', 'anim' => 'animate-mesh-1', 'pos' => 'left-[-12%] top-[-35%]'],
-            ['color' => 'bg-sky-400/50',    'anim' => 'animate-mesh-2', 'pos' => 'left-[18%] top-[-20%]'],
-            ['color' => 'bg-pink-400/45',   'anim' => 'animate-mesh-3', 'pos' => 'left-[42%] top-[-30%]'],
-            ['color' => 'bg-red-300/40',    'anim' => 'animate-mesh-2', 'pos' => 'left-[62%] top-[-18%]'],
-            ['color' => 'bg-teal-300/55',   'anim' => 'animate-mesh-1', 'pos' => 'left-[88%] top-[-32%]'],
-        ];
+        $uid = wp_unique_id('snel-mesh-');
         ob_start();
         ?>
         <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div class="absolute inset-0 opacity-50">
-                <?php foreach ($blobs as $b) : ?>
-                    <span class="absolute h-[46rem] w-[46rem] rounded-full blur-[140px] <?php echo esc_attr("{$b['color']} {$b['anim']} {$b['pos']}"); ?>"></span>
-                <?php endforeach; ?>
-            </div>
+            <canvas id="<?php echo esc_attr($uid); ?>" class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
             <div class="absolute inset-0 bg-gradient-to-t <?php echo esc_attr($fade); ?>"></div>
+            <script>
+            (function () {
+                var canvas = document.getElementById('<?php echo esc_js($uid); ?>');
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+                var blobs = [
+                    { cx: -0.15, cy: -0.1, opacity: 1.0, color: [167, 139, 250] },
+                    { cx:  0.25, cy:  0.0, opacity: 1.0, color: [56,  189, 248] },
+                    { cx:  0.55, cy: -0.1, opacity: 1.0, color: [244, 114, 182] },
+                    { cx:  0.80, cy:  0.0, opacity: 0.5, color: [252, 165, 165] },
+                    { cx:  0.95, cy: -0.1, opacity: 1.0, color: [94,  234, 212] },
+                ];
+                var times = blobs.map(function (_, i) { return i * 2.1; });
+                function resize() {
+                    canvas.width  = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                }
+                function draw() {
+                    var w = canvas.width, h = canvas.height;
+                    ctx.clearRect(0, 0, w, h);
+                    blobs.forEach(function (b, i) {
+                        times[i] += 0.003;
+                        var cx = b.cx * w + Math.sin(times[i] * 0.7) * w * 0.06;
+                        var cy = b.cy * h + Math.cos(times[i] * 0.5) * h * 0.05;
+                        var r  = Math.max(700, w * 0.85);
+                        var g  = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+                        var c  = b.color.join(',');
+                        var o  = b.opacity;
+                        g.addColorStop(0,    'rgba(' + c + ',' + (0.17 * o) + ')');
+                        g.addColorStop(0.2,  'rgba(' + c + ',' + (0.10 * o) + ')');
+                        g.addColorStop(0.45, 'rgba(' + c + ',' + (0.04 * o) + ')');
+                        g.addColorStop(0.7,  'rgba(' + c + ',' + (0.01 * o) + ')');
+                        g.addColorStop(1,    'rgba(' + c + ',0)');
+                        ctx.fillStyle = g;
+                        ctx.fillRect(0, 0, w, h);
+                    });
+                    requestAnimationFrame(draw);
+                }
+                resize();
+                window.addEventListener('resize', resize);
+                requestAnimationFrame(draw);
+            })();
+            </script>
         </div>
         <?php
         return ob_get_clean();
