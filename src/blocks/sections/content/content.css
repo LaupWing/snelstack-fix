@@ -1,0 +1,27 @@
+.snel-content .prose {
+    --tw-prose-links: #8b5cf6;
+    --tw-prose-bullets: #8b5cf6;
+    --tw-prose-counters: #8b5cf6;
+}
+
+.snel-content .prose p,
+.snel-content .prose li,
+.snel-content .prose blockquote p {
+    font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+    .snel-content .prose p,
+    .snel-content .prose li,
+    .snel-content .prose blockquote p {
+        font-size: 1.125rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .snel-content .prose p,
+    .snel-content .prose li,
+    .snel-content .prose blockquote p {
+        font-size: 1.25rem;
+    }
+}
