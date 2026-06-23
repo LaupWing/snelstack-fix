@@ -1,0 +1,40 @@
+/* Hero 2 slot layout — real styling, used on BOTH the front end and the editor.
+   (Editor-only quirk overrides live in src/editor.css, not here.)
+
+   Slots carry WP's `is-layout-flex` class so the editor's
+   `:where(:not(.is-layout-flex,.is-layout-grid)) > .wp-block { margin-inline:auto }`
+   rule skips them (no auto-centering). We define the real layout below with a
+   2-class selector so it beats WP's `.is-layout-flex` base — no !important. */
+
+.snel-cw-xs   { max-width: 20rem; width: 100%; margin-left: auto; margin-right: auto; }
+.snel-cw-sm   { max-width: 24rem; width: 100%; margin-left: auto; margin-right: auto; }
+.snel-cw-md   { max-width: 28rem; width: 100%; margin-left: auto; margin-right: auto; }
+.snel-cw-lg   { max-width: 32rem; width: 100%; margin-left: auto; margin-right: auto; }
+.snel-cw-xl   { max-width: 36rem; width: 100%; margin-left: auto; margin-right: auto; }
+.snel-cw-2xl  { max-width: 42rem; width: 100%; margin-left: auto; margin-right: auto; }
+.snel-cw-3xl  { max-width: 48rem; width: 100%; margin-left: auto; margin-right: auto; }
+
+.snel-hero .snel-justify-start,
+.snel-panel .snel-justify-start  { align-items: flex-start; }
+.snel-hero .snel-justify-center,
+.snel-panel .snel-justify-center { align-items: center; }
+.snel-hero .snel-justify-end,
+.snel-panel .snel-justify-end    { align-items: flex-end; }
+
+.wp-block-snel-slot.snel-slot-eyebrow,
+.wp-block-snel-slot.snel-slot-middle {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.wp-block-snel-slot.snel-slot-lower {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 1rem;
+}
