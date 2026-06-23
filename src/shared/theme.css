@@ -1,0 +1,324 @@
+@import "tailwindcss";
+
+@source "../blocks";
+@source "../admin";
+@source "../editor";
+@source "../../inc";
+@source "../../templates";
+@source "../../template-parts";
+@source "../../*.php";
+@source "../../assets/js";
+
+@theme {
+  /* Brand gradient — Tailwind-equivalent of the uiGradient palette:
+     teal-300 #5eead4 → sky-400 #38bdf8 → violet-400 #a78bfa → pink-400 #f472b6 → red-300 #fca5a5
+     Logo: sky-400 → violet-500 #8b5cf6  ·  Button glow: sky-400 + pink-400 */
+
+  /* Site canvas — near-black base used for body bg, dark button faces, footer */
+  --color-canvas: #020617; /* slate-950 */
+
+  /* Replace these with your project's brand colors */
+  --color-brand-primary: #8b5cf6;
+  --color-brand-secondary: #16213e;
+  --color-brand-accent: #e94560;
+  --color-brand-light: #f5f5f5;
+  --color-brand-dark: #0f0f23;
+
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #4a4a4a;
+  --color-text-muted: #6a6a6a;
+  --color-text-light: #FFFFFF;
+
+  --color-border-light: #d4d2cd;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
+  --animate-slide-down: slide-down 0.3s ease-out forwards;
+
+  /* Header + gradient button */
+  --animate-header-glow: header-glow 4s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 2.5s ease-in-out infinite;
+  --animate-gradient-x: gradient-x 2s ease infinite;
+
+  /* Drifting gradient-mesh blobs */
+  --animate-mesh-1: mesh-1 16s ease-in-out infinite;
+  --animate-mesh-2: mesh-2 20s ease-in-out infinite;
+  --animate-mesh-3: mesh-3 24s ease-in-out infinite;
+
+  /* Logo marquee */
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(2rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Breathing gradient glow behind the header */
+@keyframes header-glow {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50%      { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+}
+
+/* Rotating conic-gradient border for the gradient button.
+   Animates the gradient's angle in place (via @property) so the ring fills the
+   button exactly (inset-0) and auto-sizes to any button — no oversized square,
+   no JS. The brand gradient: teal → sky → violet → pink → red → (loop). */
+@property --snel-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes snel-angle-spin {
+  to { --snel-angle: 360deg; }
+}
+.snel-gradient-ring {
+  background: conic-gradient(from var(--snel-angle), #5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #5eead4);
+  animation: snel-angle-spin 2s linear infinite;
+}
+
+/* Pulsing glow for the gradient button — sky + pink to match the spin palette */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.25), 0 0 22px rgba(244, 114, 182, 0.18); }
+  50%      { box-shadow: 0 0 16px rgba(56, 189, 248, 0.40), 0 0 34px rgba(244, 114, 182, 0.28); }
+}
+
+/* Animated gradient for active nav links (clipped to text) */
+@keyframes gradient-x {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Corner "stacks": idle most of the time, then a brief active "pop" (full
+   opacity, nudged up). Layers are staggered (~0.2s) so they pop in sequence,
+   and each corner is offset by a full quarter of the 8s timeline (set inline by
+   PHP) so only ONE corner waves at a time — then it stops and the next goes. */
+@keyframes stack-pulse {
+  0%, 30%  { opacity: 1;    transform: translateY(-2.5px); } /* this plate active — held */
+  35%, 96% { opacity: 0.35; transform: translateY(0); }      /* dimmed — held */
+  100%     { opacity: 1;    transform: translateY(-2.5px); }
+}
+.snel-stack-layer {
+  animation: stack-pulse 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Slow drifting blobs for the CSS gradient mesh */
+@keyframes mesh-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(8%, 6%) scale(1.15); }
+}
+@keyframes mesh-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-7%, 7%) scale(1.1); }
+}
+@keyframes mesh-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(6%, -5%) scale(1.2); }
+}
+
+/* Logo marquee — track holds the logos twice; -50% loops seamlessly. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* "Muted" inline format (snel/muted) — carries no colour of its own; colour AND
+   weight adapt so you never pick them. Muted = lighter weight + greyed, and the
+   grey follows the active background (light → slate-500, dark → slate-400).
+   Together with the semibold heading default this gives the hero two-tone. */
+.snel-muted {
+  font-weight: 400;
+  color: #64748b; /* slate-500 — light background default */
+}
+.is-dark .snel-muted {
+  color: #94a3b8; /* slate-400 — dark background */
+}
+
+/* "Accent" inline format (snel/accent) — pink-400 brand highlight. Stays pink
+   on both light and dark backgrounds. */
+.snel-accent {
+  color: #f472b6; /* pink-400 */
+  font-weight: 500;
+}
+
+/* snel/heading — weight, colour and SIZE as PLAIN (unlayered) CSS so they beat
+   WP's editor heading reset (unlayered → beats Tailwind's layered utilities).
+   Sizes mirror the Tailwind scale; .snel-h-* set per breakpoint. */
+body {
+  background-color: var(--color-canvas);
+}
+
+.snel-heading {
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--color-canvas);
+}
+
+.snel-hero--full {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+.snel-hero--full > * {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.snel-hw-bold      { font-weight: 700; }
+.snel-hw-extrabold { font-weight: 800; }
+
+.snel-hw-bold .snel-muted      { font-weight: 700; }
+.snel-hw-extrabold .snel-muted { font-weight: 800; }
+
+/* Animated gradient text */
+.snel-hg-animated {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #f97316, #5eead4);
+  background-size: 300% auto;
+  animation: gradient-x 20s ease infinite;
+}
+.is-dark .snel-heading {
+  color: #fff; /* readable on dark sections */
+}
+.snel-h-sm  { font-size: 1rem; }
+.snel-h-md  { font-size: 1.125rem; }
+.snel-h-lg  { font-size: 1.25rem; }
+.snel-h-xl  { font-size: 1.5rem; }
+.snel-h-2xl { font-size: 1.875rem; }
+.snel-h-3xl { font-size: 2.25rem; }
+.snel-h-4xl { font-size: 2.5rem; }
+.snel-h-5xl { font-size: 2.75rem; }
+@media (min-width: 768px) {
+  .snel-h-sm  { font-size: 1.125rem; }
+  .snel-h-md  { font-size: 1.25rem; }
+  .snel-h-lg  { font-size: 1.5rem; }
+  .snel-h-xl  { font-size: 1.875rem; }
+  .snel-h-2xl { font-size: 2.25rem; }
+  .snel-h-3xl { font-size: 3rem; }
+  .snel-h-4xl { font-size: 3.5rem; }
+  .snel-h-5xl { font-size: 4rem; }
+}
+@media (min-width: 1024px) {
+  .snel-h-sm  { font-size: 1.25rem; }
+  .snel-h-md  { font-size: 1.5rem; }
+  .snel-h-lg  { font-size: 1.875rem; }
+  .snel-h-xl  { font-size: 2.25rem; }
+  .snel-h-2xl { font-size: 3rem; }
+  .snel-h-3xl { font-size: 3.75rem; }
+  .snel-h-4xl { font-size: 4.5rem; }
+  .snel-h-5xl { font-size: 5.25rem; }
+}
+@media (min-width: 1280px) {
+  .snel-h-lg  { font-size: 2.25rem; }
+  .snel-h-xl  { font-size: 3rem; }
+  .snel-h-2xl { font-size: 3.75rem; }
+  .snel-h-3xl { font-size: 4.5rem; }
+  .snel-h-4xl { font-size: 5.5rem; }
+  .snel-h-5xl { font-size: 6.5rem; }
+}
+
+/* Regular badge pill (snel/badge-text) — border, bg and weight adapt to the
+   section background; text colour comes from a brand-gradient modifier with an
+   automatic lighter dark variant. */
+.snel-badge {
+  border: 1px solid rgb(0 0 0 / 0.08);
+  background: rgb(255 255 255 / 0.75);
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.07), 0 0 0 1px rgb(0 0 0 / 0.03);
+}
+.is-dark .snel-badge {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(2 6 23 / 0.45);
+  font-weight: 600;
+  box-shadow: none;
+}
+.snel-badge--teal   { color: #14b8a6; } .is-dark .snel-badge--teal   { color: #2dd4bf; }
+.snel-badge--sky    { color: #0ea5e9; } .is-dark .snel-badge--sky    { color: #38bdf8; }
+.snel-badge--violet { color: #8b5cf6; } .is-dark .snel-badge--violet { color: #a78bfa; }
+.snel-badge--pink   { color: #ec4899; } .is-dark .snel-badge--pink   { color: #f472b6; }
+.snel-badge--red    { color: #ef4444; } .is-dark .snel-badge--red    { color: #f87171; }
+
+/* snel/paragraph — plain (unlayered) CSS, same reason as the heading. Colour
+   adapts to the section background; Muted (.snel-muted) greys part of it. */
+.snel-text {
+  font-weight: 400;
+  line-height: 1.45;
+  color: #475569; /* slate-600 on light */
+}
+.is-dark .snel-text {
+  color: #fff; /* readable on dark sections */
+}
+.snel-text-sm { font-size: 0.875rem; }
+.snel-text-md { font-size: 1rem; }
+.snel-text-lg { font-size: 1.125rem; }
+.snel-text-xl { font-size: 1.125rem; }
+@media (min-width: 768px) {
+  .snel-text-sm { font-size: 1rem; }
+  .snel-text-md { font-size: 1.125rem; }
+  .snel-text-lg { font-size: 1.25rem; }
+  .snel-text-xl { font-size: 1.25rem; }
+}
+@media (min-width: 1024px) {
+  .snel-text-lg { font-size: 1.5rem; }
+  .snel-text-xl { font-size: 1.5rem; }
+}
+@media (min-width: 1280px) {
+  .snel-text-xl { font-size: 1.875rem; }
+}
+.snel-ta-center { text-align: center; }
+.snel-ta-right  { text-align: right; }
+.snel-leading-tight   { line-height: 1.25; }
+.snel-leading-relaxed { line-height: 1.6; }
+
+/* Section divider — animated gradient line with radial fade on ends */
+.snel-divider {
+    position: relative;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+@media (min-width: 48rem) {
+    .snel-divider { padding-left: 2rem; padding-right: 2rem; }
+}
+.snel-divider--full { padding: 0; }
+.snel-divider-line {
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, #5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #f97316, #5eead4);
+    background-size: 300% auto;
+    animation: gradient-x 6s ease infinite;
+}
+.snel-divider::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, var(--color-canvas) 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+.snel-leading-loose   { line-height: 1.75; }
+
+@media (max-width: 767px) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

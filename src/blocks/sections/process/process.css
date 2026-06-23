@@ -1,0 +1,104 @@
+/* Snel Process — only the SVG line drawing + scroll-driven pulse live here.
+   These use SVG-only properties (stroke-linejoin/linecap/dasharray/dashoffset)
+   and the JS-set --snel-p variable, none of which have a Tailwind utility.
+   Everything else (layout, chips, dies, stops, labels, dark/active states) is
+   Tailwind in render.php. */
+
+.snel-flow-track {
+	--snel-p: 0;
+}
+
+/* Step cards reveal on scroll — fade + slide-up (view.js toggles .is-in once). */
+.snel-proc-reveal {
+	opacity: 0;
+	transform: translateY(16px);
+	transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.snel-proc-reveal.is-in {
+	opacity: 1;
+	transform: none;
+}
+@media (prefers-reduced-motion: reduce), (max-width: 767px) {
+	.snel-proc-reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+/* Faint full traces. */
+.snel-flow-base {
+	fill: none;
+	stroke: rgb(148 163 184 / 0.25);
+	stroke-width: 1.5;
+	stroke-linejoin: round;
+}
+.is-dark .snel-flow-base {
+	stroke: rgb(255 255 255 / 0.15);
+}
+
+/* One short pulse per trace, positioned at the scroll centre (--snel-p). */
+.snel-flow-pulse {
+	fill: none;
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 0.09 0.91; /* ~9% lit, rest gap (pathLength = 1) */
+	stroke-dashoffset: calc(1 - var(--snel-p));
+}
+@media (prefers-reduced-motion: reduce) {
+	.snel-flow-pulse {
+		stroke-dashoffset: 0.5;
+	}
+}
+
+/* Decorative PCB traces + terminal pads */
+.snel-deco-wire {
+	fill: none;
+	stroke: rgb(148 163 184 / 0.35);
+	stroke-width: 1.2;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+.is-dark .snel-deco-wire {
+	stroke: rgb(255 255 255 / 0.2);
+}
+.snel-deco-pad {
+	fill: rgb(148 163 184 / 0.45);
+}
+.is-dark .snel-deco-pad {
+	fill: rgb(255 255 255 / 0.3);
+}
+
+.snel-bg-trace {
+	fill: none;
+	stroke: rgb(148 163 184 / 0.15);
+	stroke-width: 1;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+.is-dark .snel-bg-trace {
+	stroke: rgb(255 255 255 / 0.08);
+}
+.snel-bg-pad {
+	fill: rgb(148 163 184 / 0.2);
+}
+.is-dark .snel-bg-pad {
+	fill: rgb(255 255 255 / 0.12);
+}
+.snel-bg-beam {
+	fill: none;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 0.12 1.88; /* period = 2.0 > path length → only one beam on path */
+	stroke-dashoffset: 2.12;
+	animation: snel-bg-beam linear infinite;
+}
+@keyframes snel-bg-beam {
+	from { stroke-dashoffset: 2.12; } /* beam just before path start — invisible */
+	to   { stroke-dashoffset: 0.12; } /* beam just past path end — invisible */
+}
+@media (prefers-reduced-motion: reduce) {
+	.snel-bg-beam { animation: none; opacity: 0; }
+}

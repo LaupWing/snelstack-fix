@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "./blocks/slot/slot.css";
+@import "./shared/theme.css";
+@import "./blocks/sections/process/process.css";
 
 @source "../*.php";
 @source "../template-parts";
