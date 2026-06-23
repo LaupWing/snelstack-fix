@@ -12,6 +12,24 @@
 	const tracks = document.querySelectorAll('.snel-flow-track');
 	if (!tracks.length) return;
 
+	// Mobile: CSS animation loops the pulse — sync chip glow by timing, no getTotalLength()
+	if (window.innerWidth < 768) {
+		const DURATION = 3000; // matches animation-duration: 3s in process.css
+		tracks.forEach((t) => {
+			const chips = Array.from(t.querySelectorAll('.snel-proc-chip'));
+			if (!chips.length) return;
+			const n = chips.length;
+			function tick() {
+				const p      = (Date.now() % DURATION) / DURATION;
+				const active = Math.floor(p * n);
+				chips.forEach((c, i) => c.classList.toggle('is-active', i === active));
+			}
+			setInterval(tick, 80);
+			tick();
+		});
+		return;
+	}
+
 	function update() {
 		const vh     = window.innerHeight;
 		const center = vh / 2;
@@ -20,8 +38,6 @@
 			const snel_p = Math.max(0, Math.min(1, (center - r.top) / r.height));
 			t.style.setProperty('--snel-p', snel_p.toFixed(4));
 
-			// Exact SVG-space overlap: getPointAtLength gives pulse position in SVG
-			// coords; getBBox gives chip bounds in the same coords — no conversions.
 			const inView = r.top < vh && r.bottom > 0;
 			const pulse  = t.querySelector('.snel-flow-pulse');
 			if (!pulse) return;
@@ -32,7 +48,6 @@
 
 			t.querySelectorAll('.snel-proc-chip').forEach((g) => {
 				const bb  = g.getBBox();
-				// Active when the lit segment overlaps this chip's Y range
 				const hit = inView && leadY >= bb.y && trailY <= bb.y + bb.height;
 				g.classList.toggle('is-active', hit);
 			});

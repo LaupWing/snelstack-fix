@@ -315,10 +315,3 @@ body {
 }
 .snel-leading-loose   { line-height: 1.75; }
 
-@media (max-width: 767px) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}

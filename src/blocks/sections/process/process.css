@@ -43,13 +43,25 @@
 	stroke-width: 2.5;
 	stroke-linecap: round;
 	stroke-linejoin: round;
-	stroke-dasharray: 0.09 0.91; /* ~9% lit, rest gap (pathLength = 1) */
+	stroke-dasharray: 0.09 0.91;
 	stroke-dashoffset: calc(1 - var(--snel-p));
 }
 @media (prefers-reduced-motion: reduce) {
 	.snel-flow-pulse {
 		stroke-dashoffset: 0.5;
 	}
+}
+/* Mobile: replace scroll-driven pulse with CSS loop — no getTotalLength() */
+@media (max-width: 767px) {
+	.snel-flow-pulse {
+		stroke-dasharray: 0.09 0.91;
+		stroke-dashoffset: 1;
+		animation: snel-pulse-loop 3s linear infinite;
+	}
+}
+@keyframes snel-pulse-loop {
+	from { stroke-dashoffset: 1; }
+	to   { stroke-dashoffset: 0; }
 }
 
 /* Decorative PCB traces + terminal pads */
