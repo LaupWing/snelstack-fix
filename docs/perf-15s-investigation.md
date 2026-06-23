@@ -15,8 +15,8 @@ This means the culprit is something rendered by the hero block — HTML, CSS, or
 
 | What | Why ruled out |
 |---|---|
-| PHP / TTFB | TTFB is 94ms — server-side is fast |
-| Translation system | Removed entirely. Not the cause. |
+| PHP / TTFB | TTFB 26.3ms with full translation system active — not the cause |
+| Translation system | Re-added, tested live: TTFB 26.3ms, total 64.8ms — completely fine |
 | Theme itself | Basic theme (no hero block) loads at 313ms |
 | SiteGround JS (lazysizes, optimizer) | Present on both fast and slow pages |
 | Canvas + requestAnimationFrame | Removed canvas → still 15s |
