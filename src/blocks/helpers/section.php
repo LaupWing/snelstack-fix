@@ -19,11 +19,11 @@ if (! function_exists('snel_mesh')) {
                 // At W=1500px: [-12%+368=188→12.5%, 18%+368=638→42.5%, 42%+368=998→66.5%, 62%+368=1298→86.5%, 88%+368=1688→112.5%]
                 // cy from top_% × 384px + 368px, as fraction of band height (384px)
                 var blobs = [
-                    { cx: -0.08, cy: -0.1, color: [167, 139, 250] }, // violet-400
-                    { cx:  0.28, cy:  0.0, color: [56,  189, 248] }, // sky-400
-                    { cx:  0.58, cy: -0.1, color: [244, 114, 182] }, // pink-400
-                    { cx:  0.83, cy:  0.0, color: [252, 165, 165] }, // red-300
-                    { cx:  1.08, cy: -0.1, color: [94,  234, 212] }, // teal-300
+                    { cx: -0.15, cy: -0.1, opacity: 1.0, color: [167, 139, 250] }, // violet-400
+                    { cx:  0.25, cy:  0.0, opacity: 1.0, color: [56,  189, 248] }, // sky-400
+                    { cx:  0.55, cy: -0.1, opacity: 1.0, color: [244, 114, 182] }, // pink-400
+                    { cx:  0.80, cy:  0.0, opacity: 0.5, color: [252, 165, 165] }, // red-300 — toned down
+                    { cx:  0.95, cy: -0.1, opacity: 1.0, color: [94,  234, 212] }, // teal-300 — more inward
                 ];
                 var times = blobs.map(function (_, i) { return i * 2.1; });
 
@@ -39,13 +39,14 @@ if (! function_exists('snel_mesh')) {
                         times[i] += 0.003;
                         var cx = b.cx * w + Math.sin(times[i] * 0.7) * w * 0.06;
                         var cy = b.cy * h + Math.cos(times[i] * 0.5) * h * 0.05;
-                        var r  = Math.max(600, w * 0.7);
+                        var r  = Math.max(700, w * 0.85);
                         var g  = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
                         var c  = b.color.join(',');
-                        g.addColorStop(0,    'rgba(' + c + ',0.35)');
-                        g.addColorStop(0.25, 'rgba(' + c + ',0.18)');
-                        g.addColorStop(0.5,  'rgba(' + c + ',0.07)');
-                        g.addColorStop(0.75, 'rgba(' + c + ',0.02)');
+                        var o  = b.opacity;
+                        g.addColorStop(0,    'rgba(' + c + ',' + (0.17 * o) + ')');
+                        g.addColorStop(0.2,  'rgba(' + c + ',' + (0.10 * o) + ')');
+                        g.addColorStop(0.45, 'rgba(' + c + ',' + (0.04 * o) + ')');
+                        g.addColorStop(0.7,  'rgba(' + c + ',' + (0.01 * o) + ')');
                         g.addColorStop(1,    'rgba(' + c + ',0)');
                         ctx.fillStyle = g;
                         ctx.fillRect(0, 0, w, h);

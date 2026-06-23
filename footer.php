@@ -179,12 +179,55 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
     <?php /* Bottom decoration — beams from bottom-right, blobs peeking up */ ?>
     <div class="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[70%] overflow-hidden">
         <?php echo snel_beams_svg(null, true); ?>
-        <div class="absolute inset-0 overflow-hidden opacity-50">
-            <span class="absolute h-[46rem] w-[46rem] rounded-full blur-[140px] bg-violet-400/50 animate-mesh-1" style="left:-12%;bottom:-35%"></span>
-            <span class="absolute h-[46rem] w-[46rem] rounded-full blur-[140px] bg-sky-400/50 animate-mesh-2" style="left:18%;bottom:-20%"></span>
-            <span class="absolute h-[46rem] w-[46rem] rounded-full blur-[140px] bg-pink-400/45 animate-mesh-3" style="left:42%;bottom:-30%"></span>
-            <span class="absolute h-[46rem] w-[46rem] rounded-full blur-[140px] bg-teal-300/55 animate-mesh-1" style="left:88%;bottom:-32%"></span>
-        </div>
+        <?php
+        $fuid = wp_unique_id('snel-footer-mesh-');
+        ?>
+        <canvas id="<?php echo esc_attr($fuid); ?>" class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+        <script>
+        (function () {
+            var canvas = document.getElementById('<?php echo esc_js($fuid); ?>');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var blobs = [
+                { cx: -0.15, cy: 1.1,  color: [167, 139, 250] },
+                { cx:  0.25, cy: 1.0,  color: [56,  189, 248] },
+                { cx:  0.55, cy: 1.1,  color: [244, 114, 182] },
+                { cx:  0.82, cy: 1.0,  color: [252, 165, 165] },
+                { cx:  1.15, cy: 1.1,  color: [94,  234, 212] },
+            ];
+            var times = blobs.map(function (_, i) { return i * 2.1; });
+
+            function resize() {
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+
+            function draw() {
+                var w = canvas.width, h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                blobs.forEach(function (b, i) {
+                    times[i] += 0.003;
+                    var cx = b.cx * w + Math.sin(times[i] * 0.7) * w * 0.06;
+                    var cy = b.cy * h + Math.cos(times[i] * 0.5) * h * 0.05;
+                    var r  = Math.max(600, w * 0.7);
+                    var g  = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+                    var c  = b.color.join(',');
+                    g.addColorStop(0,    'rgba(' + c + ',0.28)');
+                    g.addColorStop(0.2,  'rgba(' + c + ',0.18)');
+                    g.addColorStop(0.45, 'rgba(' + c + ',0.07)');
+                    g.addColorStop(0.7,  'rgba(' + c + ',0.02)');
+                    g.addColorStop(1,    'rgba(' + c + ',0)');
+                    ctx.fillStyle = g;
+                    ctx.fillRect(0, 0, w, h);
+                });
+                requestAnimationFrame(draw);
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+            requestAnimationFrame(draw);
+        })();
+        </script>
         <div class="absolute inset-0 bg-gradient-to-b from-slate-950 to-transparent"></div>
     </div>
 
