@@ -11,6 +11,13 @@
 <?php wp_body_open(); ?>
 
 <?php
+$langs   = function_exists('snel_get_supported_langs') ? snel_get_supported_langs() : ['nl'];
+$current = function_exists('snel_get_lang') ? snel_get_lang() : 'nl';
+$config  = function_exists('snel_get_languages_config') ? snel_get_languages_config() : [];
+
+$lang_full_names = ['nl' => 'Nederlands', 'en' => 'English', 'de' => 'Deutsch', 'fr' => 'Français'];
+$lang_flags      = ['nl' => '🇳🇱', 'en' => '🇬🇧', 'de' => '🇩🇪', 'fr' => '🇫🇷'];
+
 $site_name = get_bloginfo('name');
 $email     = get_option('admin_email');
 
@@ -99,17 +106,53 @@ $chevron_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill
             </div>
 
             <!-- Language + CTA -->
-            <div class="flex items-center gap-2">
-                <a href="/nl/" class="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                    <img src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" class="rounded-sm">
-                    NL
-                </a>
+            <div class="flex items-center gap-3">
 
-            <?php get_template_part('template-parts/gradient-button', null, [
-                'href'       => $contact_href,
-                'label'      => 'Contact',
-                'face_class' => 'px-4 py-2 text-sm md:px-5',
-            ]); ?>
+                <!-- Language switcher -->
+                <div class="relative" id="snel-lang-switcher">
+                    <button type="button" id="snel-lang-btn"
+                        class="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+                        aria-expanded="false" aria-haspopup="true">
+                        <span class="text-base leading-none"><?php echo $lang_flags[$current] ?? '🌐'; ?></span>
+                        <span><?php echo esc_html($config[$current]['label'] ?? strtoupper($current)); ?></span>
+                        <svg class="h-4 w-4 opacity-50 transition-transform" id="snel-lang-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div id="snel-lang-popover"
+                        class="invisible absolute right-0 top-full z-50 mt-2 w-56 origin-top-right scale-95 overflow-hidden rounded-2xl bg-white/90 opacity-0 backdrop-blur-xl shadow-[0px_4px_8px_rgba(34,42,53,0.05),0px_0px_0px_1px_rgba(34,42,53,0.04)] transition-all duration-200 ease-out"
+                        role="menu">
+                        <div class="py-1">
+                            <?php foreach ($langs as $lang) :
+                                $lurl      = function_exists('snel_lang_url') ? snel_lang_url($lang) : "/{$lang}/";
+                                $label     = $config[$lang]['label'] ?? strtoupper($lang);
+                                $full_name = $lang_full_names[$lang] ?? $label;
+                                $flag      = $lang_flags[$lang] ?? '🌐';
+                                $is_active = ($lang === $current);
+                            ?>
+                                <a href="<?php echo esc_url($lurl); ?>"
+                                    class="flex items-center gap-3 px-3 py-2.5 text-sm transition-colors <?php echo $is_active ? 'bg-gray-50 font-medium text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'; ?>"
+                                    role="menuitem" <?php if ($is_active) echo 'aria-current="true"'; ?>>
+                                    <span class="text-lg leading-none"><?php echo $flag; ?></span>
+                                    <span class="flex-1"><?php echo esc_html($full_name); ?></span>
+                                    <span class="font-mono text-xs text-gray-400"><?php echo esc_html($label); ?></span>
+                                    <?php if ($is_active) : ?>
+                                        <svg class="h-4 w-4 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    <?php endif; ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <?php get_template_part('template-parts/gradient-button', null, [
+                    'href'       => $contact_href,
+                    'label'      => 'Contact',
+                    'face_class' => 'px-4 py-2 text-sm md:px-5',
+                ]); ?>
             </div>
         </header>
 
@@ -149,6 +192,32 @@ $chevron_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill
         </div>
 
         <script>
+        (function () {
+            // Language switcher popover
+            var langBtn = document.getElementById('snel-lang-btn');
+            var langPop = document.getElementById('snel-lang-popover');
+            var langChev = document.getElementById('snel-lang-chevron');
+            if (langBtn && langPop) {
+                function openLang() {
+                    langPop.classList.remove('invisible', 'opacity-0', 'scale-95');
+                    langPop.classList.add('opacity-100', 'scale-100');
+                    langBtn.setAttribute('aria-expanded', 'true');
+                    if (langChev) langChev.style.transform = 'rotate(180deg)';
+                }
+                function closeLang() {
+                    langPop.classList.add('invisible', 'opacity-0', 'scale-95');
+                    langPop.classList.remove('opacity-100', 'scale-100');
+                    langBtn.setAttribute('aria-expanded', 'false');
+                    if (langChev) langChev.style.transform = '';
+                }
+                langBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    langPop.classList.contains('invisible') ? openLang() : closeLang();
+                });
+                document.addEventListener('click', closeLang);
+                langPop.addEventListener('click', function (e) { e.stopPropagation(); });
+            }
+        })();
         (function () {
             var nav = document.getElementById('snel-nav');
             if (nav) {
