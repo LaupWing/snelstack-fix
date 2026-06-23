@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./blocks/sections/cases/cases.css";
 
 @source "../*.php";
 @source "../template-parts";
