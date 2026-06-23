@@ -1,0 +1,39 @@
+name: Deploy to SiteGround
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --include=dev
+
+      - name: Install @parcel/watcher for Linux
+        run: npm install @parcel/watcher-linux-x64-glibc --no-save
+
+      - name: Build theme
+        run: npm run build
+
+      - name: Deploy via rsync
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "./"
+          TARGET: ${{ secrets.DEPLOY_PATH }}
+          EXCLUDE: "node_modules/, .git/, .github/, .gitignore, .env, .DS_Store, design/"
