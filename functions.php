@@ -3,6 +3,7 @@
 if (! defined('ABSPATH')) exit;
 
 require get_template_directory() . '/inc/admin/business/index.php';
+require get_template_directory() . '/inc/admin/snelstack/index.php';
 require get_template_directory() . '/inc/translations/language.php';
 require get_template_directory() . '/inc/partners/index.php';
 require get_template_directory() . '/inc/cases/index.php';
