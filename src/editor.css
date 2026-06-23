@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.editor-styles-wrapper {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fff;
+}
+
+.wp-block-snel-slot > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.wp-block-snel-slot .block-list-appender:only-child {
+    align-self: flex-start;
+}
+
+.snel-hero-slots.is-layout-flex,
+.snel-panel-slots.is-layout-flex {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 2rem;
+}
+@media (min-width: 80rem) {
+    .snel-hero-slots.is-layout-flex,
+    .snel-panel-slots.is-layout-flex {
+        gap: 3rem;
+    }
+}
+
+.snel-hero-slots.is-layout-flex.snel-justify-start,
+.snel-panel-slots.is-layout-flex.snel-justify-start  { align-items: flex-start; }
+.snel-hero-slots.is-layout-flex.snel-justify-center,
+.snel-panel-slots.is-layout-flex.snel-justify-center { align-items: center !important; }
+.snel-hero-slots.is-layout-flex.snel-justify-end,
+.snel-panel-slots.is-layout-flex.snel-justify-end    { align-items: flex-end; }
+
+.snel-hero--full {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+}
+.snel-hero--full > * {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+[class*="wp-block-snel"] {
+    outline: 2px dashed rgba(148, 163, 184, 0.25);
+    border-radius: 6px;
+}
