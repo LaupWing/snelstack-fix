@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "snel/cases",
-    "title": "Cases",
+    "title": "Snel Cases",
     "category": "snel",
     "description": "2×2 grid of case study cards pulled from the Cases CPT.",
     "supports": { "html": false, "align": false },
