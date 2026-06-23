@@ -9,6 +9,7 @@
 <?php wp_body_open(); ?>
 
 <main>
+    <h1 class="text-4xl text-white p-8">Hello World</h1>
     <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
         <article>
             <?php the_content(); ?>
