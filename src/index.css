@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "./blocks/slot/slot.css";
 @import "./shared/theme.css";
 @import "./blocks/sections/process/process.css";
