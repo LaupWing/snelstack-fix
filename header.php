@@ -98,12 +98,19 @@ $chevron_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill
                 </nav>
             </div>
 
-            <!-- CTA -->
+            <!-- Language + CTA -->
+            <div class="flex items-center gap-2">
+                <a href="/nl/" class="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                    <img src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" class="rounded-sm">
+                    NL
+                </a>
+
             <?php get_template_part('template-parts/gradient-button', null, [
                 'href'       => $contact_href,
                 'label'      => 'Contact',
                 'face_class' => 'px-4 py-2 text-sm md:px-5',
             ]); ?>
+            </div>
         </header>
 
         <!-- Mega dropdowns -->
