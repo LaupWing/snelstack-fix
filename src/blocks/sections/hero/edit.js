@@ -1,10 +1,13 @@
-import { useBlockProps, RichText, MediaUpload, MediaUploadCheck, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Button } from '@wordpress/components';
+import { useBlockProps, RichText, InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 export default function Edit({ attributes, setAttributes }) {
-	const { heading, subheading, imageUrl, ctaLabel, ctaUrl } = attributes;
-	const blockProps = useBlockProps({ className: 'bg-white' });
+	const { heading, subheading, ctaLabel, ctaUrl } = attributes;
+	const blockProps = useBlockProps({
+		className: 'relative overflow-hidden bg-white',
+		style: { minHeight: '520px' },
+	});
 
 	return (
 		<>
@@ -16,42 +19,39 @@ export default function Edit({ attributes, setAttributes }) {
 			</InspectorControls>
 
 			<div {...blockProps}>
-				<div className="mx-auto max-w-5xl px-6 py-32 flex flex-col gap-6 md:flex-row md:items-center md:gap-12">
-					<div className="flex flex-col gap-6 md:w-1/2">
+				{/* Placeholder background — canvas runs on frontend only */}
+				<div className="pointer-events-none absolute inset-x-0 top-0 h-96 overflow-hidden bg-gradient-to-br from-violet-50 via-sky-50 to-pink-50 opacity-80" />
+
+				<div className="relative z-10 px-8 pt-40 pb-20">
+					<div className="mx-auto max-w-5xl flex flex-col gap-8">
+						<div>
+							<span className="inline-flex h-8 items-center gap-2 rounded-md border border-white/40 bg-white/80 px-2.5 text-sm font-medium shadow-sm text-slate-950">
+								⭐ Score 4.9 · op basis van 74 reviews
+							</span>
+						</div>
 						<RichText
 							tagName="h1"
-							className="text-4xl font-bold text-slate-900 lg:text-5xl"
+							className="max-w-4xl font-semibold text-slate-950 text-5xl/tight"
 							value={heading}
 							onChange={(v) => setAttributes({ heading: v })}
 							placeholder={__('Heading…', 'snel')}
+							allowedFormats={['core/italic']}
 						/>
 						<RichText
 							tagName="p"
-							className="text-lg text-slate-600"
+							className="max-w-2xl text-lg text-slate-600"
 							value={subheading}
 							onChange={(v) => setAttributes({ subheading: v })}
 							placeholder={__('Subheading…', 'snel')}
+							allowedFormats={[]}
 						/>
-						<div>
-							<span className="inline-flex h-11 items-center rounded-full bg-violet-600 px-6 font-semibold text-white">
-								{ctaLabel || __('CTA', 'snel')}
-							</span>
-						</div>
-					</div>
-					<div className="md:w-1/2">
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={(media) => setAttributes({ imageUrl: media.url })}
-								allowedTypes={['image']}
-								render={({ open }) =>
-									imageUrl
-										? <img src={imageUrl} className="w-full rounded-2xl object-cover" onClick={open} style={{ cursor: 'pointer' }} />
-										: <Button onClick={open} className="w-full h-48 border-2 border-dashed border-slate-300 rounded-2xl text-slate-400">
-											{__('+ Add image', 'snel')}
-										</Button>
-								}
-							/>
-						</MediaUploadCheck>
+						{ctaLabel && (
+							<div>
+								<span className="inline-flex h-12 items-center rounded-full bg-violet-600 px-6 text-base font-semibold text-white">
+									{ctaLabel}
+								</span>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

@@ -11,6 +11,9 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --animate-header-glow: header-glow 4s ease-in-out infinite;
   --animate-glow-pulse: glow-pulse 2.5s ease-in-out infinite;
+  --animate-mesh-1: mesh-1 16s ease-in-out infinite;
+  --animate-mesh-2: mesh-2 20s ease-in-out infinite;
+  --animate-mesh-3: mesh-3 24s ease-in-out infinite;
 }
 
 @property --snel-angle {
@@ -36,6 +39,29 @@
 .snel-gradient-ring {
   background: conic-gradient(from var(--snel-angle), #5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #5eead4);
   animation: snel-angle-spin 2s linear infinite;
+}
+
+@keyframes stack-pulse {
+  0%, 30%  { opacity: 1;    transform: translateY(-2.5px); }
+  35%, 96% { opacity: 0.35; transform: translateY(0); }
+  100%     { opacity: 1;    transform: translateY(-2.5px); }
+}
+.snel-stack-layer {
+  animation: stack-pulse 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes mesh-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(8%, 6%) scale(1.15); }
+}
+@keyframes mesh-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-7%, 7%) scale(1.1); }
+}
+@keyframes mesh-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(6%, -5%) scale(1.2); }
 }
 
 body {
