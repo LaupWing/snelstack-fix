@@ -61,7 +61,7 @@ $bg = $attributes['bg'] ?? 'white';
     </div>
     <?php endif; ?>
 
-    <div class="relative rounded-xl overflow-hidden shadow-inner min-h-[50dvh] w-full bg-slate-900">
+    <div class="relative rounded-xl overflow-hidden shadow-inner shadow min-h-[50dvh] w-full bg-slate-900">
         <?php if ($img_url) : ?>
             <img
                 src="<?php echo esc_url($img_url); ?>"
