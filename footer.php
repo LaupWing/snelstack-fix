@@ -189,11 +189,11 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
             if (!canvas) return;
             var ctx = canvas.getContext('2d');
             var blobs = [
-                { cx: -0.15, cy: 1.1,  color: [167, 139, 250] },
-                { cx:  0.25, cy: 1.0,  color: [56,  189, 248] },
-                { cx:  0.55, cy: 1.1,  color: [244, 114, 182] },
-                { cx:  0.82, cy: 1.0,  color: [252, 165, 165] },
-                { cx:  1.15, cy: 1.1,  color: [94,  234, 212] },
+                { cx: -0.25, cy: 1.15, color: [167, 139, 250] },
+                { cx:  0.35, cy: 1.05, color: [56,  189, 248] },
+                { cx:  0.55, cy: 1.15, color: [244, 114, 182] },
+                { cx:  0.80, cy: 1.05, color: [252, 165, 165] },
+                { cx:  1.25, cy: 1.15, color: [94,  234, 212] },
             ];
             var times = blobs.map(function (_, i) { return i * 2.1; });
 
@@ -209,7 +209,7 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
                     times[i] += 0.003;
                     var cx = b.cx * w + Math.sin(times[i] * 0.7) * w * 0.06;
                     var cy = b.cy * h + Math.cos(times[i] * 0.5) * h * 0.05;
-                    var r  = Math.max(600, w * 0.7);
+                    var r  = Math.max(700, w * 0.85);
                     var g  = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
                     var c  = b.color.join(',');
                     g.addColorStop(0,    'rgba(' + c + ',0.28)');
