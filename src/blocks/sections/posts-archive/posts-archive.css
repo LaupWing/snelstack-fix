@@ -1,0 +1,18 @@
+.snel-archive-inner {
+    opacity: 0;
+    transform: scale(1.025);
+    pointer-events: none;
+}
+.snel-archive-card.is-in .snel-archive-inner {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+    .snel-archive-inner {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        transition: none;
+    }
+}
