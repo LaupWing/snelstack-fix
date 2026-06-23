@@ -24,7 +24,8 @@ if (! function_exists('snel_background_open')) {
         ?>
         <div class="relative isolate overflow-hidden <?php echo esc_attr(trim("$backdrop_class $extra")); ?>">
             <div class="<?php echo esc_attr($band_class); ?>">
-                <?php if ($show_beams) echo snel_beams_svg(); ?>
+                <?php if ($show_beams)    echo snel_beams_svg(); ?>
+                <?php if ($show_gradient) echo snel_mesh($fade); ?>
             </div>
             <div class="relative z-10">
         <?php

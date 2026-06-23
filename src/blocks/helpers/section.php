@@ -1,6 +1,31 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (! function_exists('snel_mesh')) {
+    function snel_mesh(string $fade = 'from-white'): string
+    {
+        $blobs = [
+            ['color' => 'bg-violet-400/50', 'anim' => 'animate-mesh-1', 'pos' => 'left-[-12%] top-[-35%]'],
+            ['color' => 'bg-sky-400/50',    'anim' => 'animate-mesh-2', 'pos' => 'left-[18%] top-[-20%]'],
+            ['color' => 'bg-pink-400/45',   'anim' => 'animate-mesh-3', 'pos' => 'left-[42%] top-[-30%]'],
+            ['color' => 'bg-red-300/40',    'anim' => 'animate-mesh-2', 'pos' => 'left-[62%] top-[-18%]'],
+            ['color' => 'bg-teal-300/55',   'anim' => 'animate-mesh-1', 'pos' => 'left-[88%] top-[-32%]'],
+        ];
+        ob_start();
+        ?>
+        <div class="pointer-events-none absolute inset-0 overflow-hidden">
+            <div class="absolute inset-0 opacity-50">
+                <?php foreach ($blobs as $b) : ?>
+                    <span class="absolute h-[46rem] w-[46rem] rounded-full blur-[140px] <?php echo esc_attr("{$b['color']} {$b['anim']} {$b['pos']}"); ?>"></span>
+                <?php endforeach; ?>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t <?php echo esc_attr($fade); ?>"></div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
 if (! function_exists('snel_section_padding')) {
     function snel_section_padding(array $attributes): string
     {
