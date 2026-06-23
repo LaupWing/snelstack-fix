@@ -13,9 +13,8 @@ $arrow = '<span class="relative block size-4 overflow-hidden">
 ?>
 <section class="relative isolate overflow-hidden bg-white">
 
-    <!-- Decorative band: canvas beams (GPU, no load block) + CSS mesh blobs -->
+    <!-- Decorative band: CSS mesh blobs only -->
     <div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-96 overflow-hidden">
-        <canvas class="snel-beams-canvas absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
         <?php echo snel_mesh(); ?>
     </div>
 
