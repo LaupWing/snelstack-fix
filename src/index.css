@@ -4,6 +4,8 @@
 @import "./blocks/sections/process/process.css";
 @import "./blocks/sections/statement/statement.css";
 @import "./blocks/sections/cases/cases.css";
+@import "./blocks/sections/posts/posts.css";
+@import "./blocks/sections/posts-archive/posts-archive.css";
 
 @source "../*.php";
 @source "../template-parts";

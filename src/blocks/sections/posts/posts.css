@@ -1,0 +1,43 @@
+/* Snel Posts — carousel scrollbar hide, edge fades, nav. */
+
+.snel-posts {
+    overflow-x: hidden;
+}
+
+.snel-posts-track {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.snel-posts-track::-webkit-scrollbar {
+    display: none;
+}
+
+/* Per-card entrance reveal. */
+.snel-post-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+@media (max-width: 767px) {
+    .snel-post-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+.snel-post-reveal.is-in {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .snel-post-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* Nav hidden until JS recalc runs. */
+.snel-posts-nav {
+    transition: opacity 0.2s ease;
+}
