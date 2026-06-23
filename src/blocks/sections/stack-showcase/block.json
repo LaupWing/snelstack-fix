@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "snel/stack-showcase",
+	"version": "1.0.0",
+	"title": "Stack Showcase",
+	"category": "snel",
+	"icon": "images-alt2",
+	"description": "3D stacked plates (three.js) with a hover-to-explore card. Sits below the hero.",
+	"keywords": ["stack", "3d", "three", "showcase", "hover"],
+	"textdomain": "snel",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"supports": {
+		"align": ["full", "wide"]
+	},
+	"attributes": {
+		"align":         { "type": "string",  "default": "wide" },
+		"bg":            { "type": "string",  "default": "white" },
+		"size":          { "type": "string",  "default": "md" },
+		"disableTop":    { "type": "boolean", "default": false },
+		"disableBottom": { "type": "boolean", "default": false }
+	}
+}

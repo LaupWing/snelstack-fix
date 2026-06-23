@@ -9,6 +9,10 @@
     "watch:css": "tailwindcss -i ./src/index.css -o ./build/index.css --watch",
     "start:blocks": "wp-scripts start --webpack-copy-php --webpack-src-dir=src/blocks --output-path=build/blocks"
   },
+  "dependencies": {
+    "@react-three/fiber": "^8.18.0",
+    "three": "^0.184.0"
+  },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
     "@wordpress/scripts": "^27.9.0",
