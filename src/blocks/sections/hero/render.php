@@ -6,17 +6,6 @@ $subheading = $attributes['subheading'] ?? '';
 $cta_label  = $attributes['ctaLabel']   ?? '';
 $cta_url    = $attributes['ctaUrl']     ?? '#';
 
-function snel_beam_d(int $i): string {
-    $dx = 7 * $i; $dy = -8 * $i;
-    return sprintf(
-        'M %d,%d C %d,%d %d,%d %d,%d',
-        -380 + $dx, -189 + $dy,
-        -312 + $dx,  216 + $dy,
-         152 + $dx,  343 + $dy,
-         684 + $dx,  875 + $dy
-    );
-}
-
 $arrow = '<span class="relative block size-4 overflow-hidden">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="absolute inset-0 size-4 transition-transform duration-300 ease-out group-hover:translate-x-[200%]"><path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/></svg>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="absolute inset-0 size-4 translate-y-[150%] transition-transform duration-300 ease-out group-hover:translate-y-0"><path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/></svg>
@@ -24,50 +13,13 @@ $arrow = '<span class="relative block size-4 overflow-hidden">
 ?>
 <section class="relative isolate overflow-hidden bg-white">
 
-    <!-- SVG beams — SMIL, no JS needed -->
-    <div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-96 overflow-hidden" aria-hidden="true">
-    <svg viewBox="0 0 696 316" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-        <linearGradient id="sbg" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stop-color="#94a3b8" stop-opacity="0"/>
-            <stop offset="20%"  stop-color="#94a3b8" stop-opacity="0.6"/>
-            <stop offset="80%"  stop-color="#94a3b8" stop-opacity="0.6"/>
-            <stop offset="100%" stop-color="#94a3b8" stop-opacity="0"/>
-        </linearGradient>
-        <?php for ($i = 0; $i < 50; $i++) :
-            $dur   = (10 + ($i * 7) % 11) . 's';
-            $off   = round(($i * 3 % 10) / (10 + ($i * 7) % 11), 2);
-            $begin = $off > 0 ? "-{$off}s" : '0s';
-        ?>
-        <linearGradient id="sbm<?php echo $i; ?>" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="0%" y2="0%">
-            <animate attributeName="x1" values="0%;100%" dur="<?php echo $dur; ?>" begin="<?php echo $begin; ?>" repeatCount="indefinite"/>
-            <animate attributeName="x2" values="0%;95%"  dur="<?php echo $dur; ?>" begin="<?php echo $begin; ?>" repeatCount="indefinite"/>
-            <animate attributeName="y1" values="0%;100%" dur="<?php echo $dur; ?>" begin="<?php echo $begin; ?>" repeatCount="indefinite"/>
-            <animate attributeName="y2" values="0%;93%"  dur="<?php echo $dur; ?>" begin="<?php echo $begin; ?>" repeatCount="indefinite"/>
-            <stop offset="0%"   stop-color="#38bdf8" stop-opacity="0"/>
-            <stop offset="10%"  stop-color="#38bdf8"/>
-            <stop offset="50%"  stop-color="#a78bfa"/>
-            <stop offset="90%"  stop-color="#f472b6"/>
-            <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
-        </linearGradient>
-        <?php endfor; ?>
-    </defs>
-    <g opacity="0.15" stroke="url(#sbg)" stroke-width="0.5" fill="none">
-        <?php for ($i = 0; $i < 60; $i++) : ?>
-        <path d="<?php echo snel_beam_d($i); ?>"/>
-        <?php endfor; ?>
-    </g>
-    <?php for ($i = 0; $i < 50; $i++) : ?>
-    <path d="<?php echo snel_beam_d($i); ?>" stroke="url(#sbm<?php echo $i; ?>)" stroke-width="1.5" fill="none" opacity="0.9"/>
-    <?php endfor; ?>
-    </svg>
+    <div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-96 overflow-hidden">
+        <?php echo snel_beams_svg(); ?>
     </div>
 
-    <!-- Content -->
     <div class="relative z-10 px-4 pt-40 pb-20 md:px-8 lg:pt-44">
         <?php snel_panel_open(['inner_class' => 'gap-8 xl:gap-12']); ?>
 
-            <!-- Eyebrow -->
             <div>
                 <span class="inline-flex h-8 items-center gap-3 rounded-md border border-white/40 bg-white/50 px-2.5 text-sm font-medium shadow-sm backdrop-blur-md">
                     <svg viewBox="0 0 24 24" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
