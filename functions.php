@@ -4,6 +4,7 @@ if (! defined('ABSPATH')) exit;
 
 require get_template_directory() . '/inc/admin/business/index.php';
 require get_template_directory() . '/inc/blocks/index.php';
+require get_template_directory() . '/inc/cases/index.php';
 
 add_filter('block_categories_all', function ($cats) {
     return array_merge([['slug' => 'snel', 'title' => 'Snel']], $cats);
