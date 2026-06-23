@@ -1,8 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
 
-const SNEL_BEAMS_COUNT      = 50;
-const SNEL_BEAMS_BASE_COUNT = 60;
+defined('SNEL_BEAMS_COUNT')      || define('SNEL_BEAMS_COUNT',      50);
+defined('SNEL_BEAMS_BASE_COUNT') || define('SNEL_BEAMS_BASE_COUNT', 60);
 
 function snel_beam_path(int $i): string
 {
