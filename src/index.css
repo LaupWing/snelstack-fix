@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-@source "../../*.php";
-@source "../../template-parts";
-@source "../../inc";
-@source "../../assets/js";
+@source "../*.php";
+@source "../template-parts";
+@source "../inc";
+@source "../assets/js";
 
 @theme {
   --color-brand-primary: #8b5cf6;
