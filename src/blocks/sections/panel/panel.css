@@ -1,0 +1,46 @@
+/* Panel block — the locked 3-row content (eyebrow pill, heading, lead).
+   Light card on the beams background, matching the hero. Classes are applied by
+   the InnerBlocks template in src/blocks/panel/edit.js. The corner "stacks" use
+   the shared .snel-stack-layer animation from theme.css. */
+
+.snel-panel-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  margin: 0;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-primary) 25%, transparent);
+  background: rgb(255 255 255 / 0.6);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.375;
+  color: var(--color-brand-primary);
+}
+.snel-panel-heading {
+  margin: 1.5rem 0 0;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #020617; /* slate-950 */
+}
+.snel-panel-lead {
+  margin: 2rem 0 0;
+  max-width: 56rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #475569; /* slate-600 */
+}
+
+/* Dark theme — deep violet base, white text, white/10 eyebrow pill. */
+.snel-panel.is-dark .snel-panel-eyebrow {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+.snel-panel.is-dark .snel-panel-heading {
+  color: #fff;
+}
+.snel-panel.is-dark .snel-panel-lead {
+  color: #cbd5e1; /* slate-300 */
+}
