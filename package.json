@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tailwindcss -i ./src/index.css -o ./build/index.css --minify",
-    "watch": "tailwindcss -i ./src/index.css -o ./build/index.css --watch"
+    "build:css": "tailwindcss -i ./src/index.css -o ./build/index.css --minify",
+    "build:blocks": "wp-scripts build --webpack-copy-php --webpack-src-dir=src/blocks --output-path=build/blocks",
+    "build": "npm run build:css && npm run build:blocks",
+    "watch:css": "tailwindcss -i ./src/index.css -o ./build/index.css --watch",
+    "start:blocks": "wp-scripts start --webpack-copy-php --webpack-src-dir=src/blocks --output-path=build/blocks"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
+    "@wordpress/scripts": "^27.9.0",
     "tailwindcss": "^4.1.8"
   }
 }
