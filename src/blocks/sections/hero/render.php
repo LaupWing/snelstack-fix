@@ -6,6 +6,10 @@ $subheading = $attributes['subheading'] ?? '';
 $cta_label  = $attributes['ctaLabel']   ?? '';
 $cta_url    = $attributes['ctaUrl']     ?? '#';
 ?>
+<div class="pointer-events-none absolute inset-x-0 top-0 h-96 overflow-hidden">
+    <canvas class="snel-beams-canvas absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+</div>
+
 <section class="relative bg-white px-4 pt-40 pb-20 md:px-8">
     <div class="mx-auto max-w-5xl flex flex-col gap-8">
 

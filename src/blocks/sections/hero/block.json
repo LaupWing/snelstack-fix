@@ -7,6 +7,7 @@
 	"icon": "cover-image",
 	"textdomain": "snel",
 	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
 	"attributes": {
 		"heading":    { "type": "string", "default": "" },
