@@ -1,7 +1,35 @@
 @import "tailwindcss";
 
 @theme {
+  --color-brand-primary: #8b5cf6;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --animate-header-glow: header-glow 4s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 2.5s ease-in-out infinite;
+}
+
+@property --snel-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes snel-angle-spin {
+  to { --snel-angle: 360deg; }
+}
+
+@keyframes header-glow {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50%       { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(56,189,248,0.25), 0 0 22px rgba(244,114,182,0.18); }
+  50%       { box-shadow: 0 0 16px rgba(56,189,248,0.40), 0 0 34px rgba(244,114,182,0.28); }
+}
+
+.snel-gradient-ring {
+  background: conic-gradient(from var(--snel-angle), #5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #5eead4);
+  animation: snel-angle-spin 2s linear infinite;
 }
 
 body {
