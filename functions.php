@@ -2,9 +2,6 @@
 
 if (! defined('ABSPATH')) exit;
 
-require get_template_directory() . '/inc/translations/language.php';
-require get_template_directory() . '/inc/admin/business/index.php';
-
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
