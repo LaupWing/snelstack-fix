@@ -27,6 +27,14 @@ add_action('init', function () {
     }
 });
 
+add_filter('block_categories_all', function ($categories) {
+    array_unshift($categories, [
+        'slug'  => 'snel',
+        'title' => __('Snel', 'snel'),
+    ]);
+    return $categories;
+});
+
 add_filter('show_admin_bar', '__return_false');
 
 remove_action('wp_head', 'print_emoji_detection_script', 7);

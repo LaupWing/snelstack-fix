@@ -1,0 +1,30 @@
+/* Snel Statement — word-reveal animation.
+   Layout + typography live in Tailwind (render.php) and theme.css (snel-text
+   scale). Only the .wr-word animation mechanics live here. */
+
+.wr-word {
+	display: inline-block;
+	opacity: 0;
+	transform: translateY(0.35em);
+	transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.wr-word.wr-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* Slightly different exit: words slide up rather than down when scrolled past. */
+.wr-word.wr-out {
+	opacity: 0;
+	transform: translateY(-0.2em);
+	transition-duration: 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wr-word {
+		opacity: 1 !important;
+		transform: none !important;
+		transition: none !important;
+	}
+}
