@@ -3,6 +3,7 @@
 @import "./shared/theme.css";
 @import "./blocks/sections/process/process.css";
 @import "./blocks/sections/statement/statement.css";
+@import "./blocks/sections/cases/cases.css";
 
 @source "../*.php";
 @source "../template-parts";

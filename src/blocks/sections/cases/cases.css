@@ -1,0 +1,45 @@
+/* Snel Cases — card entrance animation, concave corner clip, bottom blur strip. */
+
+.snel-case-card {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.snel-case-card.is-in {
+    opacity: 1;
+    transform: none;
+}
+@media (max-width: 767px) {
+    .snel-case-card {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* Concave corner clip — carves the top-left corner of the card to reveal the
+   icon sitting behind it. Works with any section background colour. */
+.snel-case-link {
+    clip-path: path("M0 76.8Q0 57.6 19.2 57.6Q57.6 57.6 57.6 19.2Q57.6 0 76.8 0H6000V60000H0Z");
+}
+@media (min-width: 1024px) {
+    .snel-case-link {
+        clip-path: path("M0 128Q0 96 32 96Q96 96 96 32Q96 0 128 0H10000V100000H0Z");
+    }
+}
+
+/* Frosted blur strip at the very bottom. */
+.snel-case-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 25%;
+    pointer-events: none;
+    z-index: 6;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
+}
