@@ -1,0 +1,7 @@
+.snel-cf-input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.snel-cf-status.text-green-600 { color: #16a34a; }
+.snel-cf-status.text-red-600   { color: #dc2626; }

@@ -345,6 +345,67 @@ function snel_seed_websites_page(bool $wipe = false): bool
     return ! is_wp_error($page_id);
 }
 
+function snel_get_contact_page_blocks(): string
+{
+    $h_class = 'font-semibold text-slate-950 text-2xl/tight md:text-3xl/tight lg:text-4xl/tight xl:text-5xl/tight';
+
+    $b = [];
+
+    // ── Hero ──────────────────────────────────────────────────────────────────────
+    $b[] = '<!-- wp:snel/hero {"size":"md"} -->'
+        . "\n<!-- wp:snel/slot {\"max\":1,\"className\":\"snel-slot-eyebrow\"} -->"
+        . "\n<div class=\"wp-block-snel-slot is-layout-flex snel-slot-eyebrow\"><!-- wp:snel/badge-text /--></div>"
+        . "\n<!-- /wp:snel/slot -->"
+        . "\n"
+        . "\n<!-- wp:snel/slot {\"max\":1,\"className\":\"snel-slot-middle\"} -->"
+        . "\n<div class=\"wp-block-snel-slot is-layout-flex snel-slot-middle\"><!-- wp:snel/heading {\"level\":\"h1\",\"className\":\"" . $h_class . "\"} -->"
+        . "\n<h1 class=\"wp-block-snel-heading snel-heading max-w-4xl snel-h-xl " . $h_class . "\">Vertel ons over<br><span class=\"snel-muted\">jouw project.</span></h1>"
+        . "\n<!-- /wp:snel/heading --></div>"
+        . "\n<!-- /wp:snel/slot -->"
+        . "\n"
+        . "\n<!-- wp:snel/slot {\"max\":2,\"orientation\":\"horizontal\",\"className\":\"snel-slot-lower\"} -->"
+        . "\n<div class=\"wp-block-snel-slot is-layout-flex snel-slot-lower\"><!-- wp:snel/paragraph {\"size\":\"lg\"} -->"
+        . "\n<p class=\"wp-block-snel-paragraph snel-text max-w-4xl snel-text-lg\">We reageren binnen één werkdag. Liever direct bellen?&nbsp;<span class=\"snel-muted\">Dat kan ook.</span></p>"
+        . "\n<!-- /wp:snel/paragraph --></div>"
+        . "\n<!-- /wp:snel/slot -->"
+        . "\n<!-- /wp:snel/hero -->";
+
+    // ── Contact form ───────────────────────────────────────────────────────────────
+    $b[] = '<!-- wp:snel/contact-form /-->';
+
+    return implode("\n\n", $b);
+}
+
+function snel_seed_contact_page(bool $wipe = false): bool
+{
+    $content  = snel_get_contact_page_blocks();
+    $existing = get_posts([
+        'post_type'   => 'page',
+        'name'        => 'contact',
+        'post_status' => 'any',
+        'numberposts' => 1,
+        'fields'      => 'ids',
+    ]);
+
+    if ($existing && ! $wipe) return false;
+
+    if ($existing && $wipe) {
+        $result = wp_update_post(['ID' => $existing[0], 'post_content' => $content, 'post_status' => 'publish']);
+        return ! is_wp_error($result);
+    }
+
+    $page_id = wp_insert_post([
+        'post_type'    => 'page',
+        'post_title'   => 'Contact',
+        'post_name'    => 'contact',
+        'post_content' => $content,
+        'post_status'  => 'publish',
+        'page_template' => 'page-contact.php',
+    ]);
+
+    return ! is_wp_error($page_id);
+}
+
 function snel_seed_front_page(bool $wipe = false): bool
 {
     $content       = snel_get_front_page_blocks();

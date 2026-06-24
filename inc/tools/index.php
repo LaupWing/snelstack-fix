@@ -227,6 +227,22 @@ add_action('admin_post_snel_reseed_front_page', function () {
     exit;
 });
 
+add_action('admin_post_snel_seed_contact_page', function () {
+    check_admin_referer('snel_seed_contact_page');
+    if (! current_user_can('manage_options')) wp_die(__('Geen toegang.', 'snel'));
+    $ok = snel_seed_contact_page();
+    wp_safe_redirect(add_query_arg(['page' => 'snel-seed', 'seeded' => (int) $ok, 'type' => 'contact_page'], admin_url('tools.php')));
+    exit;
+});
+
+add_action('admin_post_snel_reseed_contact_page', function () {
+    check_admin_referer('snel_reseed_contact_page');
+    if (! current_user_can('manage_options')) wp_die(__('Geen toegang.', 'snel'));
+    $ok = snel_seed_contact_page(true);
+    wp_safe_redirect(add_query_arg(['page' => 'snel-seed', 'seeded' => (int) $ok, 'type' => 'contact_page'], admin_url('tools.php')));
+    exit;
+});
+
 // ---------------------------------------------------------------------------
 // Page render
 // ---------------------------------------------------------------------------
@@ -288,6 +304,12 @@ function snel_seed_page_render(): void
         $notice = (int) $_GET['seeded']
             ? '<div class="notice notice-success is-dismissible"><p>' . __('Homepagina geseed.', 'snel') . '</p></div>'
             : '<div class="notice notice-info is-dismissible"><p>' . __('Homepagina bestaat al — gebruik Re-seed om de content te overschrijven.', 'snel') . '</p></div>';
+    }
+
+    if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'contact_page') {
+        $notice = (int) $_GET['seeded']
+            ? '<div class="notice notice-success is-dismissible"><p>' . __('Contactpagina geseed.', 'snel') . '</p></div>'
+            : '<div class="notice notice-info is-dismissible"><p>' . __('Contactpagina bestaat al — gebruik Re-seed om de content te overschrijven.', 'snel') . '</p></div>';
     }
 
     if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'cases') {
@@ -478,6 +500,21 @@ function snel_seed_page_render(): void
                     <?php wp_nonce_field('snel_reseed_partners'); ?>
                     <input type="hidden" name="action" value="snel_reseed_partners" />
                     <button type="submit" class="button button-secondary"><?php _e('Re-seed (wis + hermaak)', 'snel'); ?></button>
+                </form>
+            </div>
+
+            <div style="border:1px solid #c3c4c7;border-radius:4px;padding:20px 24px;background:#fff">
+                <h2 style="margin-top:0"><?php _e('Contactpagina', 'snel'); ?></h2>
+                <p style="color:#646970"><?php _e('Maakt de /contact/ pagina aan (hero + contactformulier). Re-seed overschrijft alleen de content.', 'snel'); ?></p>
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block;margin-right:8px">
+                    <?php wp_nonce_field('snel_seed_contact_page'); ?>
+                    <input type="hidden" name="action" value="snel_seed_contact_page" />
+                    <button type="submit" class="button button-primary"><?php _e('Seed contactpagina', 'snel'); ?></button>
+                </form>
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block" onsubmit="return confirm('Content van de contactpagina wordt overschreven. Doorgaan?')">
+                    <?php wp_nonce_field('snel_reseed_contact_page'); ?>
+                    <input type="hidden" name="action" value="snel_reseed_contact_page" />
+                    <button type="submit" class="button button-secondary"><?php _e('Re-seed (overschrijf content)', 'snel'); ?></button>
                 </form>
             </div>
 

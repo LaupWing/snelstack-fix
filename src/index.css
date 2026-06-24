@@ -9,6 +9,7 @@
 @import "./blocks/sections/content/content.css";
 @import "./blocks/sections/posts/posts.css";
 @import "./blocks/sections/posts-archive/posts-archive.css";
+@import "./blocks/sections/contact-form/contact-form.css";
 
 @source "../*.php";
 @source "../template-parts";
