@@ -25,7 +25,7 @@ if (! function_exists('snel_beams_svg')) {
         }
         ob_start();
         ?>
-        <svg class="pointer-events-none absolute inset-0 h-full w-full" width="100%" height="100%" viewBox="0 0 696 316" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"<?php echo $flip ? ' style="transform:scale(-1,-1)"' : ''; ?>>
+        <svg class="snel-beams pointer-events-none absolute inset-0 h-full w-full" width="100%" height="100%" viewBox="0 0 696 316" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"<?php echo $flip ? ' style="transform:scale(-1,-1)"' : ''; ?>>
             <path d="<?php echo esc_attr($base); ?>" stroke="url(#<?php echo esc_attr($uid); ?>-base)" stroke-opacity="0.2" stroke-width="0.5"></path>
             <?php for ($i = 0; $i < SNEL_BEAMS_COUNT; $i++) : ?>
                 <path d="<?php echo esc_attr(snel_beam_path($i)); ?>" stroke="url(#<?php echo esc_attr($uid); ?>-<?php echo $i; ?>)" stroke-opacity="0.8" stroke-width="1.5"></path>

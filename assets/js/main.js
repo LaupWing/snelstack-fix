@@ -71,3 +71,20 @@
     document.addEventListener('click', (e) => { if (isOpen && header && !header.contains(e.target)) close(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) close(); });
 })();
+
+(function () {
+    'use strict';
+
+    // Pause beam SVG animations when off-screen, resume when in view.
+    const svgs = document.querySelectorAll('.snel-beams');
+    if (!svgs.length || !('IntersectionObserver' in window)) return;
+
+    svgs.forEach((svg) => {
+        svg.pauseAnimations();
+        const io = new IntersectionObserver(
+            ([entry]) => { entry.isIntersecting ? svg.unpauseAnimations() : svg.pauseAnimations(); },
+            { rootMargin: '100px' }
+        );
+        io.observe(svg);
+    });
+})();
