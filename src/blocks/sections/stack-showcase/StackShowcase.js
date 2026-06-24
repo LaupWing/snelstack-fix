@@ -98,6 +98,7 @@ function BackgroundBoxes() {
 			}
 		}
 		if (changed && m.instanceColor) m.instanceColor.needsUpdate = true;
+		s.invalidate();
 	});
 
 	return (
@@ -288,7 +289,7 @@ export default function StackShowcase({ slides = [] }) {
 				className="absolute inset-0"
 				camera={{ position: [7.58, 3.15, 5.31], fov: 34 }}
 				dpr={[1, 2]}
-				frameloop="always"
+				frameloop="demand"
 			>
 				<CameraRig />
 				<Env />
