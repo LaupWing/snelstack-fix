@@ -1,12 +1,3 @@
-/**
- * Stack Showcase — frontend view script.
- *
- * Three.js is heavy. We lazy-load it only when the element is about to enter
- * the viewport (IntersectionObserver + dynamic import). The PHP render already
- * outputs a spinner placeholder so the layout doesn't jump.
- *
- * @package Snel
- */
 import { createRoot } from '@wordpress/element';
 
 document.querySelectorAll('.snel-stack-showcase').forEach((el) => {
@@ -18,24 +9,37 @@ document.querySelectorAll('.snel-stack-showcase').forEach((el) => {
 	}
 	if (!slides.length) return;
 
+	let root = null;
+	const placeholder = el.querySelector('.snel-stack-placeholder');
+
 	const mount = async () => {
+		if (root) return;
+		if (placeholder) placeholder.hidden = true;
+
+		const container = document.createElement('div');
+		container.className = 'snel-stack-canvas';
+		el.appendChild(container);
+
 		const { default: StackShowcase } = await import('./StackShowcase');
-		el.innerHTML = '';
-		createRoot(el).render(<StackShowcase slides={slides} />);
+		root = createRoot(container);
+		root.render(<StackShowcase slides={slides} />);
 	};
 
+	const unmount = () => {
+		if (!root) return;
+		root.unmount();
+		root = null;
+		el.querySelector('.snel-stack-canvas')?.remove();
+		if (placeholder) placeholder.hidden = false;
+	};
+
+	if (placeholder) placeholder.addEventListener('click', mount);
+
 	if ('IntersectionObserver' in window) {
-		const obs = new IntersectionObserver(
-			([entry]) => {
-				if (entry.isIntersecting) {
-					obs.disconnect();
-					mount();
-				}
-			},
-			{ rootMargin: '200px' }
+		const io = new IntersectionObserver(
+			([entry]) => { if (!entry.isIntersecting) unmount(); },
+			{ rootMargin: '-50px' }
 		);
-		obs.observe(el);
-	} else {
-		mount();
+		io.observe(el);
 	}
 });
