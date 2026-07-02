@@ -43,3 +43,12 @@
     mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 100%);
 }
+
+/* Mobile: a 20px backdrop blur re-composites every frame as cards scroll past —
+   expensive on phones. Keep the frost, cut the radius. */
+@media (max-width: 767px) {
+    .snel-case-link::after {
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+}

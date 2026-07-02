@@ -48,11 +48,35 @@ if (! function_exists('snel_mesh')) {
                         ctx.fillStyle = g;
                         ctx.fillRect(0, 0, w, h);
                     });
-                    requestAnimationFrame(draw);
                 }
                 resize();
                 window.addEventListener('resize', resize);
-                requestAnimationFrame(draw);
+
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                var rafId = null, onScreen = false;
+
+                function loop() { draw(); rafId = requestAnimationFrame(loop); }
+                function start() { if (rafId === null && onScreen && !document.hidden) rafId = requestAnimationFrame(loop); }
+                function stop() { if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
+
+                // prefers-reduced-motion: paint one static frame, no loop.
+                if (reduce) { draw(); return; }
+
+                // Pause when the tab is backgrounded.
+                document.addEventListener('visibilitychange', function () {
+                    document.hidden ? stop() : start();
+                });
+
+                // Only animate while this section is in (or near) the viewport.
+                if ('IntersectionObserver' in window) {
+                    new IntersectionObserver(function (entries) {
+                        onScreen = entries[0].isIntersecting;
+                        onScreen ? start() : stop();
+                    }, { rootMargin: '200px' }).observe(canvas);
+                } else {
+                    onScreen = true;
+                    start();
+                }
             })();
             </script>
         </div>
