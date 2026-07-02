@@ -45,7 +45,7 @@ $arrow_svg  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill=
             . '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="absolute inset-0 size-3 translate-y-[150%] transition-transform duration-300 ease-out group-hover:translate-y-0">' . $arrow_path . '</svg>';
 
 // Generates the .snel-flow-track HTML for a given pitch and unique ID suffix.
-$make_track = function (int $pitch, string $id_sfx, string $svg_w, string $ol_left)
+$make_track = function (int $pitch, string $id_sfx, string $svg_w, string $ol_left, bool $mobile = false)
 	use ($steps, $n, $palette, $xs, $chip_x, $chip_w, $chip_h, $top, $arrow_svg): string
 {
 	$chip_y = [];
@@ -139,10 +139,17 @@ $make_track = function (int $pitch, string $id_sfx, string $svg_w, string $ol_le
 		$chips .= '<text class="snel-flow-num fill-violet-500 text-[13px] font-bold tracking-[0.04em] in-[.is-active]:fill-white" x="' . ($chip_x + $chip_w / 2) . '" y="' . ($cy + 5) . '" text-anchor="middle">' . esc_html($s['n']) . '</text>';
 		$chips .= '</g>';
 
-		$pct   = round($cy / $vb_h * 100, 3);
-		$rows .= '<div data-cy="' . $cy . '" class="absolute left-0 right-0 grid -translate-y-1/2 grid-cols-1 items-start gap-1 md:grid-cols-[150px_1fr] md:items-center md:gap-6" style="top:' . $pct . '%">';
-		$rows .= '<h3 class="snel-heading snel-h-sm md:snel-h-md">' . esc_html($s['title']) . '</h3>';
-		$rows .= '<div class="snel-proc-reveal max-w-lg rounded-2xl border border-violet-500/20 bg-white/60 px-4 py-4 md:justify-self-end md:px-6 md:py-6 in-[.is-dark]:border-violet-400/25 in-[.is-dark]:bg-white/5">';
+		if ($mobile) {
+			// Normal flow, full container width (the SVG is a background here).
+			$rows .= '<div class="grid grid-cols-1 gap-1">';
+			$rows .= '<h3 class="snel-heading snel-h-sm">' . esc_html($s['title']) . '</h3>';
+			$rows .= '<div class="snel-proc-reveal w-full rounded-2xl border border-violet-500/20 bg-white/70 px-4 py-4 backdrop-blur-sm in-[.is-dark]:border-violet-400/25 in-[.is-dark]:bg-white/5">';
+		} else {
+			$pct   = round($cy / $vb_h * 100, 3);
+			$rows .= '<div data-cy="' . $cy . '" class="absolute left-0 right-0 grid -translate-y-1/2 grid-cols-1 items-start gap-1 md:grid-cols-[150px_1fr] md:items-center md:gap-6" style="top:' . $pct . '%">';
+			$rows .= '<h3 class="snel-heading snel-h-sm md:snel-h-md">' . esc_html($s['title']) . '</h3>';
+			$rows .= '<div class="snel-proc-reveal max-w-lg rounded-2xl border border-violet-500/20 bg-white/60 px-4 py-4 md:justify-self-end md:px-6 md:py-6 in-[.is-dark]:border-violet-400/25 in-[.is-dark]:bg-white/5">';
+		}
 		$rows .= '<h4 class="snel-heading snel-h-md"><span class="text-pink-400">' . esc_html($s['n']) . '</span> ' . esc_html($s['heading']) . '</h4>';
 		$rows .= '<p class="snel-text snel-text-md mt-3">' . esc_html($s['body']) . '</p>';
 		$rows .= '<a href="' . esc_url($s['btn_url']) . '" class="group mt-4 inline-flex md:mt-8 h-8 items-center gap-2 rounded-md border-2 border-teal-400 bg-teal-400 px-3 text-xs font-medium text-violet-950 transition-all duration-300 hover:bg-teal-400/90"><span class="whitespace-nowrap">' . esc_html($s['btn_label']) . '</span><span class="relative block size-3 overflow-hidden">' . $arrow_svg . '</span></a>';
@@ -165,6 +172,14 @@ $make_track = function (int $pitch, string $id_sfx, string $svg_w, string $ol_le
 	      . '</defs>'
 	      . $decorations . $traces . $stops . $chips
 	      . '</svg>';
+
+	if ($mobile) {
+		// Circuit becomes a decorative background behind the full-width cards.
+		return '<div class="snel-flow-track relative">'
+		     . '<div class="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden opacity-25">' . $svg . '</div>'
+		     . '<div class="relative flex flex-col gap-12">' . $rows . '</div>'
+		     . '</div>';
+	}
 
 	return '<div class="snel-flow-track relative">'
 	     . $svg
@@ -217,7 +232,7 @@ $bg_svg_html = '<svg class="pointer-events-none absolute inset-0 h-full w-full h
 <section data-seo-content class="snel-process relative <?php echo snel_section_class($attributes, 'theme'); ?>"<?php echo snel_section_style($attributes, 'theme'); ?>>
 	<?php echo $bg_svg_html; ?>
 	<div class="relative z-10 mx-auto w-full max-w-5xl px-4 md:px-8 <?php echo snel_section_padding($attributes); ?>">
-		<div class="md:hidden"><?php echo $make_track(560, '-mob', 'w-28', 'left-32'); ?></div>
+		<div class="md:hidden"><?php echo $make_track(560, '-mob', 'w-28', 'left-32', true); ?></div>
 		<div class="hidden md:block"><?php echo $make_track(420, '-desk', 'w-37.5', 'left-42.5'); ?></div>
 	</div>
 </section>

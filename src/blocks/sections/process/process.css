@@ -18,7 +18,7 @@
 	opacity: 1;
 	transform: none;
 }
-@media (prefers-reduced-motion: reduce), (max-width: 767px) {
+@media (prefers-reduced-motion: reduce) {
 	.snel-proc-reveal {
 		opacity: 1;
 		transform: none;
