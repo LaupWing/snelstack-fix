@@ -27,7 +27,7 @@ $query = new WP_Query($query_args);
 
 if (! $query->have_posts()) {
     if (current_user_can('edit_posts')) {
-        echo '<p class="py-10 text-center text-sm text-slate-400">' . esc_html__('Publiceer blogberichten om dit blok te vullen.', 'snel') . '</p>';
+        echo '<p class="py-10 text-center text-sm text-slate-400">' . esc_html(snel__('Publiceer blogberichten om dit blok te vullen.')) . '</p>';
     }
     return;
 }
@@ -35,7 +35,7 @@ if (! $query->have_posts()) {
 $arrow_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 transition group-hover:rotate-[-45deg] rotate-0"><path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/></svg>';
 
 $btn = '<span class="inline-flex group space-x-2 px-4 items-center h-11 border border-brand-primary/25 bg-white hover:bg-brand-primary text-brand-primary hover:text-white rounded-md transition-all duration-300">'
-     . '<span class="text-sm font-medium antialiased whitespace-nowrap">' . esc_html__('Lees artikel', 'snel') . '</span>'
+     . '<span class="text-sm font-medium antialiased whitespace-nowrap">' . esc_html(snel__('Lees artikel')) . '</span>'
      . '<span class="mt-0.5">' . $arrow_svg . '</span>'
      . '</span>';
 
@@ -82,14 +82,14 @@ if ($query->max_num_pages > 1) {
     $nav_btn_class = 'inline-flex group items-center gap-2 h-[46px] px-4 rounded-md text-sm font-medium text-brand-primary bg-white border-2 border-brand-primary/40 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all duration-300 antialiased whitespace-nowrap';
 
     $prev_btn = $prev_url
-        ? '<a href="' . esc_url($prev_url) . '" rel="prev" class="' . $nav_btn_class . '"><svg viewBox="0 0 20 20" fill="currentColor" class="size-4 rotate-180"><path d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"/></svg><span class="hidden sm:inline">' . esc_html__('Vorige', 'snel') . '</span></a>'
+        ? '<a href="' . esc_url($prev_url) . '" rel="prev" class="' . $nav_btn_class . '"><svg viewBox="0 0 20 20" fill="currentColor" class="size-4 rotate-180"><path d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"/></svg><span class="hidden sm:inline">' . esc_html(snel__('Vorige')) . '</span></a>'
         : '<div></div>';
 
     $next_btn = $next_url
-        ? '<a href="' . esc_url($next_url) . '" rel="next" class="' . $nav_btn_class . '"><span class="hidden sm:inline">' . esc_html__('Volgende', 'snel') . '</span><svg viewBox="0 0 20 20" fill="currentColor" class="size-4"><path d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"/></svg></a>'
+        ? '<a href="' . esc_url($next_url) . '" rel="next" class="' . $nav_btn_class . '"><span class="hidden sm:inline">' . esc_html(snel__('Volgende')) . '</span><svg viewBox="0 0 20 20" fill="currentColor" class="size-4"><path d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"/></svg></a>'
         : '<div></div>';
 
-    $pagination = '<nav class="flex items-center justify-between" aria-label="' . esc_attr__('Paginering', 'snel') . '">'
+    $pagination = '<nav class="flex items-center justify-between" aria-label="' . esc_attr(snel__('Paginering')) . '">'
         . '<div class="flex items-center">' . $prev_btn . '</div>'
         . '<div class="flex space-x-1 lg:space-x-2">' . $nums . '</div>'
         . '<div class="flex items-center">' . $next_btn . '</div>'

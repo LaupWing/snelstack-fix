@@ -13,7 +13,37 @@ add_filter('snel_block_text_attrs', function ($map) {
     $map['snel/button-gradient'] = ['label'];
     $map['snel/badge-text']      = ['label'];
     $map['snel/posts']           = ['heading'];
+    $map['snel/thumbnail']       = ['backLabel'];
     return $map;
+});
+
+// Static UI strings baked into block markup (via snel__). Register them so they
+// appear in the Theme Strings grid for the translator to fill.
+add_filter('snel_theme_string_defaults', function ($groups) {
+    $add = function (&$groups, $section, array $keys) {
+        foreach ($keys as $k) {
+            if (! isset($groups[$section][$k])) $groups[$section][$k] = [];
+        }
+    };
+    $add($groups, 'Blocks', [
+        'Lees artikel',
+        'Meer cases bekijken',
+        'Score',
+        'Vorige',
+        'Volgende',
+        'Paginering',
+        'Publiceer blogberichten om dit blok te vullen.',
+        'Voeg cases toe via het Cases menu om dit blok te vullen.',
+        'Add some Partners (with a logo) under the Partners menu to fill this marquee.',
+    ]);
+    $add($groups, 'Contactformulier', [
+        'Naam', 'E-mailadres', 'Telefoonnummer', '(optioneel)', 'Bericht',
+        'Jan de Vries', 'jan@bedrijf.nl', '+31 6 12 34 56 78',
+        'Vertel ons over jouw project, idee of vraag...', 'Verstuur bericht',
+    ]);
+    $add($groups, 'Stack showcase', ['Verken de stack', 'Klik om te verkennen']);
+    $add($groups, 'Navigatie', ['Home', 'Terug naar %s']);
+    return $groups;
 });
 
 // Repeater blocks: array attributes whose items hold translatable text.

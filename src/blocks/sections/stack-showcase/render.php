@@ -25,9 +25,9 @@ $slides = array_values(array_map(function ($s) {
 							<span class="size-3.5 rounded-full bg-violet-500 ring-2 ring-slate-900"></span>
 							<span class="size-3.5 rounded-full bg-pink-600 ring-2 ring-slate-900"></span>
 						</div>
-						<p class="text-xl font-semibold text-white">Verken de stack</p>
+						<p class="text-xl font-semibold text-white"><?php echo esc_html(snel__('Verken de stack')); ?></p>
 						<span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/70 ring-1 ring-white/20 transition group-hover:bg-white/20">
-							Klik om te verkennen
+							<?php echo esc_html(snel__('Klik om te verkennen')); ?>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z" clip-rule="evenodd"/></svg>
 						</span>
 					</div>

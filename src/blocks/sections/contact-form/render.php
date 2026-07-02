@@ -28,51 +28,51 @@ $label_cls    = 'block text-sm font-medium text-slate-700 mb-1.5';
 
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label for="snel-cf-name" class="<?php echo $label_cls; ?>">Naam <span class="text-brand-primary">*</span></label>
+                        <label for="snel-cf-name" class="<?php echo $label_cls; ?>"><?php echo esc_html(snel__('Naam')); ?> <span class="text-brand-primary">*</span></label>
                         <input
                             id="snel-cf-name"
                             name="name"
                             type="text"
                             required
                             autocomplete="name"
-                            placeholder="Jan de Vries"
+                            placeholder="<?php echo esc_attr(snel__('Jan de Vries')); ?>"
                             class="<?php echo $input_cls; ?>"
                         />
                     </div>
                     <div>
-                        <label for="snel-cf-email" class="<?php echo $label_cls; ?>">E-mailadres <span class="text-brand-primary">*</span></label>
+                        <label for="snel-cf-email" class="<?php echo $label_cls; ?>"><?php echo esc_html(snel__('E-mailadres')); ?> <span class="text-brand-primary">*</span></label>
                         <input
                             id="snel-cf-email"
                             name="email"
                             type="email"
                             required
                             autocomplete="email"
-                            placeholder="jan@bedrijf.nl"
+                            placeholder="<?php echo esc_attr(snel__('jan@bedrijf.nl')); ?>"
                             class="<?php echo $input_cls; ?>"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label for="snel-cf-phone" class="<?php echo $label_cls; ?>">Telefoonnummer <span class="text-slate-400 font-normal">(optioneel)</span></label>
+                    <label for="snel-cf-phone" class="<?php echo $label_cls; ?>"><?php echo esc_html(snel__('Telefoonnummer')); ?> <span class="text-slate-400 font-normal"><?php echo esc_html(snel__('(optioneel)')); ?></span></label>
                     <input
                         id="snel-cf-phone"
                         name="phone"
                         type="tel"
                         autocomplete="tel"
-                        placeholder="+31 6 12 34 56 78"
+                        placeholder="<?php echo esc_attr(snel__('+31 6 12 34 56 78')); ?>"
                         class="<?php echo $input_cls; ?>"
                     />
                 </div>
 
                 <div>
-                    <label for="snel-cf-message" class="<?php echo $label_cls; ?>">Bericht <span class="text-brand-primary">*</span></label>
+                    <label for="snel-cf-message" class="<?php echo $label_cls; ?>"><?php echo esc_html(snel__('Bericht')); ?> <span class="text-brand-primary">*</span></label>
                     <textarea
                         id="snel-cf-message"
                         name="message"
                         required
                         rows="5"
-                        placeholder="Vertel ons over jouw project, idee of vraag..."
+                        placeholder="<?php echo esc_attr(snel__('Vertel ons over jouw project, idee of vraag...')); ?>"
                         class="<?php echo $input_cls; ?> resize-none"
                     ></textarea>
                 </div>
@@ -84,7 +84,7 @@ $label_cls    = 'block text-sm font-medium text-slate-700 mb-1.5';
                     >
                         <span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
                         <span class="snel-cf-btn-label relative inline-flex items-center justify-center whitespace-nowrap rounded-full bg-white px-6 text-base font-semibold text-gray-900">
-                            Verstuur bericht
+                            <?php echo esc_html(snel__('Verstuur bericht')); ?>
                         </span>
                     </button>
 

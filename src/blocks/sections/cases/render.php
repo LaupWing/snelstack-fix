@@ -20,7 +20,7 @@ $cases    = function_exists('snel_get_cases') ? snel_get_cases(['posts_per_page'
 
 if (empty($cases)) {
     if (current_user_can('edit_posts')) {
-        echo '<p class="py-10 text-center text-sm text-gray-400">' . esc_html__('Voeg cases toe via het Cases menu om dit blok te vullen.', 'snel') . '</p>';
+        echo '<p class="py-10 text-center text-sm text-gray-400">' . esc_html(snel__('Voeg cases toe via het Cases menu om dit blok te vullen.')) . '</p>';
     }
     return;
 }
@@ -103,7 +103,7 @@ $arrow_hover  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fil
                 <span class="group relative inline-flex animate-glow-pulse cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] h-12">
                     <span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
                     <span class="relative inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-full bg-slate-950 pl-6 pr-2 text-base font-semibold text-white">
-                        <?php echo esc_html__('Meer cases bekijken', 'snel'); ?>
+                        <?php echo esc_html(snel__('Meer cases bekijken')); ?>
                         <span class="flex size-8 items-center justify-center rounded-full bg-teal-400 text-slate-950">
                             <span class="relative block size-4 overflow-hidden">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="absolute inset-0 size-4 transition-transform duration-300 ease-out group-hover:-translate-y-[150%]"><?php echo $arrow_path; ?></svg>

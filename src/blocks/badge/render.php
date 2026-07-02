@@ -17,7 +17,7 @@ $google_svg = '<svg viewBox="0 0 24 24" class="h-4 w-4"><path fill="#4285F4" d="
 ?>
 <span class="inline-flex h-8 items-center gap-3 rounded-md border border-white/40 bg-white/50 px-2.5 text-sm font-medium shadow-sm backdrop-blur-md">
 	<?php echo $google_svg; ?>
-	<span class="text-slate-950"><?php echo esc_html__('Score', 'snel') . ' ' . esc_html($score); ?></span>
+	<span class="text-slate-950"><?php echo esc_html(snel__('Score')) . ' ' . esc_html($score); ?></span>
 	<span class="flex gap-1"><?php echo str_repeat($star_svg, 5); ?></span>
 	<?php if ($count_label) : ?>
 		<span class="hidden text-slate-950 md:inline"><?php echo esc_html($count_label); ?></span>

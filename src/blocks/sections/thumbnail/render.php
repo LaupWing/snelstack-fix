@@ -22,7 +22,7 @@ $breadcrumbs = [];
 if ($back_url) {
     // Walk up: Home → parent page → current
     $home = home_url('/');
-    $breadcrumbs[] = ['label' => 'Home', 'url' => $home];
+    $breadcrumbs[] = ['label' => snel__('Home'), 'url' => $home];
     $breadcrumbs[] = ['label' => $back_label, 'url' => $back_url];
     $breadcrumbs[] = ['label' => $title, 'url' => ''];
 }
@@ -54,7 +54,7 @@ $bg = $attributes['bg'] ?? 'white';
             </nav>
             <nav aria-label="Back">
                 <a href="<?php echo esc_url($back_url); ?>" class="text-sm lg:text-base font-normal underline-offset-2 hover:underline text-white transition-colors">
-                    <?php echo esc_html('Terug naar ' . $back_label); ?>
+                    <?php echo esc_html(sprintf(snel__('Terug naar %s'), $back_label)); ?>
                 </a>
             </nav>
         </div>

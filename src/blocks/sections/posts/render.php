@@ -27,7 +27,7 @@ $posts = get_posts($query_args);
 
 if (empty($posts)) {
     if (current_user_can('edit_posts')) {
-        echo '<p class="py-10 text-center text-sm text-gray-400">' . esc_html__('Publiceer blogberichten om dit blok te vullen.', 'snel') . '</p>';
+        echo '<p class="py-10 text-center text-sm text-gray-400">' . esc_html(snel__('Publiceer blogberichten om dit blok te vullen.')) . '</p>';
     }
     return;
 }
@@ -103,7 +103,7 @@ $arrow_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="
 
                         <div class="flex">
                             <span class="inline-flex items-center gap-2 rounded-md border border-brand-primary/30 bg-white px-4 h-10 text-sm font-medium text-brand-primary antialiased whitespace-nowrap transition-all duration-300 group-hover:bg-brand-primary group-hover:text-white group-hover:border-brand-primary">
-                                <?php echo esc_html__('Lees artikel', 'snel'); ?>
+                                <?php echo esc_html(snel__('Lees artikel')); ?>
                                 <?php echo $arrow_svg; ?>
                             </span>
                         </div>

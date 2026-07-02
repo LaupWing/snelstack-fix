@@ -36,7 +36,7 @@ foreach ($partners as $p) {
 
 if ($items === '') {
 	if (current_user_can('edit_posts')) {
-		echo '<p class="py-10 text-center text-sm text-gray-400">' . esc_html__('Add some Partners (with a logo) under the Partners menu to fill this marquee.', 'snel') . '</p>';
+		echo '<p class="py-10 text-center text-sm text-gray-400">' . esc_html(snel__('Add some Partners (with a logo) under the Partners menu to fill this marquee.')) . '</p>';
 	}
 	return;
 }
