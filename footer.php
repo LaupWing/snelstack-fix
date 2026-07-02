@@ -114,11 +114,11 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
         <div class="mx-auto flex w-full flex-col items-center space-y-10 md:w-4/5 lg:w-3/5">
 
             <h2 class="text-center text-[calc(1.5rem+6vw)] font-bold leading-tight text-white lg:text-[calc(2rem+4vw)]">
-                <?php echo esc_html(get_theme_mod('snel_footer_headline', 'Samen iets bouwen?')); ?>
+                <?php echo esc_html(snel__(get_theme_mod('snel_footer_headline', 'Samen iets bouwen?'))); ?>
             </h2>
 
             <p class="mx-auto max-w-2xl text-balance text-center text-base text-white/60 sm:text-lg">
-                <?php echo esc_html(get_theme_mod('snel_footer_subtext', 'Benieuwd wat we samen kunnen bouwen? Neem gerust contact op.')); ?>
+                <?php echo esc_html(snel__(get_theme_mod('snel_footer_subtext', 'Benieuwd wat we samen kunnen bouwen? Neem gerust contact op.'))); ?>
                 <?php if ($email) : ?>
                     <?php echo esc_html(snel__('Stuur een mail naar')); ?>
                     <a class="mx-1 font-medium text-brand-primary transition hover:text-brand-primary/80 whitespace-nowrap"

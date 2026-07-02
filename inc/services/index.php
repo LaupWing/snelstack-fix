@@ -139,11 +139,31 @@ add_action('save_post_service', function (int $post_id): void {
 
 function snel_get_services(array $args = []): array
 {
-    return get_posts(array_merge([
+    $default = snel_get_default_lang();
+
+    // Canonical (default-language) services — the source list, no duplicates.
+    $services = get_posts(array_merge([
         'post_type'      => 'service',
         'posts_per_page' => -1,
         'post_status'    => 'publish',
         'orderby'        => 'menu_order date',
         'order'          => 'ASC',
+        'meta_query'     => [
+            'relation' => 'OR',
+            ['key' => '_snel_lang', 'value' => $default],
+            ['key' => '_snel_lang', 'compare' => 'NOT EXISTS'],
+        ],
     ], $args));
+
+    $lang = snel_get_lang();
+    if ($lang === $default) {
+        return $services;
+    }
+
+    // Swap each to its current-language sibling (fall back to the source post).
+    return array_map(function ($post) use ($lang) {
+        $sibling = snel_get_translation($post->ID, $lang);
+        $translated = $sibling ? get_post($sibling) : null;
+        return $translated ?: $post;
+    }, $services);
 }

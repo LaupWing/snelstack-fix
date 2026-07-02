@@ -9,12 +9,25 @@ defined('ABSPATH') || exit;
 
 function snel_get_recent_posts(array $args = []): array
 {
+    // Blog posts are independent per language — show the recent posts written
+    // in the current language (default also matches posts with no language yet).
+    $lang    = snel_get_lang();
+    $default = snel_get_default_lang();
+    $meta    = ($lang === $default)
+        ? [
+            'relation' => 'OR',
+            ['key' => '_snel_lang', 'value' => $default],
+            ['key' => '_snel_lang', 'compare' => 'NOT EXISTS'],
+        ]
+        : [['key' => '_snel_lang', 'value' => $lang]];
+
     return get_posts(array_merge([
         'post_type'      => 'post',
         'posts_per_page' => 6,
         'post_status'    => 'publish',
         'orderby'        => 'date',
         'order'          => 'DESC',
+        'meta_query'     => $meta,
     ], $args));
 }
 

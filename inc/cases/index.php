@@ -127,11 +127,29 @@ add_action('save_post_case', function (int $post_id): void {
 
 function snel_get_cases(array $args = []): array
 {
-    return get_posts(array_merge([
+    $default = snel_get_default_lang();
+
+    $cases = get_posts(array_merge([
         'post_type'      => 'case',
         'posts_per_page' => -1,
         'post_status'    => 'publish',
         'orderby'        => 'menu_order date',
         'order'          => 'ASC',
+        'meta_query'     => [
+            'relation' => 'OR',
+            ['key' => '_snel_lang', 'value' => $default],
+            ['key' => '_snel_lang', 'compare' => 'NOT EXISTS'],
+        ],
     ], $args));
+
+    $lang = snel_get_lang();
+    if ($lang === $default) {
+        return $cases;
+    }
+
+    return array_map(function ($post) use ($lang) {
+        $sibling    = snel_get_translation($post->ID, $lang);
+        $translated = $sibling ? get_post($sibling) : null;
+        return $translated ?: $post;
+    }, $cases);
 }

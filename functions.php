@@ -79,6 +79,8 @@ add_filter('snel_theme_string_defaults', function ($groups) {
     $add($groups, 'Footer', [
         'Stuur een mail naar', 'Start een gesprek', 'Stuur een WhatsApp',
         'Privacybeleid', 'Algemene voorwaarden',
+        'Samen iets bouwen?',
+        'Benieuwd wat we samen kunnen bouwen? Neem gerust contact op.',
     ]);
     return $groups;
 });
