@@ -9,6 +9,14 @@
 @source "../../*.php";
 @source "../../assets/js";
 
+/* Freeze all CSS animations while transient UI is open (mobile menu). JS adds
+   .snel-anim-frozen to <html>; canvas meshes + SMIL beams are paused in JS. */
+html.snel-anim-frozen *,
+html.snel-anim-frozen *::before,
+html.snel-anim-frozen *::after {
+    animation-play-state: paused !important;
+}
+
 @theme {
   /* Brand gradient — Tailwind-equivalent of the uiGradient palette:
      teal-300 #5eead4 → sky-400 #38bdf8 → violet-400 #a78bfa → pink-400 #f472b6 → red-300 #fca5a5

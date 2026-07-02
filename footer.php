@@ -250,6 +250,11 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
                 onScreen = true;
                 start();
             }
+
+            // Freeze during transient UI (e.g. mobile menu open) — see snelAnim.
+            document.addEventListener('snel:anim', function (e) {
+                (e.detail && e.detail.frozen) ? stop() : start();
+            });
         })();
         </script>
         <div class="absolute inset-0 bg-gradient-to-b from-slate-950 to-transparent"></div>

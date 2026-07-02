@@ -1,3 +1,26 @@
+// Global animation freeze coordinator.
+// Transient UI like the mobile menu uses a `backdrop-blur` panel; blurring a
+// *moving* background (canvas mesh, beams, CSS animations) forces a re-blur
+// every frame and makes the open/close animation janky. Freezing all background
+// motion for the duration makes the panel blur a static image = smooth.
+// - CSS animations: paused via the `snel-anim-frozen` class (see theme.css).
+// - Canvas meshes + SMIL beams: listen for the `snel:anim` event below.
+window.snelAnim = window.snelAnim || {
+    frozen: false,
+    pause: function () {
+        if (this.frozen) return;
+        this.frozen = true;
+        document.documentElement.classList.add('snel-anim-frozen');
+        document.dispatchEvent(new CustomEvent('snel:anim', { detail: { frozen: true } }));
+    },
+    resume: function () {
+        if (!this.frozen) return;
+        this.frozen = false;
+        document.documentElement.classList.remove('snel-anim-frozen');
+        document.dispatchEvent(new CustomEvent('snel:anim', { detail: { frozen: false } }));
+    }
+};
+
 (function () {
     'use strict';
 
@@ -50,6 +73,7 @@
 
     function open() {
         isOpen = true;
+        window.snelAnim.pause(); // still the background so the blurred panel opens smoothly
         menu.classList.remove(...closedClasses);
         menu.classList.add(...openClasses);
         toggle.setAttribute('aria-expanded', 'true');
@@ -64,6 +88,8 @@
         toggle.setAttribute('aria-expanded', 'false');
         if (iconMenu) iconMenu.classList.remove('hidden');
         if (iconClose) iconClose.classList.add('hidden');
+        // Keep the background frozen until the close transition (300ms) finishes.
+        setTimeout(function () { if (!isOpen) window.snelAnim.resume(); }, 350);
     }
 
     toggle.addEventListener('click', (e) => { e.stopPropagation(); isOpen ? close() : open(); });
@@ -75,16 +101,30 @@
 (function () {
     'use strict';
 
-    // Pause beam SVG animations when off-screen, resume when in view.
+    // Pause beam SVG animations when off-screen (or when globally frozen),
+    // resume when in view.
     const svgs = document.querySelectorAll('.snel-beams');
     if (!svgs.length || !('IntersectionObserver' in window)) return;
 
+    let frozen = false;
+    const visible = new Map();
+
+    function apply(svg) {
+        (visible.get(svg) && !frozen) ? svg.unpauseAnimations() : svg.pauseAnimations();
+    }
+
     svgs.forEach((svg) => {
+        visible.set(svg, false);
         svg.pauseAnimations();
         const io = new IntersectionObserver(
-            ([entry]) => { entry.isIntersecting ? svg.unpauseAnimations() : svg.pauseAnimations(); },
+            ([entry]) => { visible.set(svg, entry.isIntersecting); apply(svg); },
             { rootMargin: '100px' }
         );
         io.observe(svg);
+    });
+
+    document.addEventListener('snel:anim', (e) => {
+        frozen = !!(e.detail && e.detail.frozen);
+        svgs.forEach(apply);
     });
 })();

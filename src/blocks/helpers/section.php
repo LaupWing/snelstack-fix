@@ -77,6 +77,11 @@ if (! function_exists('snel_mesh')) {
                     onScreen = true;
                     start();
                 }
+
+                // Freeze during transient UI (e.g. mobile menu open) — see snelAnim.
+                document.addEventListener('snel:anim', function (e) {
+                    (e.detail && e.detail.frozen) ? stop() : start();
+                });
             })();
             </script>
         </div>
