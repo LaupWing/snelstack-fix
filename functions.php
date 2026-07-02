@@ -5,6 +5,16 @@ if (! defined('ABSPATH')) exit;
 require get_template_directory() . '/inc/admin/business/index.php';
 require get_template_directory() . '/inc/admin/snelstack/index.php';
 // Translation system now lives in the Snel Translations plugin (required).
+// Declare which Snel block attributes hold translatable text. Blocks whose text
+// is stored in attributes (not inner HTML) need this, or they stay untranslated.
+add_filter('snel_block_text_attrs', function ($map) {
+    $map['snel/statement']       = ['heading', 'paragraph'];
+    $map['snel/button']          = ['label'];
+    $map['snel/button-gradient'] = ['label'];
+    $map['snel/badge-text']      = ['label'];
+    $map['snel/posts']           = ['heading'];
+    return $map;
+});
 require get_template_directory() . '/inc/partners/index.php';
 require get_template_directory() . '/inc/cases/index.php';
 require get_template_directory() . '/inc/services/index.php';
