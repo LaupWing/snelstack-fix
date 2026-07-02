@@ -5,6 +5,7 @@ import GlobalSearch from '../components/GlobalSearch';
 import Tabs from '../components/Tabs';
 import SettingsTab from './SettingsTab';
 import DebugTab from './DebugTab';
+import OrphansPanel from './OrphansPanel';
 
 const TABS = [
     { id: 'languages', label: __( 'Languages', 'snel' ), icon: Languages },
@@ -30,7 +31,12 @@ export default function Translations() {
 
             <Tabs tabs={ TABS } active={ active } onChange={ setActive } />
 
-            { active === 'languages' && <SettingsTab /> }
+            { active === 'languages' && (
+                <>
+                    <SettingsTab />
+                    <OrphansPanel />
+                </>
+            ) }
             { active === 'debug' && <DebugTab /> }
         </div>
     );

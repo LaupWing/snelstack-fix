@@ -243,6 +243,86 @@ add_action('rest_api_init', function () {
         'permission_callback' => function () { return current_user_can('manage_options'); },
     ));
 
+    // Orphans — posts whose _snel_lang is no longer a configured language.
+    register_rest_route('snel-translations/v1', '/orphans', array(
+        'methods'  => 'GET',
+        'callback' => function () {
+            global $wpdb;
+
+            $config_keys = array_keys(snel_get_languages_config());
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT p.ID, p.post_title, p.post_type, p.post_status, ml.meta_value AS lang
+                 FROM {$wpdb->posts} p
+                 INNER JOIN {$wpdb->postmeta} ml ON ml.post_id = p.ID AND ml.meta_key = %s
+                 WHERE p.post_status NOT IN ('auto-draft', 'trash', 'inherit')
+                 ORDER BY ml.meta_value, p.post_title",
+                TranslationGroup::META_LANG
+            ), ARRAY_A);
+
+            $posts = array();
+            $langs = array();
+            foreach ($rows as $r) {
+                if (in_array($r['lang'], $config_keys, true)) {
+                    continue; // language still configured → not an orphan
+                }
+                $langs[$r['lang']] = true;
+                $posts[] = array(
+                    'id'      => (int) $r['ID'],
+                    'lang'    => $r['lang'],
+                    'title'   => $r['post_title'],
+                    'type'    => $r['post_type'],
+                    'status'  => $r['post_status'],
+                    'editUrl' => get_edit_post_link($r['ID'], 'raw'),
+                );
+            }
+
+            return rest_ensure_response(array(
+                'languages' => array_keys($langs),
+                'posts'     => $posts,
+            ));
+        },
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+    ));
+
+    // Orphan actions: re-add the language, or trash/delete a post.
+    register_rest_route('snel-translations/v1', '/orphan-action', array(
+        'methods'  => 'POST',
+        'callback' => function (WP_REST_Request $request) {
+            $action = sanitize_text_field((string) $request->get_param('action'));
+
+            if ($action === 'add_language') {
+                $lang = sanitize_text_field((string) $request->get_param('lang'));
+                if (! preg_match('/^[a-z]{2}(-[a-z]{2})?$/i', $lang)) {
+                    return new WP_Error('bad_lang', 'Invalid language code.', array('status' => 400));
+                }
+                $config = snel_get_languages_config();
+                if (! isset($config[$lang])) {
+                    $config[$lang] = array('label' => strtoupper($lang), 'locale' => $lang);
+                    update_option('snel_languages', wp_json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+                    flush_rewrite_rules();
+                }
+                return rest_ensure_response(array('success' => true));
+            }
+
+            $post_id = (int) $request->get_param('postId');
+            if (! $post_id || ! current_user_can('delete_post', $post_id)) {
+                return new WP_Error('cap', 'Not allowed.', array('status' => 403));
+            }
+
+            if ($action === 'trash') {
+                wp_trash_post($post_id);
+                return rest_ensure_response(array('success' => true));
+            }
+            if ($action === 'delete') {
+                wp_delete_post($post_id, true);
+                return rest_ensure_response(array('success' => true));
+            }
+
+            return new WP_Error('bad_action', 'Unknown action.', array('status' => 400));
+        },
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+    ));
+
 });
 
 // ─── Block Defaults Helper ───────────────────────────────────────────────────
