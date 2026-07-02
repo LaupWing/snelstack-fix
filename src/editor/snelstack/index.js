@@ -38,6 +38,7 @@ function TranslationsPanel() {
 	const [busy, setBusy] = useState(false);
 	const [status, setStatus] = useState('');
 	const [result, setResult] = useState(null);
+	const [batch, setBatch] = useState(null); // per-language progress for "create all"
 
 	if (!data || !data.postId) {
 		return (
@@ -49,46 +50,74 @@ function TranslationsPanel() {
 
 	const targetLang = others.find((l) => l.code === target);
 
-	const handleCreate = async () => {
-		if (!targetLang) return;
-		setBusy(true);
-		setResult(null);
-		setStatus(__('Saving page…', 'snel'));
-
-		const postId = data.postId || window.wp?.data?.select('core/editor')?.getCurrentPostId();
-
-		try {
-			await savePost();
-		} catch (e) { /* ignore — continue with last saved content */ }
-
-		setStatus(__('Translating… this can take a moment.', 'snel'));
-
+	// Create one translation. Returns { ok, editUrl, postId, existed, msg }.
+	const createOne = async (postId, lang) => {
 		try {
 			const body = new URLSearchParams({
 				action: 'snel_create_translation',
 				nonce: data.nonce,
 				post_id: postId,
-				target: target,
+				target: lang,
 			});
 			const res = await fetch(data.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' });
 			const raw = await res.text();
-
 			let json;
 			try { json = JSON.parse(raw); } catch (e) {
-				setStatus(__('Unexpected response. HTTP', 'snel') + ' ' + res.status);
-				setBusy(false);
-				return;
+				return { ok: false, msg: __('Unexpected response. HTTP', 'snel') + ' ' + res.status };
 			}
-
 			if (json.success && json.data && json.data.edit_url) {
-				setResult(json.data);
-				setStatus(json.data.existed ? __('Already exists:', 'snel') : __('Created!', 'snel'));
-			} else {
-				setStatus(__('Error:', 'snel') + ' ' + ((json.data && (json.data.message || json.data)) || 'unknown'));
+				return { ok: true, editUrl: json.data.edit_url, postId: json.data.post_id, existed: json.data.existed };
 			}
+			return { ok: false, msg: (json.data && (json.data.message || json.data)) || 'unknown' };
 		} catch (err) {
-			setStatus(__('Request failed:', 'snel') + ' ' + err.message);
+			return { ok: false, msg: err.message };
 		}
+	};
+
+	const currentPostId = () =>
+		data.postId || window.wp?.data?.select('core/editor')?.getCurrentPostId();
+
+	const handleCreate = async () => {
+		if (!targetLang) return;
+		setBusy(true);
+		setResult(null);
+		setBatch(null);
+		setStatus(__('Saving page…', 'snel'));
+
+		const postId = currentPostId();
+		try { await savePost(); } catch (e) { /* continue with last saved content */ }
+
+		setStatus(__('Translating… this can take a moment.', 'snel'));
+		const r = await createOne(postId, target);
+		if (r.ok) {
+			setResult({ edit_url: r.editUrl, post_id: r.postId });
+			setStatus(r.existed ? __('Already exists:', 'snel') : __('Created!', 'snel'));
+		} else {
+			setStatus(__('Error:', 'snel') + ' ' + r.msg);
+		}
+		setBusy(false);
+	};
+
+	const handleCreateAll = async () => {
+		if (!missing.length) return;
+		setBusy(true);
+		setResult(null);
+		setBatch(missing.map((l) => ({ code: l.code, label: l.label, state: 'pending' })));
+		setStatus(__('Saving page…', 'snel'));
+
+		const postId = currentPostId();
+		try { await savePost(); } catch (e) { /* continue with last saved content */ }
+
+		for (let i = 0; i < missing.length; i++) {
+			const l = missing[i];
+			setStatus(`${__('Translating', 'snel')} ${l.label} (${i + 1}/${missing.length})…`);
+			setBatch((prev) => prev.map((it) => (it.code === l.code ? { ...it, state: 'working' } : it)));
+			const r = await createOne(postId, l.code);
+			setBatch((prev) => prev.map((it) => (
+				it.code === l.code ? { ...it, state: r.ok ? 'done' : 'error', editUrl: r.editUrl, msg: r.msg } : it
+			)));
+		}
+		setStatus(__('Done.', 'snel'));
 		setBusy(false);
 	};
 
@@ -165,6 +194,18 @@ function TranslationsPanel() {
 								: `✦ ${__('Create', 'snel')} ${targetLang ? targetLang.label : ''}`}
 						</Button>
 					)}
+
+					{missing.length > 0 && (
+						<Button
+							variant="secondary"
+							onClick={handleCreateAll}
+							isBusy={busy}
+							disabled={busy}
+							style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
+						>
+							{`✦ ${__('Create all missing', 'snel')} (${missing.length})`}
+						</Button>
+					)}
 				</>
 			) : (
 				<p style={{ color: '#999', fontSize: 13 }}>
@@ -173,6 +214,24 @@ function TranslationsPanel() {
 			)}
 
 			{status && <p style={{ marginTop: 8, fontSize: 12, color: '#666' }}>{status}</p>}
+
+			{batch && (
+				<div style={{ marginTop: 8 }}>
+					{batch.map((it) => (
+						<div key={it.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', fontSize: 12, borderBottom: '1px solid #f0f0f0' }}>
+							<span style={{ fontWeight: 600 }}>{it.label}</span>
+							<span>
+								{it.state === 'pending' && <span style={{ color: '#999' }}>{__('waiting…', 'snel')}</span>}
+								{it.state === 'working' && <span style={{ color: '#2271b1' }}>{__('translating…', 'snel')}</span>}
+								{it.state === 'done' && (it.editUrl
+									? <a href={it.editUrl}>{__('open →', 'snel')}</a>
+									: <span style={{ color: '#16a34a' }}>✓</span>)}
+								{it.state === 'error' && <span style={{ color: '#d63638' }} title={it.msg}>{__('failed', 'snel')}</span>}
+							</span>
+						</div>
+					))}
+				</div>
+			)}
 
 			{result && result.edit_url && (
 				<div style={{ marginTop: 8, padding: '8px 12px', background: '#edfaef', border: '1px solid #b6e0bf', borderRadius: 6 }}>
