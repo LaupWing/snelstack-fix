@@ -117,8 +117,15 @@ export default function Edit({ attributes, setAttributes }) {
 				</PanelBody>
 			</InspectorControls>
 
-			{/* view.js (the scroll reveal) never runs in the editor, so unhide the cards here. */}
-			<style>{ `.snel-proc-reveal { opacity: 1 !important; transform: none !important; }` }</style>
+			{/* Editor only: the desktop track is `hidden md:block` and the editor
+			    canvas is often under the md width, so it stays display:none. Force
+			    the desktop version visible, hide the mobile one, and unhide the
+			    scroll-reveal cards (view.js never runs in the editor). */}
+			<style>{ `
+				.snel-process .md\\:hidden { display: none !important; }
+				.snel-process .hidden.md\\:block { display: block !important; }
+				.snel-proc-reveal { opacity: 1 !important; transform: none !important; }
+			` }</style>
 			<ServerSideRender block="snel/process" attributes={attributes} />
 		</div>
 	);
