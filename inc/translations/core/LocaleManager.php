@@ -53,7 +53,19 @@ class LocaleManager
     public static function config(): array
     {
         if (self::$config === null) {
-            self::$config = require get_template_directory() . '/inc/translations/config/languages.php';
+            $config = require get_template_directory() . '/inc/translations/config/languages.php';
+
+            // An admin-provided JSON override (Languages tab) takes precedence
+            // over the hardcoded file default.
+            $stored = get_option('snel_languages', '');
+            if (is_string($stored) && trim($stored) !== '') {
+                $decoded = json_decode($stored, true);
+                if (is_array($decoded) && ! empty($decoded)) {
+                    $config = $decoded;
+                }
+            }
+
+            self::$config = $config;
         }
 
         return self::$config;

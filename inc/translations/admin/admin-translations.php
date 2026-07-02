@@ -117,6 +117,107 @@ add_action('rest_api_init', function () {
         'permission_callback' => function () { return current_user_can('manage_options'); },
     ));
 
+    // Languages config (JSON) — read the effective config + the file default.
+    register_rest_route('snel-translations/v1', '/languages-config', array(
+        'methods'  => 'GET',
+        'callback' => function () {
+            $file   = include get_template_directory() . '/inc/translations/config/languages.php';
+            $stored = get_option('snel_languages', '');
+            $flags  = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+            return rest_ensure_response(array(
+                'json'         => wp_json_encode(snel_get_languages_config(), $flags),
+                'defaultJson'  => wp_json_encode($file, $flags),
+                'overridden'   => is_string($stored) && trim($stored) !== '',
+            ));
+        },
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+    ));
+
+    // Languages config (JSON) — validate + save (or clear to revert to default).
+    register_rest_route('snel-translations/v1', '/languages-config', array(
+        'methods'  => 'POST',
+        'callback' => function (WP_REST_Request $request) {
+            $raw = (string) $request->get_param('json');
+
+            if (trim($raw) === '') {
+                delete_option('snel_languages');
+                flush_rewrite_rules();
+                return rest_ensure_response(array('success' => true, 'reverted' => true));
+            }
+
+            $decoded = json_decode($raw, true);
+            if (! is_array($decoded) || empty($decoded)) {
+                return new WP_Error('invalid_json', 'Not valid JSON, or empty object.', array('status' => 400));
+            }
+
+            $defaults = 0;
+            foreach ($decoded as $code => $lang) {
+                if (! is_string($code) || ! preg_match('/^[a-z]{2}(-[a-z]{2})?$/i', $code)) {
+                    return new WP_Error('invalid_code', "Invalid language code: '" . esc_html((string) $code) . "'.", array('status' => 400));
+                }
+                if (! is_array($lang) || empty($lang['label'])) {
+                    return new WP_Error('invalid_lang', "Language '" . esc_html($code) . "' needs at least a \"label\".", array('status' => 400));
+                }
+                if (! empty($lang['default'])) {
+                    $defaults++;
+                }
+            }
+            if ($defaults !== 1) {
+                return new WP_Error('default_count', 'Exactly one language must have "default": true.', array('status' => 400));
+            }
+
+            update_option('snel_languages', wp_json_encode($decoded, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            flush_rewrite_rules();
+
+            return rest_ensure_response(array('success' => true));
+        },
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+    ));
+
+    // Debug — read-only dump of the current translation data in the database.
+    register_rest_route('snel-translations/v1', '/debug', array(
+        'methods'  => 'GET',
+        'callback' => function () {
+            global $wpdb;
+
+            $lang_key  = TranslationGroup::META_LANG;
+            $group_key = TranslationGroup::META_GROUP;
+
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT p.ID, p.post_title, p.post_type, p.post_status,
+                        ml.meta_value AS lang, mg.meta_value AS grp
+                 FROM {$wpdb->posts} p
+                 INNER JOIN {$wpdb->postmeta} ml ON ml.post_id = p.ID AND ml.meta_key = %s
+                 LEFT JOIN {$wpdb->postmeta} mg ON mg.post_id = p.ID AND mg.meta_key = %s
+                 WHERE p.post_status NOT IN ('auto-draft', 'trash', 'inherit')
+                 ORDER BY mg.meta_value, ml.meta_value",
+                $lang_key,
+                $group_key
+            ), ARRAY_A);
+
+            $groups = array();
+            foreach ($rows as $r) {
+                $gid = $r['grp'] ?: $r['ID'];
+                $groups[$gid][] = array(
+                    'id'     => (int) $r['ID'],
+                    'lang'   => $r['lang'],
+                    'title'  => $r['post_title'],
+                    'type'   => $r['post_type'],
+                    'status' => $r['post_status'],
+                );
+            }
+
+            return rest_ensure_response(array(
+                'languagesConfig'   => snel_get_languages_config(),
+                'defaultLang'       => snel_get_default_lang(),
+                'enabledLangs'      => snel_get_supported_langs(),
+                'themeStrings'      => get_option('snel_theme_translations', array()),
+                'translationGroups' => array_values($groups),
+            ));
+        },
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+    ));
+
 });
 
 // ─── Block Defaults Helper ───────────────────────────────────────────────────
@@ -265,9 +366,12 @@ add_action('admin_enqueue_scripts', function ($hook) {
     wp_enqueue_script('snel-translations-admin', $admin_url . 'index.js', $asset['dependencies'], $asset['version'], true);
     wp_enqueue_style('snel-translations-admin', $admin_url . 'index.css', array('wp-components'), $asset['version']);
 
+    // WP-native code editor (CodeMirror) for the languages JSON editor.
+    wp_enqueue_code_editor(array('type' => 'application/json'));
+
     $default_lang = snel_get_default_lang();
     $enabled      = snel_get_supported_langs();
-    $config       = include get_template_directory() . '/inc/translations/config/languages.php';
+    $config       = snel_get_languages_config();
 
     wp_localize_script('snel-translations-admin', 'snelTranslations', array(
         'restUrl'      => rest_url('snel-translations/v1'),

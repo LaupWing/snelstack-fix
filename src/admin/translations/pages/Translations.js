@@ -1,16 +1,18 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Settings } from 'lucide-react';
+import { Languages, Bug } from 'lucide-react';
 import GlobalSearch from '../components/GlobalSearch';
 import Tabs from '../components/Tabs';
 import SettingsTab from './SettingsTab';
+import DebugTab from './DebugTab';
 
 const TABS = [
-    { id: 'settings', label: __( 'Settings', 'snel' ), icon: Settings },
+    { id: 'languages', label: __( 'Languages', 'snel' ), icon: Languages },
+    { id: 'debug', label: __( 'Debug', 'snel' ), icon: Bug },
 ];
 
 export default function Translations() {
-    const [ active, setActive ] = useState( 'settings' );
+    const [ active, setActive ] = useState( 'languages' );
 
     return (
         <div className="p-6">
@@ -28,7 +30,8 @@ export default function Translations() {
 
             <Tabs tabs={ TABS } active={ active } onChange={ setActive } />
 
-            { active === 'settings' && <SettingsTab /> }
+            { active === 'languages' && <SettingsTab /> }
+            { active === 'debug' && <DebugTab /> }
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useState } from '@wordpress/element';
+import { useState, useRef, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { SelectControl, Button } from '@wordpress/components';
 
@@ -14,6 +14,87 @@ export default function SettingsTab() {
     );
     const [ busy, setBusy ] = useState( false );
     const [ status, setStatus ] = useState( '' );
+
+    // Languages JSON editor (collapsible).
+    const [ showJson, setShowJson ] = useState( false );
+    const [ json, setJson ] = useState( '' );
+    const [ jsonLoaded, setJsonLoaded ] = useState( false );
+    const [ jsonBusy, setJsonBusy ] = useState( false );
+    const [ jsonStatus, setJsonStatus ] = useState( '' );
+
+    const loadJson = async () => {
+        try {
+            const res = await fetch( `${ data.restUrl }/languages-config`, { headers: { 'X-WP-Nonce': data.nonce } } );
+            const j = await res.json();
+            setJson( j.json || '' );
+            setJsonLoaded( true );
+        } catch ( e ) {
+            setJsonStatus( __( 'Could not load.', 'snel' ) );
+        }
+    };
+
+    const textareaRef = useRef( null );
+    const cmRef = useRef( null );
+    const seededRef = useRef( false );
+
+    // Enhance the textarea with WP's CodeMirror once the editor is open and the
+    // JSON has loaded. Falls back to a plain textarea if the code editor is off.
+    useEffect( () => {
+        if ( ! showJson || ! jsonLoaded || ! textareaRef.current || seededRef.current ) return;
+        seededRef.current = true;
+        textareaRef.current.value = json;
+
+        const wpCE = window.wp && window.wp.codeEditor;
+        if ( wpCE ) {
+            try {
+                const ed = wpCE.initialize( textareaRef.current, wpCE.defaultSettings || {} );
+                cmRef.current = ed;
+                ed.codemirror.on( 'change', () => setJson( ed.codemirror.getValue() ) );
+            } catch ( e ) { /* fall back to the plain textarea */ }
+        }
+    }, [ showJson, jsonLoaded ] );
+
+    const toggleJson = () => {
+        const next = ! showJson;
+        if ( ! next ) {
+            // Editor DOM unmounts on collapse — reset so it re-inits on reopen.
+            cmRef.current = null;
+            seededRef.current = false;
+        }
+        setShowJson( next );
+        if ( next && ! jsonLoaded ) loadJson();
+    };
+
+    const downloadJson = () => {
+        const blob = new Blob( [ json ], { type: 'application/json' } );
+        const url = URL.createObjectURL( blob );
+        const a = document.createElement( 'a' );
+        a.href = url;
+        a.download = 'languages.json';
+        a.click();
+        URL.revokeObjectURL( url );
+    };
+
+    const saveJson = async () => {
+        setJsonBusy( true );
+        setJsonStatus( '' );
+        try {
+            const res = await fetch( `${ data.restUrl }/languages-config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': data.nonce },
+                body: JSON.stringify( { json } ),
+            } );
+            const j = await res.json();
+            if ( j && j.success ) {
+                setJsonStatus( __( 'Saved. Reload the page to apply.', 'snel' ) );
+            } else {
+                setJsonStatus( ( j && j.message ) || __( 'Could not save.', 'snel' ) );
+            }
+        } catch ( e ) {
+            setJsonStatus( __( 'Request failed.', 'snel' ) );
+        }
+        setJsonBusy( false );
+    };
 
     const isOn = ( code ) => code === defaultLang || enabled.includes( code );
 
@@ -74,7 +155,7 @@ export default function SettingsTab() {
                     ) ) }
                 </div>
                 <p className="text-xs text-gray-400 mt-2">
-                    { __( 'Turn languages on/off. The default (source) language is always on. Add new languages in inc/translations/config/languages.php.', 'snel' ) }
+                    { __( 'Turn languages on/off. The default (source) language is always on. Add or edit the language list in the JSON editor below.', 'snel' ) }
                 </p>
             </div>
 
@@ -101,6 +182,53 @@ export default function SettingsTab() {
                 { __( 'Save', 'snel' ) }
             </Button>
             { status && <span className="ml-3 text-sm text-gray-600">{ status }</span> }
+
+            {/* Languages JSON editor (advanced) */}
+            <div className="mt-8 border-t border-gray-200 pt-5">
+                <button
+                    onClick={ toggleJson }
+                    className="flex items-center gap-1.5 text-sm font-semibold text-gray-700"
+                >
+                    <span className="text-gray-400">{ showJson ? '▾' : '▸' }</span>
+                    { __( 'Edit languages (JSON)', 'snel' ) }
+                </button>
+
+                { showJson && (
+                    <div className="mt-3">
+                        <div
+                            className="text-sm mb-3 p-3 rounded"
+                            style={ { background: '#fdecea', borderLeft: '4px solid #d63638' } }
+                        >
+                            <strong>⚠ { __( 'Danger — read first.', 'snel' ) }</strong>{ ' ' }
+                            { __( 'This rewrites the site’s language list. Removing a language does NOT delete its pages — you must remove those yourself (that cleanup is not automated yet). Renaming a code breaks the existing URLs for that language. Save, then reload the admin.', 'snel' ) }
+                        </div>
+
+                        <textarea
+                            ref={ textareaRef }
+                            defaultValue={ json }
+                            onChange={ ( e ) => setJson( e.target.value ) }
+                            spellCheck={ false }
+                            rows={ 14 }
+                            className="w-full text-xs p-3 border border-gray-300 rounded"
+                            style={ { fontFamily: 'monospace', whiteSpace: 'pre', tabSize: 2 } }
+                        />
+
+                        <div className="mt-2 flex items-center gap-3">
+                            <Button variant="primary" onClick={ saveJson } isBusy={ jsonBusy } disabled={ jsonBusy }>
+                                { __( 'Save languages', 'snel' ) }
+                            </Button>
+                            <Button variant="secondary" onClick={ downloadJson }>
+                                { __( 'Download .json', 'snel' ) }
+                            </Button>
+                            { jsonStatus && <span className="text-sm text-gray-600">{ jsonStatus }</span> }
+                        </div>
+
+                        <p className="text-xs text-gray-400 mt-2">
+                            { __( 'Format: { "nl": { "label": "NL", "locale": "nl_NL", "default": true }, "en": { "label": "EN", "locale": "en_US" } }. Exactly one language must be "default": true. Clear the box and save to revert to the theme default.', 'snel' ) }
+                        </p>
+                    </div>
+                ) }
+            </div>
         </div>
     );
 }
