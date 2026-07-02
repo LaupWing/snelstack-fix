@@ -317,14 +317,14 @@ export default function TranslationGrid( { dataKey, initialSearch = '' } ) {
                         <div key={ section } className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                             <button
                                 onClick={ () => toggleSection( section ) }
-                                className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                                className="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer transition-colors text-left"
                             >
                                 <div className="flex items-center gap-2">
                                     { isCollapsed
-                                        ? <ChevronRight size={ 16 } className="text-gray-400" />
-                                        : <ChevronDown size={ 16 } className="text-gray-400" />
+                                        ? <ChevronRight size={ 16 } className="text-indigo-500" />
+                                        : <ChevronDown size={ 16 } className="text-indigo-500" />
                                     }
-                                    <span className="text-sm font-semibold text-gray-700"><Highlight text={ section } query={ query } /></span>
+                                    <span className="text-sm font-semibold text-gray-800"><Highlight text={ section } query={ query } /></span>
                                     <span className="text-xs text-gray-400">({ keys.length })</span>
                                 </div>
                                 <div className="flex items-center gap-2">

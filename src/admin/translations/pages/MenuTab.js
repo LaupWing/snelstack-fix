@@ -1,6 +1,6 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Save, ExternalLink, Search } from 'lucide-react';
+import { Save, ExternalLink, Search, Languages, Loader2 } from 'lucide-react';
 import Highlight from '../components/Highlight';
 import EditableCell from '../components/EditableCell';
 
@@ -12,8 +12,54 @@ export default function MenuTab( { initialSearch = '' } ) {
 
     const [ items, setItems ] = useState( () => window.snelTranslations?.menuItems || [] );
     const [ saving, setSaving ] = useState( false );
+    const [ aiBusy, setAiBusy ] = useState( false );
     const [ notice, setNotice ] = useState( null );
     const [ searchQuery, setSearchQuery ] = useState( initialSearch );
+
+    // Fill missing menu labels for every language via the AI translate endpoint.
+    const aiTranslate = async () => {
+        setAiBusy( true );
+        setNotice( null );
+        try {
+            for ( const l of nonDefaultLangs ) {
+                // Unique source titles still missing a translation in this language.
+                const titles = [ ...new Set(
+                    items
+                        .filter( ( it ) => ! ( ( it.translations || {} )[ l.code ] || '' ).trim() )
+                        .map( ( it ) => it.title )
+                ) ];
+                if ( ! titles.length ) continue;
+
+                const form = new URLSearchParams();
+                form.append( 'action', 'snel_translate' );
+                form.append( 'nonce', window.snelTranslate?.nonce || '' );
+                form.append( 'source', defaultLang );
+                form.append( 'target', l.code );
+                titles.forEach( ( t ) => form.append( 'texts[]', t ) );
+
+                const res = await fetch( window.snelTranslate?.ajaxUrl || window.ajaxurl, {
+                    method: 'POST',
+                    body: form,
+                    credentials: 'same-origin',
+                } );
+                const json = await res.json();
+                const out = json?.data?.translations;
+                if ( json.success && Array.isArray( out ) ) {
+                    const map = {};
+                    titles.forEach( ( t, i ) => { if ( out[ i ] ) map[ t ] = out[ i ]; } );
+                    setItems( ( prev ) => prev.map( ( it ) => (
+                        map[ it.title ]
+                            ? { ...it, translations: { ...it.translations, [ l.code ]: map[ it.title ] } }
+                            : it
+                    ) ) );
+                }
+            }
+            setNotice( { type: 'success', message: __( 'Translated with AI. Review, then Save.', 'snel' ) } );
+        } catch ( e ) {
+            setNotice( { type: 'error', message: __( 'AI translate failed.', 'snel' ) } );
+        }
+        setAiBusy( false );
+    };
 
     const updateTranslation = ( title, lang, value ) => {
         setItems( ( prev ) => prev.map( ( item ) => {
@@ -133,6 +179,14 @@ export default function MenuTab( { initialSearch = '' } ) {
                             { __( 'Edit Menu', 'snel' ) }
                         </a>
                     ) }
+                    <button
+                        onClick={ aiTranslate }
+                        disabled={ aiBusy || saving }
+                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-indigo-700 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50"
+                    >
+                        { aiBusy ? <Loader2 size={ 14 } className="animate-spin" /> : <Languages size={ 14 } /> }
+                        { aiBusy ? __( 'Translating...', 'snel' ) : __( 'Translate with AI', 'snel' ) }
+                    </button>
                     <button
                         onClick={ handleSave }
                         disabled={ saving }

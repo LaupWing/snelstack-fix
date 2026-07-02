@@ -1,14 +1,16 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Languages, Bug } from 'lucide-react';
+import { Languages, Settings, Bug } from 'lucide-react';
 import GlobalSearch from '../components/GlobalSearch';
 import Tabs from '../components/Tabs';
 import SettingsTab from './SettingsTab';
+import StringsTab from './StringsTab';
 import DebugTab from './DebugTab';
 import OrphansPanel from './OrphansPanel';
 
 const TABS = [
     { id: 'languages', label: __( 'Languages', 'snel' ), icon: Languages },
+    { id: 'settings', label: __( 'Settings', 'snel' ), icon: Settings },
     { id: 'debug', label: __( 'Debug', 'snel' ), icon: Bug },
 ];
 
@@ -37,6 +39,7 @@ export default function Translations() {
                     <OrphansPanel />
                 </>
             ) }
+            { active === 'settings' && <StringsTab /> }
             { active === 'debug' && <DebugTab /> }
         </div>
     );
