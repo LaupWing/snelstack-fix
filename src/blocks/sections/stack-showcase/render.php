@@ -1,11 +1,17 @@
 <?php
 defined('ABSPATH') || exit;
 
-$slides = [
-	['title' => 'Data Extractie',     'dot' => '#38bdf8', 'text' => 'Wij halen gestructureerde data op uit websites, documenten en systemen. Schoon, geordend en klaar om te gebruiken.', 'cta' => 'Meer info', 'url' => '#'],
-	['title' => 'n8n Automatisering', 'dot' => '#a78bfa', 'text' => 'Processen die je tijd kosten draaien voortaan vanzelf. Van leadopvolging tot rapportage, met n8n als motor.',           'cta' => 'Meer info', 'url' => '#'],
-	['title' => 'Custom Software',    'dot' => '#f472b6', 'text' => 'Dashboards, portals en tools op maat. Gebouwd precies zoals jij het nodig hebt, niet zoals de markt het aanbiedt.',   'cta' => 'Meer info', 'url' => '#'],
-];
+// Slides are editable (block.json default applies when unset). Normalize each.
+$slides_raw = ! empty($attributes['slides']) && is_array($attributes['slides']) ? $attributes['slides'] : [];
+$slides = array_values(array_map(function ($s) {
+	return [
+		'title' => $s['title'] ?? '',
+		'dot'   => $s['dot']   ?? '#38bdf8',
+		'text'  => $s['text']  ?? '',
+		'cta'   => $s['cta']   ?? '',
+		'url'   => $s['url']   ?? '#',
+	];
+}, $slides_raw));
 ?>
 <section class="snel-stack-showcase-section <?php echo snel_section_class($attributes); ?> <?php echo snel_section_padding($attributes); ?>"<?php echo snel_section_style($attributes); ?>>
 	<div class="px-4 md:px-8">

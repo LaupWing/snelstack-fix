@@ -18,7 +18,8 @@ add_filter('snel_block_text_attrs', function ($map) {
 
 // Repeater blocks: array attributes whose items hold translatable text.
 add_filter('snel_block_repeater_attrs', function ($map) {
-    $map['snel/process'] = ['steps' => ['title', 'heading', 'body', 'btn_label']];
+    $map['snel/process']        = ['steps'  => ['title', 'heading', 'body', 'btn_label']];
+    $map['snel/stack-showcase'] = ['slides' => ['title', 'text', 'cta']];
     return $map;
 });
 require get_template_directory() . '/inc/partners/index.php';

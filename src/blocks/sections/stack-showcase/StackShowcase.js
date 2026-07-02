@@ -190,13 +190,13 @@ function Plate({ index, color, meshRef, onOver, onOut, onSelect }) {
 	);
 }
 
-function StackGroup({ active, selected, onOver, onOut, onSelect }) {
+function StackGroup({ active, selected, onOver, onOut, onSelect, colors = COLORS }) {
 	const meshes = useRef([]);
-	const heights = useRef(COLORS.map(() => H_NORMAL));
+	const heights = useRef(colors.map(() => H_NORMAL));
 	const inited = useRef(false);
 
 	useFrame(() => {
-		const n = COLORS.length;
+		const n = colors.length;
 
 		// 1) Animate each plate's height; rebuild its rounded geometry while moving.
 		for (let i = 0; i < n; i++) {
@@ -233,7 +233,7 @@ function StackGroup({ active, selected, onOver, onOut, onSelect }) {
 
 	return (
 		<group position={[0, 0, 0]} scale={0.85} rotation={[0, 0, 0]}>
-			{COLORS.map((c, i) => (
+			{colors.map((c, i) => (
 				<Plate
 					key={i}
 					index={i}
@@ -249,6 +249,9 @@ function StackGroup({ active, selected, onOver, onOut, onSelect }) {
 }
 
 export default function StackShowcase({ slides = [] }) {
+	// Plate colours follow the slides (one plate per slide), falling back to the
+	// brand default. This is what makes the stack dynamic.
+	const colors = slides.map((s) => s.dot || '#0ea5e9');
 	const [active, setActive] = useState(-1); // plate hovered (drives the subtle 3D scale)
 	const [hover, setHover] = useState(null); // { index, x, y } for the callout label
 	const [slide, setSlide] = useState(-1); // card: -1 = stack overview, else section index
@@ -297,7 +300,7 @@ export default function StackShowcase({ slides = [] }) {
 				<ambientLight intensity={0.7} />
 				<directionalLight position={[8, 11, 9]} intensity={1.15} />
 				<directionalLight position={[-7, -1, 5]} intensity={0.45} color="#c7d2fe" />
-				<StackGroup active={active} selected={slide} onOver={onOver} onOut={onOut} onSelect={onSelect} />
+				<StackGroup key={colors.length} active={active} selected={slide} colors={colors} onOver={onOver} onOut={onOut} onSelect={onSelect} />
 			</Canvas>
 
 			{/* Gradient fade overlay — desktop only */}
