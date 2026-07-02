@@ -4,11 +4,14 @@ if (! defined('ABSPATH')) exit;
 
 require get_template_directory() . '/inc/admin/business/index.php';
 require get_template_directory() . '/inc/admin/snelstack/index.php';
-require get_template_directory() . '/inc/translations/language.php';
-// Always loaded: registers the admin page (admin_menu), its REST routes
-// (rest_api_init — REST requests are NOT is_admin()), and asset enqueues.
-// Each is hook-gated, so loading on the front-end is harmless.
-require get_template_directory() . '/inc/translations/admin/admin-translations.php';
+// Translation system. The Snel Translations PLUGIN supersedes this when active
+// — the theme's copy steps aside so the two never collide. Deactivate the
+// plugin and the theme's copy takes over again (safe fallback during migration).
+if ( ! class_exists( '\Snel\Translations\Boot' ) ) {
+    require get_template_directory() . '/inc/translations/language.php';
+    require get_template_directory() . '/inc/translations/admin/admin-translations.php';
+    define( 'SNEL_THEME_TRANSLATIONS_ACTIVE', true );
+}
 require get_template_directory() . '/inc/partners/index.php';
 require get_template_directory() . '/inc/cases/index.php';
 require get_template_directory() . '/inc/services/index.php';
@@ -88,4 +91,7 @@ function snel_enqueue_editor_plugins()
         'default' => snel_get_default_lang(),
     ));
 }
-add_action('enqueue_block_editor_assets', 'snel_enqueue_editor_plugins');
+// Only when the plugin isn't running the show (it enqueues the same handle).
+if ( defined( 'SNEL_THEME_TRANSLATIONS_ACTIVE' ) ) {
+    add_action('enqueue_block_editor_assets', 'snel_enqueue_editor_plugins');
+}
