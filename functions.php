@@ -20,6 +20,7 @@ add_filter('snel_block_text_attrs', function ($map) {
 add_filter('snel_block_repeater_attrs', function ($map) {
     $map['snel/process']        = ['steps'  => ['title', 'heading', 'body', 'btn_label']];
     $map['snel/stack-showcase'] = ['slides' => ['title', 'text', 'cta']];
+    $map['snel/features']       = ['cards'  => ['heading', 'body']];
     return $map;
 });
 require get_template_directory() . '/inc/partners/index.php';
