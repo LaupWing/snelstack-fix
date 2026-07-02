@@ -117,6 +117,8 @@ export default function Edit({ attributes, setAttributes }) {
 				</PanelBody>
 			</InspectorControls>
 
+			{/* view.js (the scroll reveal) never runs in the editor, so unhide the cards here. */}
+			<style>{ `.snel-proc-reveal { opacity: 1 !important; transform: none !important; }` }</style>
 			<ServerSideRender block="snel/process" attributes={attributes} />
 		</div>
 	);

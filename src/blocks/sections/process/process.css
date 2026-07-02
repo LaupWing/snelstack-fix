@@ -27,11 +27,13 @@
 }
 
 /* In the block editor the view script never runs, so the reveal would leave the
-   cards permanently hidden. Force them visible there. */
-.editor-styles-wrapper .snel-proc-reveal {
-	opacity: 1;
-	transform: none;
-	transition: none;
+   cards permanently hidden. Force them visible there (editor-only selectors). */
+.editor-styles-wrapper .snel-proc-reveal,
+.block-editor-block-list__layout .snel-proc-reveal,
+.wp-admin .snel-proc-reveal {
+	opacity: 1 !important;
+	transform: none !important;
+	transition: none !important;
 }
 
 /* Faint full traces. */
