@@ -75,6 +75,30 @@ export default function SettingsTab() {
         URL.revokeObjectURL( url );
     };
 
+    const fileInputRef = useRef( null );
+
+    const importJson = () => {
+        if ( fileInputRef.current ) fileInputRef.current.click();
+    };
+
+    const onImportFile = ( e ) => {
+        const file = e.target.files && e.target.files[ 0 ];
+        if ( ! file ) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const text = String( reader.result || '' );
+            setJson( text );
+            if ( cmRef.current ) {
+                cmRef.current.codemirror.setValue( text );
+            } else if ( textareaRef.current ) {
+                textareaRef.current.value = text;
+            }
+            setJsonStatus( __( 'Imported. Review, then Save languages.', 'snel' ) );
+        };
+        reader.readAsText( file );
+        e.target.value = ''; // allow re-importing the same file
+    };
+
     const saveJson = async () => {
         setJsonBusy( true );
         setJsonStatus( '' );
@@ -220,6 +244,16 @@ export default function SettingsTab() {
                             <Button variant="secondary" onClick={ downloadJson }>
                                 { __( 'Download .json', 'snel' ) }
                             </Button>
+                            <Button variant="secondary" onClick={ importJson }>
+                                { __( 'Import .json', 'snel' ) }
+                            </Button>
+                            <input
+                                ref={ fileInputRef }
+                                type="file"
+                                accept="application/json,.json"
+                                onChange={ onImportFile }
+                                style={ { display: 'none' } }
+                            />
                             { jsonStatus && <span className="text-sm text-gray-600">{ jsonStatus }</span> }
                         </div>
 
