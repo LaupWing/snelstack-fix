@@ -81,12 +81,20 @@ function snel_admin_lang_filter(): void
     }
 
     $config  = snel_get_languages_config();
-    $current = isset($_GET['snel_lang_filter']) ? sanitize_text_field(wp_unslash($_GET['snel_lang_filter'])) : '';
+    $default = snel_get_default_lang();
+    // Default the filter to the source language, so every list shows the
+    // default-language posts first. "All languages" (value "all") opts out.
+    $current = isset($_GET['snel_lang_filter'])
+        ? sanitize_text_field(wp_unslash($_GET['snel_lang_filter']))
+        : $default;
 
     echo '<select name="snel_lang_filter">';
-    echo '<option value="">' . esc_html__('All languages', 'snel') . '</option>';
+    echo '<option value="all"' . selected($current, 'all', false) . '>' . esc_html__('All languages', 'snel') . '</option>';
     foreach (snel_get_supported_langs() as $lang) {
         $label = $config[$lang]['label'] ?? strtoupper($lang);
+        if ($lang === $default) {
+            $label .= ' · ' . __('src', 'snel');
+        }
         printf(
             '<option value="%s"%s>%s</option>',
             esc_attr($lang),
@@ -111,12 +119,16 @@ function snel_admin_lang_filter_query($query): void
         return;
     }
 
-    $lang = isset($_GET['snel_lang_filter']) ? sanitize_text_field(wp_unslash($_GET['snel_lang_filter'])) : '';
+    $default = snel_get_default_lang();
+    // No param present → default to the source language (matches the dropdown).
+    // "all" (or anything not a real language) → don't filter.
+    $lang = isset($_GET['snel_lang_filter'])
+        ? sanitize_text_field(wp_unslash($_GET['snel_lang_filter']))
+        : $default;
     if (! $lang || ! in_array($lang, snel_get_supported_langs(), true)) {
         return;
     }
 
-    $default = snel_get_default_lang();
     $meta    = $query->get('meta_query');
     if (! is_array($meta)) {
         $meta = [];
