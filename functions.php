@@ -75,7 +75,11 @@ add_filter('snel_theme_string_defaults', function ($groups) {
         'Vertel ons over jouw project, idee of vraag...', 'Verstuur bericht',
     ]);
     $add($groups, 'Stack showcase', ['Verken de stack', 'Klik om te verkennen']);
-    $add($groups, 'Navigatie', ['Home', 'Terug naar %s']);
+    $add($groups, 'Navigatie', ['Home', 'Terug naar %s', 'Meer info', 'Bekijk alle %s', 'Toggle menu', 'Set up a menu in Appearance > Menus']);
+    $add($groups, 'Footer', [
+        'Stuur een mail naar', 'Start een gesprek', 'Stuur een WhatsApp',
+        'Privacybeleid', 'Algemene voorwaarden',
+    ]);
     return $groups;
 });
 

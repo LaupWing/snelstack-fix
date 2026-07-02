@@ -101,7 +101,7 @@
                         type="button"
                         id="snel-mobile-toggle"
                         class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200 md:hidden"
-                        aria-label="<?php esc_attr_e('Toggle menu', 'snel'); ?>"
+                        aria-label="<?php echo esc_attr(snel__('Toggle menu')); ?>"
                         aria-expanded="false">
                         <svg class="snel-icon-menu h-5 w-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="4" y1="6" x2="20" y2="6" />
@@ -164,7 +164,7 @@
                         <?php endforeach; ?>
 
                         <?php if (empty($menu_tree)) : ?>
-                            <span class="text-sm text-gray-400"><?php esc_html_e('Set up a menu in Appearance > Menus', 'snel'); ?></span>
+                            <span class="text-sm text-gray-400"><?php echo esc_html(snel__('Set up a menu in Appearance > Menus')); ?></span>
                         <?php endif; ?>
                     </nav>
                 </div>
@@ -267,7 +267,7 @@
                                     <p class="grow text-sm text-slate-500 transition group-hover:text-slate-800"><?php echo esc_html($excerpt); ?></p>
                                 <?php endif; ?>
                                 <span class="mt-1 flex items-center gap-1.5 text-sm font-medium text-brand-primary">
-                                    <?php esc_html_e('Meer info', 'snel'); ?>
+                                    <?php echo esc_html(snel__('Meer info')); ?>
                                     <?php echo $arrow_svg; ?>
                                 </span>
                             </div>
@@ -278,7 +278,7 @@
 
                     <a href="<?php echo esc_url($archive_url); ?>"
                        class="group flex w-full items-center justify-center gap-2 p-4 text-sm font-medium text-slate-600 transition hover:bg-brand-primary/5 hover:text-brand-primary">
-                        <?php printf(esc_html__('Bekijk alle %s', 'snel'), esc_html(strtolower($resolved['title']))); ?>
+                        <?php printf(esc_html(snel__('Bekijk alle %s')), esc_html(strtolower($resolved['title']))); ?>
                         <?php echo $arrow_svg; ?>
                     </a>
                 </div>

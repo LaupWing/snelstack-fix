@@ -120,7 +120,7 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
             <p class="mx-auto max-w-2xl text-balance text-center text-base text-white/60 sm:text-lg">
                 <?php echo esc_html(get_theme_mod('snel_footer_subtext', 'Benieuwd wat we samen kunnen bouwen? Neem gerust contact op.')); ?>
                 <?php if ($email) : ?>
-                    <?php esc_html_e('Stuur een mail naar', 'snel'); ?>
+                    <?php echo esc_html(snel__('Stuur een mail naar')); ?>
                     <a class="mx-1 font-medium text-brand-primary transition hover:text-brand-primary/80 whitespace-nowrap"
                        href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
                 <?php endif; ?>
@@ -131,7 +131,7 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
                 <?php
                 get_template_part('template-parts/gradient-button', null, [
                     'href'        => $contact_url,
-                    'label'       => __('Start een gesprek', 'snel'),
+                    'label'       => snel__('Start een gesprek'),
                     'icon'        => $cta_icon,
                     'face_class'  => 'px-6 text-base',
                     'outer_class' => 'h-12',
@@ -142,7 +142,7 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
                     <span class="group relative inline-flex animate-glow-pulse cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] h-12">
                         <span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
                         <span class="relative inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-full bg-slate-950 pl-6 pr-2 text-base font-semibold text-white">
-                            <?php echo esc_html__('Stuur een WhatsApp', 'snel'); ?>
+                            <?php echo esc_html(snel__('Stuur een WhatsApp')); ?>
                             <span class="flex size-8 items-center justify-center rounded-full bg-[#25D366] text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -164,10 +164,10 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
             <div>&copy;<?php echo esc_html(date('Y')); ?>&nbsp;&nbsp;·&nbsp;&nbsp;<?php echo esc_html($site_name); ?></div>
             <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 lg:justify-end">
                 <?php if ($privacy_page) : ?>
-                    <a class="transition hover:text-white" href="<?php echo esc_url(get_permalink($privacy_page)); ?>"><?php esc_html_e('Privacybeleid', 'snel'); ?></a>
+                    <a class="transition hover:text-white" href="<?php echo esc_url(get_permalink($privacy_page)); ?>"><?php echo esc_html(snel__('Privacybeleid')); ?></a>
                 <?php endif; ?>
                 <?php if ($av_page) : ?>
-                    <a class="transition hover:text-white" href="<?php echo esc_url(get_permalink($av_page)); ?>"><?php esc_html_e('Algemene voorwaarden', 'snel'); ?></a>
+                    <a class="transition hover:text-white" href="<?php echo esc_url(get_permalink($av_page)); ?>"><?php echo esc_html(snel__('Algemene voorwaarden')); ?></a>
                 <?php endif; ?>
                 <?php if ($email) : ?>
                     <a class="transition hover:text-white" href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
