@@ -4,14 +4,7 @@ if (! defined('ABSPATH')) exit;
 
 require get_template_directory() . '/inc/admin/business/index.php';
 require get_template_directory() . '/inc/admin/snelstack/index.php';
-// Translation system. The Snel Translations PLUGIN supersedes this when active
-// — the theme's copy steps aside so the two never collide. Deactivate the
-// plugin and the theme's copy takes over again (safe fallback during migration).
-if ( ! class_exists( '\Snel\Translations\Boot' ) ) {
-    require get_template_directory() . '/inc/translations/language.php';
-    require get_template_directory() . '/inc/translations/admin/admin-translations.php';
-    define( 'SNEL_THEME_TRANSLATIONS_ACTIVE', true );
-}
+// Translation system now lives in the Snel Translations plugin (required).
 require get_template_directory() . '/inc/partners/index.php';
 require get_template_directory() . '/inc/cases/index.php';
 require get_template_directory() . '/inc/services/index.php';
@@ -64,34 +57,3 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_script('snelstack-main', get_template_directory_uri() . '/assets/js/main.js', [], '1.0.0', true);
 });
 
-/**
- * Enqueue Snel Stack editor sidebar plugin (translations panel).
- */
-function snel_enqueue_editor_plugins()
-{
-    $asset_file = get_template_directory() . '/build/editor/snelstack/index.asset.php';
-    if (! file_exists($asset_file)) {
-        return;
-    }
-
-    $asset = require $asset_file;
-
-    wp_enqueue_script(
-        'snel-editor-snelstack',
-        get_template_directory_uri() . '/build/editor/snelstack/index.js',
-        $asset['dependencies'],
-        $asset['version'],
-        true
-    );
-
-    wp_localize_script('snel-editor-snelstack', 'snelTranslate', array(
-        'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce'   => wp_create_nonce('snel_translate_nonce'),
-        'langs'   => snel_get_supported_langs(),
-        'default' => snel_get_default_lang(),
-    ));
-}
-// Only when the plugin isn't running the show (it enqueues the same handle).
-if ( defined( 'SNEL_THEME_TRANSLATIONS_ACTIVE' ) ) {
-    add_action('enqueue_block_editor_assets', 'snel_enqueue_editor_plugins');
-}
