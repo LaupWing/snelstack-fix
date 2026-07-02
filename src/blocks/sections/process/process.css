@@ -26,6 +26,14 @@
 	}
 }
 
+/* In the block editor the view script never runs, so the reveal would leave the
+   cards permanently hidden. Force them visible there. */
+.editor-styles-wrapper .snel-proc-reveal {
+	opacity: 1;
+	transform: none;
+	transition: none;
+}
+
 /* Faint full traces. */
 .snel-flow-base {
 	fill: none;
