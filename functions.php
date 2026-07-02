@@ -2,6 +2,39 @@
 
 if (! defined('ABSPATH')) exit;
 
+// ─── Translation fallbacks ───────────────────────────────────────────────────
+// The Snel Translations plugin provides these; it loads first (plugins_loaded)
+// and wins. These guarded no-op versions only kick in when the plugin is off,
+// so the theme degrades to monolingual instead of white-screening.
+if (! function_exists('snel__')) {
+    function snel__($text) { return $text; }
+}
+if (! function_exists('snel_url')) {
+    function snel_url($url) { return $url; }
+}
+if (! function_exists('snel_lang_url')) {
+    function snel_lang_url($lang) { return home_url('/'); }
+}
+if (! function_exists('snel_get_default_lang')) {
+    function snel_get_default_lang() { return 'nl'; }
+}
+if (! function_exists('snel_get_lang')) {
+    function snel_get_lang() { return 'nl'; }
+}
+if (! function_exists('snel_get_supported_langs')) {
+    function snel_get_supported_langs() { return ['nl']; }
+}
+if (! function_exists('snel_get_languages_config')) {
+    function snel_get_languages_config() {
+        return ['nl' => ['label' => 'NL', 'locale' => 'nl_NL', 'default' => true]];
+    }
+}
+if (! function_exists('snel_nav_item')) {
+    function snel_nav_item($item) {
+        return ['url' => $item->url ?? '#', 'title' => $item->title ?? ''];
+    }
+}
+
 require get_template_directory() . '/inc/admin/business/index.php';
 require get_template_directory() . '/inc/admin/snelstack/index.php';
 // Translation system now lives in the Snel Translations plugin (required).
