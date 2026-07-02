@@ -196,15 +196,19 @@ add_action('rest_api_init', function () {
             ), ARRAY_A);
 
             $groups = array();
+            $flat   = array();
             foreach ($rows as $r) {
-                $gid = $r['grp'] ?: $r['ID'];
-                $groups[$gid][] = array(
+                $gid   = $r['grp'] ?: $r['ID'];
+                $entry = array(
                     'id'     => (int) $r['ID'],
                     'lang'   => $r['lang'],
+                    'group'  => (int) $gid,
                     'title'  => $r['post_title'],
                     'type'   => $r['post_type'],
                     'status' => $r['post_status'],
                 );
+                $flat[]         = $entry;
+                $groups[$gid][] = $entry;
             }
 
             return rest_ensure_response(array(
@@ -213,6 +217,7 @@ add_action('rest_api_init', function () {
                 'enabledLangs'      => snel_get_supported_langs(),
                 'themeStrings'      => get_option('snel_theme_translations', array()),
                 'translationGroups' => array_values($groups),
+                'translationRows'   => $flat,
             ));
         },
         'permission_callback' => function () { return current_user_can('manage_options'); },

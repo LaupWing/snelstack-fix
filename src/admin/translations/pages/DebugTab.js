@@ -1,38 +1,120 @@
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, Copy, Check } from 'lucide-react';
 
-function Section( { title, count, children } ) {
-    const [ open, setOpen ] = useState( false );
+// Read-only JSON view: WP CodeMirror when available, plain textarea otherwise.
+// Includes a Copy button for whatever is currently shown.
+function JsonBlock( { data, rows = 12 } ) {
+    const text = JSON.stringify( data, null, 2 );
+    const taRef = useRef( null );
+    const cmRef = useRef( null );
+    const [ copied, setCopied ] = useState( false );
+
+    useEffect( () => {
+        if ( ! taRef.current ) return;
+
+        // Already have a CodeMirror instance → just push the new value.
+        if ( cmRef.current ) {
+            cmRef.current.codemirror.setValue( text );
+            return;
+        }
+
+        const wpCE = window.wp && window.wp.codeEditor;
+        if ( wpCE ) {
+            try {
+                taRef.current.value = text;
+                const base = wpCE.defaultSettings || {};
+                cmRef.current = wpCE.initialize( taRef.current, {
+                    ...base,
+                    codemirror: { ...( base.codemirror || {} ), readOnly: true, lineNumbers: true },
+                } );
+                return;
+            } catch ( e ) { /* fall through to plain textarea */ }
+        }
+        taRef.current.value = text;
+    }, [ text ] );
+
+    const copy = () => {
+        const done = () => { setCopied( true ); setTimeout( () => setCopied( false ), 1500 ); };
+        if ( navigator.clipboard ) {
+            navigator.clipboard.writeText( text ).then( done ).catch( done );
+        } else if ( taRef.current ) {
+            taRef.current.select();
+            document.execCommand( 'copy' );
+            done();
+        }
+    };
+
     return (
-        <div className="border border-gray-200 rounded-lg mb-2 overflow-hidden">
+        <div className="mt-3">
+            <div className="flex justify-end mb-1">
+                <button
+                    onClick={ copy }
+                    className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-800"
+                >
+                    { copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" /> }
+                    { copied ? __( 'Copied!', 'snel' ) : __( 'Copy', 'snel' ) }
+                </button>
+            </div>
+            <textarea
+                ref={ taRef }
+                defaultValue={ text }
+                readOnly
+                spellCheck={ false }
+                rows={ rows }
+                className="w-full text-xs p-3 border border-gray-200 rounded"
+                style={ { fontFamily: 'monospace', whiteSpace: 'pre' } }
+            />
+        </div>
+    );
+}
+
+function Section( { title, count, defaultOpen = false, children } ) {
+    const [ open, setOpen ] = useState( defaultOpen );
+    return (
+        <div className="border border-gray-200 rounded-lg mb-2 overflow-hidden bg-white">
             <button
                 onClick={ () => setOpen( ! open ) }
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                className="w-full flex items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-gray-800 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
             >
-                { open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" /> }
+                { open
+                    ? <ChevronDown className="w-4 h-4 text-indigo-500" />
+                    : <ChevronRight className="w-4 h-4 text-indigo-500" /> }
                 <span>{ title }</span>
                 { count !== undefined && (
                     <span className="ml-1 text-xs font-normal text-gray-400">({ count })</span>
                 ) }
             </button>
-            { open && (
-                <div className="px-4 pb-4 border-t border-gray-100">
-                    { children }
-                </div>
-            ) }
+            { open && <div className="px-4 pb-4 border-t border-gray-100">{ children }</div> }
         </div>
     );
 }
 
-function Json( { data } ) {
+// Translation data with a Cleaned (grouped) / Raw (flat, DB-shaped) toggle.
+function TranslationData( { groups, rows } ) {
+    const [ mode, setMode ] = useState( 'clean' );
+    const pill = ( on ) =>
+        `text-xs px-2.5 py-1 rounded-full font-medium ${
+            on ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        }`;
+
     return (
-        <pre
-            className="text-xs bg-gray-50 border border-gray-100 rounded p-3 mt-3 overflow-auto"
-            style={ { maxHeight: 420, fontFamily: 'monospace', whiteSpace: 'pre' } }
-        >
-            { JSON.stringify( data, null, 2 ) }
-        </pre>
+        <div>
+            <div className="flex gap-1.5 mt-3">
+                <button onClick={ () => setMode( 'clean' ) } className={ pill( mode === 'clean' ) }>
+                    { __( 'Cleaned', 'snel' ) }
+                </button>
+                <button onClick={ () => setMode( 'raw' ) } className={ pill( mode === 'raw' ) }>
+                    { __( 'Raw', 'snel' ) }
+                </button>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">
+                { mode === 'clean'
+                    ? __( 'Posts bucketed by their _snel_group meta.', 'snel' )
+                    : __( 'One row per post — mirrors the _snel_lang / _snel_group meta in the DB.', 'snel' ) }
+            </p>
+            <JsonBlock data={ mode === 'raw' ? rows : groups } rows={ 18 } />
+        </div>
     );
 }
 
@@ -56,6 +138,7 @@ export default function DebugTab() {
     }
 
     const groups = data.translationGroups || [];
+    const rows = data.translationRows || [];
 
     return (
         <div className="max-w-3xl">
@@ -63,20 +146,20 @@ export default function DebugTab() {
                 { __( 'Read-only view of the current translation data in the database — for debugging, so you can inspect it without opening SQL.', 'snel' ) }
             </p>
 
+            <Section title={ __( 'Translation data', 'snel' ) } count={ rows.length } defaultOpen>
+                <TranslationData groups={ groups } rows={ rows } />
+            </Section>
+
             <Section title={ __( 'Languages config', 'snel' ) }>
-                <Json data={ data.languagesConfig } />
+                <JsonBlock data={ data.languagesConfig } />
             </Section>
 
             <Section title={ __( 'Default / enabled', 'snel' ) }>
-                <Json data={ { defaultLang: data.defaultLang, enabledLangs: data.enabledLangs } } />
-            </Section>
-
-            <Section title={ __( 'Translation groups', 'snel' ) } count={ groups.length }>
-                <Json data={ groups } />
+                <JsonBlock data={ { defaultLang: data.defaultLang, enabledLangs: data.enabledLangs } } rows={ 6 } />
             </Section>
 
             <Section title={ __( 'Theme strings', 'snel' ) }>
-                <Json data={ data.themeStrings } />
+                <JsonBlock data={ data.themeStrings } rows={ 16 } />
             </Section>
         </div>
     );
