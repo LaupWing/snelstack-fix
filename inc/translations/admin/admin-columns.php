@@ -40,7 +40,7 @@ function snel_admin_lang_column_widths(): void
     }
     echo '<style>
         .column-snel_lang { width: 72px; }
-        .column-snel_missing { width: 160px; }
+        .column-snel_langs { width: 220px; }
     </style>';
 }
 add_action('admin_head', 'snel_admin_lang_column_widths');
@@ -53,14 +53,14 @@ function snel_admin_lang_column(array $columns): array
     $new = [];
     foreach ($columns as $key => $label) {
         if ($key === 'date') {
-            $new['snel_lang']    = __('Language', 'snel');
-            $new['snel_missing'] = __('Missing', 'snel');
+            $new['snel_lang']  = __('Language', 'snel');
+            $new['snel_langs'] = __('Languages', 'snel');
         }
         $new[$key] = $label;
     }
     if (! isset($new['snel_lang'])) {
-        $new['snel_lang']    = __('Language', 'snel');
-        $new['snel_missing'] = __('Missing', 'snel');
+        $new['snel_lang']  = __('Language', 'snel');
+        $new['snel_langs'] = __('Languages', 'snel');
     }
     return $new;
 }
@@ -86,24 +86,40 @@ function snel_admin_lang_column_render($column, $post_id): void
         return;
     }
 
-    if ($column === 'snel_missing') {
-        $config = snel_get_languages_config();
+    if ($column === 'snel_langs') {
+        $config  = snel_get_languages_config();
+        $default = snel_get_default_lang();
+        $lang    = snel_post_lang($post_id);
 
-        // Languages the translation group already has (including this post's own).
-        $have   = array_keys(array_filter(snel_get_translations($post_id)));
-        $have[] = snel_post_lang($post_id);
-
-        $missing = array_diff(snel_get_supported_langs(), array_unique($have));
-
-        if (empty($missing)) {
-            echo '<span style="color:#16a34a;font-size:12px;font-weight:600;">&#10003; ' . esc_html__('Complete', 'snel') . '</span>';
+        // Translation rows point back to their source (default-language) post.
+        if ($lang !== $default) {
+            $source_id = (int) snel_get_translation($post_id, $default);
+            if ($source_id) {
+                printf(
+                    '<span style="color:#64748b;font-size:12px;">%s <a href="%s">%s</a></span>',
+                    esc_html__('src:', 'snel'),
+                    esc_url((string) get_edit_post_link($source_id)),
+                    esc_html(get_the_title($source_id))
+                );
+            } else {
+                echo '<span style="color:#cbd5e1;">&mdash;</span>';
+            }
             return;
         }
 
-        foreach ($missing as $lang) {
-            $label = $config[$lang]['label'] ?? strtoupper($lang);
-            echo '<span style="display:inline-block;margin:1px 2px 1px 0;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600;background:#fff4e5;color:#b45309;">'
-                . esc_html($label)
+        // Source rows show every language with a check (exists) or cross (missing).
+        $siblings = snel_get_translations($post_id);
+        foreach (snel_get_supported_langs() as $code) {
+            $label = $config[$code]['label'] ?? strtoupper($code);
+            $has   = ($code === $default) || ! empty($siblings[$code]);
+
+            $style = $has
+                ? 'background:#e7f6ec;color:#15803d;'
+                : 'background:#f1f5f9;color:#94a3b8;';
+            $icon  = $has ? '&#10003;' : '&#10007;';
+
+            echo '<span style="display:inline-flex;align-items:center;gap:3px;margin:1px 3px 1px 0;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:600;' . $style . '">'
+                . $icon . ' ' . esc_html($label)
                 . '</span>';
         }
         return;
