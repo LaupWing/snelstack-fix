@@ -211,6 +211,25 @@ add_action('rest_api_init', function () {
                 $groups[$gid][] = $entry;
             }
 
+            // The literal wp_postmeta rows — exactly how the links are stored.
+            $meta_raw = $wpdb->get_results($wpdb->prepare(
+                "SELECT meta_id, post_id, meta_key, meta_value
+                 FROM {$wpdb->postmeta}
+                 WHERE meta_key IN (%s, %s)
+                 ORDER BY post_id, meta_key",
+                $lang_key,
+                $group_key
+            ), ARRAY_A);
+
+            $meta_rows = array_map(function ($r) {
+                return array(
+                    'meta_id'    => (int) $r['meta_id'],
+                    'post_id'    => (int) $r['post_id'],
+                    'meta_key'   => $r['meta_key'],
+                    'meta_value' => $r['meta_value'],
+                );
+            }, $meta_raw);
+
             return rest_ensure_response(array(
                 'languagesConfig'   => snel_get_languages_config(),
                 'defaultLang'       => snel_get_default_lang(),
@@ -218,6 +237,7 @@ add_action('rest_api_init', function () {
                 'themeStrings'      => get_option('snel_theme_translations', array()),
                 'translationGroups' => array_values($groups),
                 'translationRows'   => $flat,
+                'metaRows'          => $meta_rows,
             ));
         },
         'permission_callback' => function () { return current_user_can('manage_options'); },

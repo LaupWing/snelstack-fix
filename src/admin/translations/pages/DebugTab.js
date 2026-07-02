@@ -90,30 +90,36 @@ function Section( { title, count, defaultOpen = false, children } ) {
     );
 }
 
-// Translation data with a Cleaned (grouped) / Raw (flat, DB-shaped) toggle.
-function TranslationData( { groups, rows } ) {
-    const [ mode, setMode ] = useState( 'clean' );
+// Translation data with Grouped / Flat / DB-rows views of the same links.
+function TranslationData( { groups, rows, metaRows } ) {
+    const [ mode, setMode ] = useState( 'grouped' );
     const pill = ( on ) =>
         `text-xs px-2.5 py-1 rounded-full font-medium ${
             on ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
         }`;
 
+    const dataFor = { grouped: groups, flat: rows, db: metaRows };
+    const desc = {
+        grouped: __( 'Posts bucketed by their _snel_group meta (a "group" = all posts sharing a group id).', 'snel' ),
+        flat: __( 'One object per post — wp_posts joined with its _snel_lang / _snel_group meta. Tidy, not literal.', 'snel' ),
+        db: __( 'The literal wp_postmeta rows — exactly how the links are stored in the database.', 'snel' ),
+    };
+
     return (
         <div>
             <div className="flex gap-1.5 mt-3">
-                <button onClick={ () => setMode( 'clean' ) } className={ pill( mode === 'clean' ) }>
-                    { __( 'Cleaned', 'snel' ) }
+                <button onClick={ () => setMode( 'grouped' ) } className={ pill( mode === 'grouped' ) }>
+                    { __( 'Grouped', 'snel' ) }
                 </button>
-                <button onClick={ () => setMode( 'raw' ) } className={ pill( mode === 'raw' ) }>
-                    { __( 'Raw', 'snel' ) }
+                <button onClick={ () => setMode( 'flat' ) } className={ pill( mode === 'flat' ) }>
+                    { __( 'Flat', 'snel' ) }
+                </button>
+                <button onClick={ () => setMode( 'db' ) } className={ pill( mode === 'db' ) }>
+                    { __( 'DB rows', 'snel' ) }
                 </button>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
-                { mode === 'clean'
-                    ? __( 'Posts bucketed by their _snel_group meta.', 'snel' )
-                    : __( 'One row per post — mirrors the _snel_lang / _snel_group meta in the DB.', 'snel' ) }
-            </p>
-            <JsonBlock data={ mode === 'raw' ? rows : groups } rows={ 18 } />
+            <p className="text-xs text-gray-400 mt-2">{ desc[ mode ] }</p>
+            <JsonBlock data={ dataFor[ mode ] } rows={ 18 } />
         </div>
     );
 }
@@ -147,7 +153,7 @@ export default function DebugTab() {
             </p>
 
             <Section title={ __( 'Translation data', 'snel' ) } count={ rows.length } defaultOpen>
-                <TranslationData groups={ groups } rows={ rows } />
+                <TranslationData groups={ groups } rows={ rows } metaRows={ data.metaRows || [] } />
             </Section>
 
             <Section title={ __( 'Languages config', 'snel' ) }>
