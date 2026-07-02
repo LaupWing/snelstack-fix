@@ -11,7 +11,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
 import { useState } from '@wordpress/element';
 import { useDispatch } from '@wordpress/data';
-import { PanelBody, SelectControl, Button, ExternalLink } from '@wordpress/components';
+import { PanelBody, SelectControl, Button, ExternalLink, Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 // ─── Data ─────────────────────────────────────────────────────────────────
@@ -38,7 +38,13 @@ function TranslationsPanel() {
 	const [busy, setBusy] = useState(false);
 	const [status, setStatus] = useState('');
 	const [result, setResult] = useState(null);
-	const [batch, setBatch] = useState(null); // per-language progress for "create all"
+	const [batch, setBatch] = useState(null); // per-language progress for "create all" / "sync all"
+	const [synced, setSynced] = useState([]); // codes synced this session (clear their badge)
+	const [showSyncAll, setShowSyncAll] = useState(false);
+
+	// Existing translations that are out of date (source edited since).
+	const isOutdated = (l) => l.postId && l.outdated && !synced.includes(l.code);
+	const outdated = others.filter(isOutdated);
 
 	if (!data || !data.postId) {
 		return (
@@ -50,11 +56,11 @@ function TranslationsPanel() {
 
 	const targetLang = others.find((l) => l.code === target);
 
-	// Create one translation. Returns { ok, editUrl, postId, existed, msg }.
-	const createOne = async (postId, lang) => {
+	// Run one create/sync request. Returns { ok, editUrl, postId, existed, msg }.
+	const callAction = async (action, postId, lang) => {
 		try {
 			const body = new URLSearchParams({
-				action: 'snel_create_translation',
+				action,
 				nonce: data.nonce,
 				post_id: postId,
 				target: lang,
@@ -88,7 +94,7 @@ function TranslationsPanel() {
 		try { await savePost(); } catch (e) { /* continue with last saved content */ }
 
 		setStatus(__('Translating… this can take a moment.', 'snel'));
-		const r = await createOne(postId, target);
+		const r = await callAction('snel_create_translation', postId, target);
 		if (r.ok) {
 			setResult({ edit_url: r.editUrl, post_id: r.postId });
 			setStatus(r.existed ? __('Already exists:', 'snel') : __('Created!', 'snel'));
@@ -112,7 +118,47 @@ function TranslationsPanel() {
 			const l = missing[i];
 			setStatus(`${__('Translating', 'snel')} ${l.label} (${i + 1}/${missing.length})…`);
 			setBatch((prev) => prev.map((it) => (it.code === l.code ? { ...it, state: 'working' } : it)));
-			const r = await createOne(postId, l.code);
+			const r = await callAction('snel_create_translation', postId, l.code);
+			setBatch((prev) => prev.map((it) => (
+				it.code === l.code ? { ...it, state: r.ok ? 'done' : 'error', editUrl: r.editUrl, msg: r.msg } : it
+			)));
+		}
+		setStatus(__('Done.', 'snel'));
+		setBusy(false);
+	};
+
+	const handleSyncOne = async (lang) => {
+		setBusy(true);
+		setResult(null);
+		setBatch(null);
+		setStatus(`${__('Re-translating', 'snel')} ${lang}…`);
+
+		const postId = currentPostId();
+		const r = await callAction('snel_sync_translation', postId, lang);
+		if (r.ok) {
+			setSynced((prev) => [...prev, lang]);
+			setResult({ edit_url: r.editUrl, post_id: r.postId });
+			setStatus(__('Synced!', 'snel'));
+		} else {
+			setStatus(__('Error:', 'snel') + ' ' + r.msg);
+		}
+		setBusy(false);
+	};
+
+	const handleSyncAll = async () => {
+		if (!outdated.length) return;
+		setBusy(true);
+		setResult(null);
+		setBatch(outdated.map((l) => ({ code: l.code, label: l.label, state: 'pending' })));
+		setStatus(__('Syncing outdated translations…', 'snel'));
+
+		const postId = currentPostId();
+		for (let i = 0; i < outdated.length; i++) {
+			const l = outdated[i];
+			setStatus(`${__('Re-translating', 'snel')} ${l.label} (${i + 1}/${outdated.length})…`);
+			setBatch((prev) => prev.map((it) => (it.code === l.code ? { ...it, state: 'working' } : it)));
+			const r = await callAction('snel_sync_translation', postId, l.code);
+			if (r.ok) setSynced((prev) => [...prev, l.code]);
 			setBatch((prev) => prev.map((it) => (
 				it.code === l.code ? { ...it, state: r.ok ? 'done' : 'error', editUrl: r.editUrl, msg: r.msg } : it
 			)));
@@ -146,10 +192,24 @@ function TranslationsPanel() {
 								{l.status && l.status !== 'publish' && (
 									<em style={{ color: '#b26200', fontWeight: 400 }}> · {l.status}</em>
 								)}
+								{isOutdated(l) && (
+									<em style={{ color: '#b45309', fontWeight: 600 }}> · {__('needs update', 'snel')}</em>
+								)}
 							</span>
 							<span style={{ fontSize: 12 }}>
 								<a href={l.editUrl}>{__('Edit', 'snel')}</a>
 								{l.viewUrl && <> · <ExternalLink href={l.viewUrl}>{__('View', 'snel')}</ExternalLink></>}
+								{isOutdated(l) && (
+									<> · <a
+										href="#"
+										onClick={(e) => {
+											e.preventDefault();
+											if (!busy && window.confirm(__('Re-translate and overwrite this translation? Manual edits will be lost.', 'snel'))) {
+												handleSyncOne(l.code);
+											}
+										}}
+									>{__('Sync', 'snel')}</a></>
+								)}
 							</span>
 						</div>
 					))}
@@ -213,6 +273,18 @@ function TranslationsPanel() {
 				</p>
 			)}
 
+			{outdated.length > 0 && (
+				<Button
+					variant="secondary"
+					isDestructive
+					onClick={() => setShowSyncAll(true)}
+					disabled={busy}
+					style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
+				>
+					{`↻ ${__('Sync all outdated', 'snel')} (${outdated.length})`}
+				</Button>
+			)}
+
 			{status && <p style={{ marginTop: 8, fontSize: 12, color: '#666' }}>{status}</p>}
 
 			{batch && (
@@ -226,7 +298,7 @@ function TranslationsPanel() {
 								{it.state === 'done' && (it.editUrl
 									? <a href={it.editUrl}>{__('open →', 'snel')}</a>
 									: <span style={{ color: '#16a34a' }}>✓</span>)}
-								{it.state === 'error' && <span style={{ color: '#d63638' }} title={it.msg}>{__('failed', 'snel')}</span>}
+								{it.state === 'error' && <span style={{ color: '#d63638' }}>{__('failed', 'snel')}{it.msg ? ': ' + it.msg : ''}</span>}
 							</span>
 						</div>
 					))}
@@ -242,6 +314,22 @@ function TranslationsPanel() {
 						{__('Post ID', 'snel')}: {result.post_id}
 					</div>
 				</div>
+			)}
+			{showSyncAll && (
+				<Modal title={__('Sync outdated translations', 'snel')} onRequestClose={() => setShowSyncAll(false)}>
+					<p style={{ fontSize: 13, marginTop: 0 }}>
+						{__('This re-translates the source content into each outdated language and overwrites the current translated content. Any manual edits in those translations will be lost.', 'snel')}
+					</p>
+					<p style={{ fontSize: 13, fontWeight: 600 }}>
+						{outdated.length} {__('will be overwritten:', 'snel')} {outdated.map((l) => l.label).join(', ')}
+					</p>
+					<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 16 }}>
+						<Button variant="tertiary" onClick={() => setShowSyncAll(false)}>{__('Cancel', 'snel')}</Button>
+						<Button variant="primary" isDestructive onClick={() => { setShowSyncAll(false); handleSyncAll(); }}>
+							{__('Sync all', 'snel')}
+						</Button>
+					</div>
+				</Modal>
 			)}
 		</div>
 	);

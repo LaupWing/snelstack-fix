@@ -129,17 +129,17 @@ function snel_ai_translate(array $texts, string $source, string $target)
     $source_name = $lang_names[$source] ?? $source;
     $target_name = $lang_names[$target] ?? $target;
 
-    // Build a numbered list so we can map translations back by position.
-    $numbered = [];
-    foreach ($texts as $i => $text) {
-        $numbered[] = ($i + 1) . '. ' . $text;
-    }
+    // Separate segments with a rare sentinel instead of a numbered list, so
+    // multi-line / HTML values survive the round trip (a numbered list breaks
+    // the moment a value contains newlines — the reply gains extra lines).
+    $delim = '@@@SNEL_SEG@@@';
 
     $prompt = "You are a professional translator. Translate accurately and naturally, preserving HTML tags.\n\n"
-            . "Translate the following texts from {$source_name} to {$target_name}. "
-            . "Return ONLY the translations, numbered the same way (1. 2. 3. etc). "
-            . "Keep HTML tags intact. Keep the same tone, style, and formatting.\n\n"
-            . implode("\n", $numbered);
+            . "Translate the following segments from {$source_name} to {$target_name}.\n"
+            . "Segments are separated by a line containing exactly {$delim}.\n"
+            . "Return ONLY the translated segments in the same order, separated by that same {$delim} line.\n"
+            . "Do not add, remove, merge or reorder segments. Keep HTML tags, whitespace and formatting intact.\n\n"
+            . implode("\n{$delim}\n", $texts);
 
     // Note: don't set temperature — some newer OpenAI models (gpt-5, o-series)
     // reject the 'temperature' parameter entirely.
@@ -154,17 +154,15 @@ function snel_ai_translate(array $texts, string $source, string $target)
         return new WP_Error('snel_ai_failed', 'AI request failed: ' . $output->get_error_message());
     }
 
-    // Parse numbered translations back into an array.
-    $translations = [];
-    foreach (explode("\n", trim((string) $output)) as $line) {
-        $line = trim($line);
-        if ($line === '') {
-            continue;
-        }
-        $cleaned = preg_replace('/^\d+\.\s*/', '', $line);
-        if ($cleaned !== '') {
-            $translations[] = $cleaned;
-        }
+    // Split on the sentinel, stripping the newlines that wrap each delimiter.
+    $translations = array_map(
+        static function ($part) { return trim($part, "\r\n"); },
+        explode($delim, (string) $output)
+    );
+
+    // The model may emit a trailing delimiter — drop a resulting empty tail.
+    if (count($translations) > count($texts) && end($translations) === '') {
+        array_pop($translations);
     }
 
     if (count($translations) !== count($texts)) {
