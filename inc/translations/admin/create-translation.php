@@ -31,6 +31,7 @@ function snel_create_translation_register(): void
 {
     add_action('wp_ajax_snel_create_translation', 'snel_create_translation_ajax');
     add_action('wp_ajax_snel_sync_translation', 'snel_sync_translation_ajax');
+    add_action('wp_ajax_snel_translation_state', 'snel_translation_state_ajax');
     add_action('enqueue_block_editor_assets', 'snel_create_translation_editor_data', 20);
 }
 add_action('init', 'snel_create_translation_register');
@@ -52,15 +53,33 @@ function snel_create_translation_editor_data(): void
         return;
     }
 
-    $config    = snel_get_languages_config();
-    $this_lang = snel_post_lang($post->ID);
-    $siblings  = snel_get_translations($post->ID);
+    wp_localize_script('snel-editor-snelstack', 'snelCreateTranslation', [
+        'ajaxUrl'     => admin_url('admin-ajax.php'),
+        'nonce'       => wp_create_nonce('snel_create_translation'),
+        'postId'      => $post->ID,
+        'currentLang' => snel_post_lang($post->ID),
+        'defaultLang' => snel_get_default_lang(),
+        'languages'   => snel_translation_languages($post->ID),
+    ]);
+}
+
+/**
+ * Build the per-language translation state for a post: which languages exist,
+ * their edit/view URLs, publish status, and whether each is out of date.
+ *
+ * @return array
+ */
+function snel_translation_languages(int $post_id): array
+{
+    $config       = snel_get_languages_config();
+    $this_lang    = snel_post_lang($post_id);
+    $siblings     = snel_get_translations($post_id);
+    $default_lang = snel_get_default_lang();
 
     // Signature of the group's source (default-language) post, used to flag
     // translations that fell out of date after a later source edit.
-    $default_lang = snel_get_default_lang();
-    $source_id    = snel_source_post_id($post->ID);
-    $source_sig   = $source_id ? snel_source_signature($source_id) : '';
+    $source_id  = snel_source_post_id($post_id);
+    $source_sig = $source_id ? snel_source_signature($source_id) : '';
 
     $languages = [];
     foreach (snel_get_supported_langs() as $code) {
@@ -86,13 +105,26 @@ function snel_create_translation_editor_data(): void
         ];
     }
 
-    wp_localize_script('snel-editor-snelstack', 'snelCreateTranslation', [
-        'ajaxUrl'     => admin_url('admin-ajax.php'),
-        'nonce'       => wp_create_nonce('snel_create_translation'),
-        'postId'      => $post->ID,
-        'currentLang' => $this_lang,
+    return $languages;
+}
+
+/**
+ * AJAX: return the current translation state for a post (used to refresh the
+ * editor sidebar after a save, without a full page reload).
+ */
+function snel_translation_state_ajax(): void
+{
+    check_ajax_referer('snel_create_translation', 'nonce');
+
+    $post_id = (int) ($_POST['post_id'] ?? 0);
+    if (! $post_id || ! current_user_can('edit_post', $post_id)) {
+        wp_send_json_error(['message' => 'Unauthorized'], 403);
+    }
+
+    wp_send_json_success([
+        'currentLang' => snel_post_lang($post_id),
         'defaultLang' => snel_get_default_lang(),
-        'languages'   => $languages,
+        'languages'   => snel_translation_languages($post_id),
     ]);
 }
 

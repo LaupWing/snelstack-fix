@@ -9,8 +9,8 @@ import './muted-format';  // registers the snel/muted inline format (toolbar tog
 import './accent-format'; // registers the snel/accent inline format (toolbar toggle)
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
-import { useState } from '@wordpress/element';
-import { useDispatch } from '@wordpress/data';
+import { useState, useEffect, useRef } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { PanelBody, SelectControl, Button, ExternalLink, Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -20,13 +20,63 @@ function getData() {
 	return window.snelCreateTranslation || null;
 }
 
+// ─── Badge ──────────────────────────────────────────────────────────────────
+
+const BADGE_COLORS = {
+	amber: { bg: '#fef3e2', fg: '#b45309' },
+	gray:  { bg: '#eef1f4', fg: '#556270' },
+	green: { bg: '#e7f6ec', fg: '#15803d' },
+	blue:  { bg: '#e8f0fe', fg: '#1d4ed8' },
+};
+
+function Badge({ color = 'gray', children }) {
+	const c = BADGE_COLORS[color] || BADGE_COLORS.gray;
+	return (
+		<span
+			style={{
+				display: 'inline-flex',
+				alignItems: 'center',
+				gap: 4,
+				padding: '1px 7px',
+				borderRadius: 999,
+				fontSize: 9,
+				fontWeight: 700,
+				letterSpacing: '0.03em',
+				textTransform: 'uppercase',
+				lineHeight: 1.7,
+				background: c.bg,
+				color: c.fg,
+				whiteSpace: 'nowrap',
+			}}
+		>
+			<span style={{ width: 5, height: 5, borderRadius: 999, background: c.fg, opacity: 0.85 }} />
+			{children}
+		</span>
+	);
+}
+
+// Status/outdated badges for a language entry, reused in the header + list.
+function LangBadges({ lang, outdated, isSource }) {
+	return (
+		<>
+			{isSource && <Badge color="blue">{__('source', 'snel')}</Badge>}
+			{outdated && <Badge color="amber">{__('needs update', 'snel')}</Badge>}
+			{lang.status && lang.status !== 'publish' && (
+				<Badge color="gray">{lang.status}</Badge>
+			)}
+		</>
+	);
+}
+
 // ─── Translations Panel ─────────────────────────────────────────────────────
 
 function TranslationsPanel() {
 	const data = getData();
 	const { savePost } = useDispatch('core/editor');
 
-	const languages = data?.languages || [];
+	// Live copy of the per-language state; refreshed from the server after saves
+	// and after create/sync so badges update without a full page reload.
+	const [languages, setLanguages] = useState(data?.languages || []);
 	const current = languages.find((l) => l.isCurrent);
 	const others = languages.filter((l) => !l.isCurrent);
 	const missing = others.filter((l) => !l.postId);
@@ -39,12 +89,40 @@ function TranslationsPanel() {
 	const [status, setStatus] = useState('');
 	const [result, setResult] = useState(null);
 	const [batch, setBatch] = useState(null); // per-language progress for "create all" / "sync all"
-	const [synced, setSynced] = useState([]); // codes synced this session (clear their badge)
 	const [showSyncAll, setShowSyncAll] = useState(false);
 
 	// Existing translations that are out of date (source edited since).
-	const isOutdated = (l) => l.postId && l.outdated && !synced.includes(l.code);
+	const isOutdated = (l) => l.postId && l.outdated;
 	const outdated = others.filter(isOutdated);
+	const isSourceLang = (l) => l.code === data?.defaultLang;
+
+	// Re-fetch the translation state from the server (statuses, outdated flags).
+	const refreshState = async () => {
+		const postId = data?.postId || window.wp?.data?.select('core/editor')?.getCurrentPostId();
+		if (!postId) return;
+		try {
+			const body = new URLSearchParams({ action: 'snel_translation_state', nonce: data.nonce, post_id: postId });
+			const res = await fetch(data.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' });
+			const json = await res.json();
+			if (json.success && json.data && Array.isArray(json.data.languages)) {
+				setLanguages(json.data.languages);
+			}
+		} catch (e) { /* ignore */ }
+	};
+
+	// Refresh whenever a (non-autosave) save finishes — the source signature
+	// only changes on save, so that's when outdated flags can flip.
+	const isSaving = useSelect((select) => {
+		const ed = select('core/editor');
+		return ed.isSavingPost() && !ed.isAutosavingPost();
+	}, []);
+	const wasSaving = useRef(false);
+	useEffect(() => {
+		if (wasSaving.current && !isSaving) {
+			refreshState();
+		}
+		wasSaving.current = isSaving;
+	}, [isSaving]);
 
 	if (!data || !data.postId) {
 		return (
@@ -101,6 +179,7 @@ function TranslationsPanel() {
 		} else {
 			setStatus(__('Error:', 'snel') + ' ' + r.msg);
 		}
+		await refreshState();
 		setBusy(false);
 	};
 
@@ -123,6 +202,7 @@ function TranslationsPanel() {
 				it.code === l.code ? { ...it, state: r.ok ? 'done' : 'error', editUrl: r.editUrl, msg: r.msg } : it
 			)));
 		}
+		await refreshState();
 		setStatus(__('Done.', 'snel'));
 		setBusy(false);
 	};
@@ -136,12 +216,12 @@ function TranslationsPanel() {
 		const postId = currentPostId();
 		const r = await callAction('snel_sync_translation', postId, lang);
 		if (r.ok) {
-			setSynced((prev) => [...prev, lang]);
 			setResult({ edit_url: r.editUrl, post_id: r.postId });
 			setStatus(__('Synced!', 'snel'));
 		} else {
 			setStatus(__('Error:', 'snel') + ' ' + r.msg);
 		}
+		await refreshState();
 		setBusy(false);
 	};
 
@@ -158,11 +238,11 @@ function TranslationsPanel() {
 			setStatus(`${__('Re-translating', 'snel')} ${l.label} (${i + 1}/${outdated.length})…`);
 			setBatch((prev) => prev.map((it) => (it.code === l.code ? { ...it, state: 'working' } : it)));
 			const r = await callAction('snel_sync_translation', postId, l.code);
-			if (r.ok) setSynced((prev) => [...prev, l.code]);
 			setBatch((prev) => prev.map((it) => (
 				it.code === l.code ? { ...it, state: r.ok ? 'done' : 'error', editUrl: r.editUrl, msg: r.msg } : it
 			)));
 		}
+		await refreshState();
 		setStatus(__('Done.', 'snel'));
 		setBusy(false);
 	};
@@ -170,47 +250,51 @@ function TranslationsPanel() {
 	return (
 		<div>
 			{/* Current language */}
-			<div style={{ marginBottom: 16, padding: '8px 12px', background: '#f5f5f5', borderRadius: 6, fontSize: 13 }}>
-				<span style={{ fontSize: 11, fontWeight: 600, color: '#999', textTransform: 'uppercase' }}>
+			<div style={{ position: 'relative', marginBottom: 16, padding: '10px 12px', background: '#f6f7f9', borderRadius: 8, fontSize: 13 }}>
+				<span style={{ fontSize: 10, fontWeight: 700, color: '#9aa4b0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
 					{__('This page', 'snel')}
 				</span>
-				<div style={{ marginTop: 4, color: '#333', fontWeight: 600 }}>
+				<div style={{ marginTop: 3, color: '#1e2733', fontWeight: 700 }}>
 					{current ? current.label : '—'}
 				</div>
+				{current && (
+					<div style={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 4 }}>
+						<LangBadges lang={current} outdated={isOutdated(current)} isSource={isSourceLang(current)} />
+					</div>
+				)}
 			</div>
 
 			{/* Existing translations */}
 			{others.some((l) => l.postId) && (
 				<div style={{ marginBottom: 16 }}>
-					<span style={{ fontSize: 11, fontWeight: 600, color: '#999', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
+					<span style={{ fontSize: 10, fontWeight: 700, color: '#9aa4b0', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: 8 }}>
 						{__('Translations', 'snel')}
 					</span>
 					{others.filter((l) => l.postId).map((l) => (
-						<div key={l.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #eee' }}>
-							<span style={{ fontWeight: 600 }}>
-								{l.label}
-								{l.status && l.status !== 'publish' && (
-									<em style={{ color: '#b26200', fontWeight: 400 }}> · {l.status}</em>
-								)}
-								{isOutdated(l) && (
-									<em style={{ color: '#b45309', fontWeight: 600 }}> · {__('needs update', 'snel')}</em>
-								)}
-							</span>
-							<span style={{ fontSize: 12 }}>
-								<a href={l.editUrl}>{__('Edit', 'snel')}</a>
-								{l.viewUrl && <> · <ExternalLink href={l.viewUrl}>{__('View', 'snel')}</ExternalLink></>}
-								{isOutdated(l) && (
-									<> · <a
-										href="#"
-										onClick={(e) => {
-											e.preventDefault();
-											if (!busy && window.confirm(__('Re-translate and overwrite this translation? Manual edits will be lost.', 'snel'))) {
-												handleSyncOne(l.code);
-											}
-										}}
-									>{__('Sync', 'snel')}</a></>
-								)}
-							</span>
+						<div key={l.code} style={{ padding: '8px 10px', marginBottom: 6, borderRadius: 8, border: '1px solid #eef0f2' }}>
+							{(isSourceLang(l) || isOutdated(l) || (l.status && l.status !== 'publish')) && (
+								<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
+									<LangBadges lang={l} outdated={isOutdated(l)} isSource={isSourceLang(l)} />
+								</div>
+							)}
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+								<strong style={{ fontWeight: 700 }}>{l.label}</strong>
+								<span style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+									<a href={l.editUrl}>{__('Edit', 'snel')}</a>
+									{l.viewUrl && <> · <ExternalLink href={l.viewUrl}>{__('View', 'snel')}</ExternalLink></>}
+									{isOutdated(l) && (
+										<> · <a
+											href="#"
+											onClick={(e) => {
+												e.preventDefault();
+												if (!busy && window.confirm(__('Re-translate and overwrite this translation? Manual edits will be lost.', 'snel'))) {
+													handleSyncOne(l.code);
+												}
+											}}
+										>{__('Sync', 'snel')}</a></>
+									)}
+								</span>
+							</div>
 						</div>
 					))}
 				</div>
