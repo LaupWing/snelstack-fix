@@ -23,6 +23,18 @@ if (is_category()) {
     $query_args['cat'] = get_queried_object_id();
 }
 
+// Restrict to the current language (this block runs its own query, so the main
+// archive language filter doesn't apply to it).
+$lang    = snel_get_lang();
+$default = snel_get_default_lang();
+$query_args['meta_query'] = ($lang === $default)
+    ? [
+        'relation' => 'OR',
+        ['key' => '_snel_lang', 'value' => $default],
+        ['key' => '_snel_lang', 'compare' => 'NOT EXISTS'],
+    ]
+    : [['key' => '_snel_lang', 'value' => $lang]];
+
 $query = new WP_Query($query_args);
 
 if (! $query->have_posts()) {
