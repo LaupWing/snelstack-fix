@@ -23,9 +23,7 @@ if (is_category()) {
     $query_args['cat'] = get_queried_object_id();
 }
 
-// Route through the language-aware helper so the carousel only shows posts in
-// the current language (a raw get_posts would leak siblings from other langs).
-$posts = snel_get_recent_posts($query_args);
+$posts = get_posts($query_args);
 
 if (empty($posts)) {
     if (current_user_can('edit_posts')) {
