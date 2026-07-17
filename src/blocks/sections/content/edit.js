@@ -33,6 +33,7 @@ export default function Edit({ attributes, setAttributes }) {
         {
             allowedBlocks: ALLOWED_BLOCKS,
             template: [['core/paragraph', { placeholder: 'Schrijf hier je content...' }]],
+            templateLock: false,
         }
     );
 

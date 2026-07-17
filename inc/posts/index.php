@@ -54,6 +54,32 @@ add_action('init', function () {
     }
 });
 
+// New posts open with the same block structure the seeder writes in snel_post_page_blocks().
+// Beams and gradient are off here — an editor turns them on per post if the header needs them.
+add_action('init', function () {
+    $post_type = get_post_type_object('post');
+    if (! $post_type) {
+        return;
+    }
+
+    $post_type->template = [
+        ['snel/intro', ['showBeams' => false, 'showGradient' => false], [
+            ['snel/slot', ['max' => 1, 'className' => 'snel-slot-eyebrow'], [
+                ['snel/badge-text', []],
+            ]],
+            ['snel/slot', ['max' => 1, 'className' => 'snel-slot-heading'], [
+                ['snel/heading', ['level' => 'h1', 'size' => '2xl', 'weight' => 'bold']],
+            ]],
+        ]],
+        ['snel/thumbnail', ['bg' => 'white', 'backUrl' => '/blog/', 'backLabel' => 'Blog']],
+        ['snel/content', []],
+    ];
+
+    // Locks the page skeleton only. snel/slot and snel/content opt out of the
+    // cascade with templateLock:false, so badge, heading and prose stay editable.
+    $post_type->template_lock = 'all';
+});
+
 // Match main query posts_per_page to the archive block default so /blog/page/N/ doesn't 404.
 add_action('pre_get_posts', function (WP_Query $q) {
     if (is_admin() || ! $q->is_main_query()) {
