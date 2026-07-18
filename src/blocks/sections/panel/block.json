@@ -20,6 +20,8 @@
 		"rounded":       { "type": "boolean", "default": false },
 		"justify":       { "type": "string",  "default": "start" },
 		"contentWidth":  { "type": "string",  "default": "none" },
-		"size":          { "type": "string",  "default": "md" }
+		"size":          { "type": "string",  "default": "md" },
+		"showBeams":     { "type": "boolean", "default": true },
+		"showGradient":  { "type": "boolean", "default": true }
 	}
 }

@@ -21,7 +21,7 @@ const TEMPLATE = [
 ];
 
 export default function Edit({ attributes, setAttributes }) {
-	const { theme, rounded, justify, contentWidth, size } = attributes;
+	const { theme, rounded, justify, contentWidth, size, showBeams, showGradient } = attributes;
 	const isDark   = theme === 'dark' || theme === 'canvas';
 	const panelBg  = theme === 'canvas' ? '#020617' : '#2e1065';
 	const fade     = theme === 'canvas' ? 'from-[#020617]' : isDark ? 'from-[#2e1065]' : 'from-white';
@@ -100,10 +100,22 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(v) => setAttributes({ rounded: v })}
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={__('Beams', 'snel')}
+						checked={showBeams}
+						onChange={(v) => setAttributes({ showBeams: v })}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={__('Gradient', 'snel')}
+						checked={showGradient}
+						onChange={(v) => setAttributes({ showGradient: v })}
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 			</InspectorControls>
 
-			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade}>
+			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade} showBeams={showBeams} showGradient={showGradient}>
 				{rounded
 					? <div className={innerWrapClass} style={innerWrapStyle}>{content}</div>
 					: content

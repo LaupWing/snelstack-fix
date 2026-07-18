@@ -16,9 +16,11 @@
 
 defined('ABSPATH') || exit;
 
-$snel_theme   = $attributes['theme'] ?? 'white';
-$snel_is_dark = in_array($snel_theme, ['dark', 'canvas'], true);
-$snel_rounded = ! empty($attributes['rounded']);
+$snel_theme    = $attributes['theme'] ?? 'white';
+$snel_is_dark  = in_array($snel_theme, ['dark', 'canvas'], true);
+$snel_rounded  = ! empty($attributes['rounded']);
+$snel_beams    = $attributes['showBeams']    ?? true;
+$snel_gradient = $attributes['showGradient'] ?? true;
 
 $theme_bg = ['dark' => '#2e1065', 'canvas' => '#020617', 'white' => '#ffffff'][$snel_theme] ?? '#ffffff';
 
@@ -44,7 +46,7 @@ if ($snel_rounded) {
 	<?php if ($snel_rounded) : ?>
 	<div class="<?php echo esc_attr($inner_class); ?>" style="<?php echo esc_attr($inner_style); ?>">
 	<?php endif; ?>
-		<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'transparent', 'fade' => $snel_panel_fade]); ?>
+		<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'transparent', 'fade' => $snel_panel_fade, 'beams' => $snel_beams, 'gradient' => $snel_gradient]); ?>
 			<div class="px-4 md:px-8 <?php echo snel_section_padding($attributes); ?>">
 				<?php
 			$cw = ($attributes['contentWidth'] ?? 'none') !== 'none' ? ' snel-cw-' . esc_attr($attributes['contentWidth']) : '';
