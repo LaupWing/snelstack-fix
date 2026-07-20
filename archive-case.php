@@ -7,7 +7,8 @@
 
 get_header();
 
-$page = get_page_by_path('cases');
+// The Cases page holds the archive's block content.
+$page = snel_page('cases');
 if ($page) {
     echo apply_filters('the_content', $page->post_content);
 }

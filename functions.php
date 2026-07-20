@@ -15,6 +15,9 @@ if (! function_exists('snel_url')) {
 if (! function_exists('snel_lang_url')) {
     function snel_lang_url($lang) { return home_url('/'); }
 }
+if (! function_exists('snel_page')) {
+    function snel_page($slug, $post_type = 'page') { return get_page_by_path($slug, OBJECT, $post_type); }
+}
 if (! function_exists('snel_get_default_lang')) {
     function snel_get_default_lang() { return 'nl'; }
 }
