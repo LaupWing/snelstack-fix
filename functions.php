@@ -41,6 +41,12 @@ if (! function_exists('snel_nav_item')) {
 require get_template_directory() . '/inc/admin/business/index.php';
 require get_template_directory() . '/inc/admin/snelstack/index.php';
 // Translation system now lives in the Snel Translations plugin (required).
+// Empty slots render nothing. Slot markup is static (saved wrapper div), so an
+// unfilled slot would still output a div — and add flex-gap whitespace in Intro.
+add_filter('render_block_snel/slot', function ($content, $block) {
+    return empty($block['innerBlocks']) ? '' : $content;
+}, 10, 2);
+
 // Declare which Snel block attributes hold translatable text. Blocks whose text
 // is stored in attributes (not inner HTML) need this, or they stay untranslated.
 add_filter('snel_block_text_attrs', function ($map) {
