@@ -74,13 +74,19 @@ function snel_seed_menu(): bool
         'menu-item-status' => 'publish',
     ]);
 
-    // Blog (posts archive).
-    wp_update_nav_menu_item($menu->term_id, 0, [
-        'menu-item-title'  => __('Blog', 'snel'),
-        'menu-item-type'   => 'post_type_archive',
-        'menu-item-object' => 'post',
-        'menu-item-status' => 'publish',
-    ]);
+    // Blog — the posts page itself, not a post_type_archive item. Archive items
+    // resolve through get_post_type_archive_link(), which the translations
+    // plugin can't map to a sibling, so /en/ ends up on the Dutch slug.
+    $blog_page_id = (int) get_option('page_for_posts');
+    if ($blog_page_id) {
+        wp_update_nav_menu_item($menu->term_id, 0, [
+            'menu-item-title'     => __('Blog', 'snel'),
+            'menu-item-type'      => 'post_type',
+            'menu-item-object'    => 'page',
+            'menu-item-object-id' => $blog_page_id,
+            'menu-item-status'    => 'publish',
+        ]);
+    }
 
     // Cases.
     wp_update_nav_menu_item($menu->term_id, 0, [

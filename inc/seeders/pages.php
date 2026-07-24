@@ -298,9 +298,13 @@ function snel_seed_blog_page(bool $wipe = false): bool
         'fields'      => 'ids',
     ]);
 
-    if ($existing && ! $wipe) return false;
+    // The nav seeder links Blog by page id, so the page must be registered as
+    // the posts page (Settings → Reading) or the menu item is skipped.
+    if ($existing) {
+        update_option('page_for_posts', (int) $existing[0]);
 
-    if ($existing && $wipe) {
+        if (! $wipe) return false;
+
         $result = wp_update_post(['ID' => $existing[0], 'post_content' => $content, 'post_status' => 'publish']);
         return ! is_wp_error($result);
     }
@@ -313,7 +317,11 @@ function snel_seed_blog_page(bool $wipe = false): bool
         'post_status'  => 'publish',
     ]);
 
-    return ! is_wp_error($page_id);
+    if (is_wp_error($page_id)) return false;
+
+    update_option('page_for_posts', (int) $page_id);
+
+    return true;
 }
 
 function snel_seed_websites_page(bool $wipe = false): bool
