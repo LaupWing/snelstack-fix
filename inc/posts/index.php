@@ -89,3 +89,25 @@ add_action('pre_get_posts', function (WP_Query $q) {
         $q->set('posts_per_page', 9);
     }
 });
+
+// Syntax highlighting (highlight.js, Tokyo Night tokens) — only on singular
+// content that actually contains a code block, so every other page ships 0 bytes.
+add_action('wp_enqueue_scripts', function () {
+    if (! is_singular()) {
+        return;
+    }
+    $post = get_post();
+    if (! $post || (strpos($post->post_content, '<pre') === false && ! has_block('core/code', $post))) {
+        return;
+    }
+
+    $uri = get_template_directory_uri();
+    $dir = get_template_directory();
+
+    wp_enqueue_style('snel-hljs-theme', "$uri/assets/css/tokyo-night-dark.min.css", [], filemtime("$dir/assets/css/tokyo-night-dark.min.css"));
+    // Our prose pre panel owns the background; the theme only colors tokens.
+    wp_add_inline_style('snel-hljs-theme', '.snel-content .prose pre code.hljs{background:transparent;padding:0}');
+
+    wp_enqueue_script('snel-hljs', "$uri/assets/js/highlight.min.js", [], filemtime("$dir/assets/js/highlight.min.js"), ['in_footer' => true, 'strategy' => 'defer']);
+    wp_add_inline_script('snel-hljs', 'document.querySelectorAll(".prose pre code").forEach(function(el){hljs.highlightElement(el)});');
+});
