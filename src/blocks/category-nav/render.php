@@ -23,7 +23,13 @@ if (empty($cats)) {
     return;
 }
 
-$archive_url    = get_post_type_archive_link($post_type) ?: get_bloginfo('url') . '/blog/';
+// For 'post' the archive is the posts page (Settings → Reading), which the
+// translations plugin keeps language-aware. Don't hardcode /blog/ as a fallback —
+// that ignores both a renamed posts page and the language prefix.
+$posts_page  = (int) get_option('page_for_posts');
+$archive_url = ($post_type === 'post' && $posts_page)
+    ? get_permalink($posts_page)
+    : (get_post_type_archive_link($post_type) ?: home_url('/'));
 $current_cat_id = is_category() ? get_queried_object_id() : 0;
 
 $inactive_class = 'scroll-mx-2 snap-start shrink-0 whitespace-nowrap font-medium antialiased text-sm px-4 h-11 flex items-center transition duration-300 rounded-md text-slate-700 hover:bg-white hover:shadow-[0px_4px_8px_rgba(34,42,53,0.05),0px_0px_0px_1px_rgba(34,42,53,0.04),0px_1px_5px_-4px_rgba(19,19,22,0.7)]';
