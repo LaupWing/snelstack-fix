@@ -20,6 +20,8 @@
 		"contentWidth":  { "type": "string",  "default": "none" },
 		"fullHeight":    { "type": "boolean", "default": false },
 		"size":          { "type": "string",  "default": "lg" },
-		"disableBottom": { "type": "boolean", "default": false }
+		"disableBottom": { "type": "boolean", "default": false },
+		"showBeams":     { "type": "boolean", "default": true },
+		"showGradient":  { "type": "boolean", "default": true }
 	}
 }

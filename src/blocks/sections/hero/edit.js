@@ -10,7 +10,7 @@ import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import PanelFrame from '../../components/PanelFrame';
-import { getSectionPaddingClass, SIZE_OPTIONS } from '../../components/SectionControl';
+import SectionControl, { getSectionPaddingClass } from '../../components/SectionControl';
 
 // 3 fixed slots (snel/slot) — outer-locked. Each caps its own count:
 //   eyebrow → 1 · middle → 1 · lower → 1–2 (side by side, left).
@@ -38,7 +38,7 @@ const CONTENT_WIDTH_OPTIONS = [
 ];
 
 export default function Edit({ attributes, setAttributes }) {
-	const { justify, contentWidth, fullHeight, size, disableBottom } = attributes;
+	const { justify, contentWidth, fullHeight, size, disableBottom, showBeams, showGradient } = attributes;
 	const cwClass = contentWidth !== 'none' ? ` snel-cw-${contentWidth}` : '';
 	const blockProps = useBlockProps({ className: `snel-hero${fullHeight ? ' min-h-screen' : ''}`, style: { backgroundColor: '#ffffff' } });
 	const innerProps = useInnerBlocksProps(
@@ -52,7 +52,13 @@ export default function Edit({ attributes, setAttributes }) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__('Layout', 'snel')} initialOpen>
+				<SectionControl
+					size={size} onSizeChange={(v) => setAttributes({ size: v })}
+					disableBottom={disableBottom} onDisableBottomChange={(v) => setAttributes({ disableBottom: v })}
+					showBeams={showBeams} onShowBeamsChange={(v) => setAttributes({ showBeams: v })}
+					showGradient={showGradient} onShowGradientChange={(v) => setAttributes({ showGradient: v })}
+				/>
+				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
 					<SelectControl
 						label={__('Alignment', 'snel')}
 						value={justify}
@@ -73,22 +79,9 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(v) => setAttributes({ fullHeight: v })}
 						__nextHasNoMarginBottom
 					/>
-					<SelectControl
-						label={__('Bottom padding size', 'snel')}
-						value={size}
-						options={SIZE_OPTIONS}
-						onChange={(v) => setAttributes({ size: v })}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={__('Remove bottom padding', 'snel')}
-						checked={!!disableBottom}
-						onChange={(v) => setAttributes({ disableBottom: v })}
-						__nextHasNoMarginBottom
-					/>
 				</PanelBody>
 			</InspectorControls>
-			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }}>
+			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} showBeams={showBeams} showGradient={showGradient}>
 				<div className={paddingClass}>
 					<PanelFrame>
 						<div {...innerProps} />

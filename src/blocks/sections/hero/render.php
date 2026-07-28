@@ -14,7 +14,12 @@
 defined('ABSPATH') || exit;
 ?>
 <section data-seo-content class="snel-hero relative<?php echo ! empty($attributes['fullHeight']) ? ' snel-hero--full' : ''; ?>">
-	<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'white']); ?>
+	<?php snel_background_open([
+		'position' => 'absolute',
+		'backdrop' => 'white',
+		'beams'    => $attributes['showBeams']    ?? true,
+		'gradient' => $attributes['showGradient'] ?? true,
+	]); ?>
 		<?php
 		$padding = ! empty($attributes['fullHeight'])
 			? 'px-4 md:px-8'

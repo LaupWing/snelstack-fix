@@ -65,6 +65,8 @@ export default function Edit({ attributes, setAttributes }) {
 				<SectionControl
 					value={theme} onChange={(v) => setAttributes({ theme: v })}
 					size={size} onSizeChange={(v) => setAttributes({ size: v })}
+					showBeams={showBeams} onShowBeamsChange={(v) => setAttributes({ showBeams: v })}
+					showGradient={showGradient} onShowGradientChange={(v) => setAttributes({ showGradient: v })}
 				/>
 				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
 					<SelectControl
@@ -98,18 +100,6 @@ export default function Edit({ attributes, setAttributes }) {
 						label={__('Rounded corners', 'snel')}
 						checked={rounded}
 						onChange={(v) => setAttributes({ rounded: v })}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={__('Beams', 'snel')}
-						checked={showBeams}
-						onChange={(v) => setAttributes({ showBeams: v })}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={__('Gradient', 'snel')}
-						checked={showGradient}
-						onChange={(v) => setAttributes({ showGradient: v })}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

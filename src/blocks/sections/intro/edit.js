@@ -9,6 +9,7 @@ import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import PanelFrame from '../../components/PanelFrame';
+import SectionControl from '../../components/SectionControl';
 
 const TEMPLATE = [
 	['snel/slot', { className: 'snel-slot-eyebrow', max: 1, orientation: 'vertical' }],
@@ -38,7 +39,11 @@ export default function Edit({ attributes, setAttributes }) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__('Layout', 'snel')} initialOpen>
+				<SectionControl
+					showBeams={showBeams} onShowBeamsChange={(v) => setAttributes({ showBeams: v })}
+					showGradient={showGradient} onShowGradientChange={(v) => setAttributes({ showGradient: v })}
+				/>
+				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
 					<ToggleControl
 						label={__('Full height (min-h-screen)', 'snel')}
 						checked={fullHeight}
@@ -50,20 +55,6 @@ export default function Edit({ attributes, setAttributes }) {
 						value={visual}
 						options={VISUAL_OPTIONS}
 						onChange={(v) => setAttributes({ visual: v })}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-				<PanelBody title={__('Background', 'snel')} initialOpen={false}>
-					<ToggleControl
-						label={__('Beams', 'snel')}
-						checked={showBeams}
-						onChange={(v) => setAttributes({ showBeams: v })}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={__('Gradient', 'snel')}
-						checked={showGradient}
-						onChange={(v) => setAttributes({ showGradient: v })}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

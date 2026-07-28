@@ -49,16 +49,18 @@ export default function SectionControl({
 	size, onSizeChange,
 	disableTop, onDisableTopChange,
 	disableBottom, onDisableBottomChange,
+	showBeams, onShowBeamsChange,
+	showGradient, onShowGradientChange,
 }) {
 	return (
 		<PanelBody title={__('Section', 'snel')} initialOpen>
-			<SelectControl
+			{onChange && <SelectControl
 				label={__('Background', 'snel')}
 				value={value}
 				options={BG_OPTIONS}
 				onChange={onChange}
 				__nextHasNoMarginBottom
-			/>
+			/>}
 			{onSizeChange && <>
 				<SelectControl
 					label={__('Padding size', 'snel')}
@@ -80,6 +82,18 @@ export default function SectionControl({
 					__nextHasNoMarginBottom
 				/>
 			</>}
+			{onShowBeamsChange && <ToggleControl
+				label={__('Beams', 'snel')}
+				checked={!!showBeams}
+				onChange={onShowBeamsChange}
+				__nextHasNoMarginBottom
+			/>}
+			{onShowGradientChange && <ToggleControl
+				label={__('Gradient', 'snel')}
+				checked={!!showGradient}
+				onChange={onShowGradientChange}
+				__nextHasNoMarginBottom
+			/>}
 		</PanelBody>
 	);
 }
