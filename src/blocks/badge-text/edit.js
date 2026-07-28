@@ -3,7 +3,7 @@
  */
 import ServerSideRender from '@wordpress/server-side-render';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, SelectControl, Disabled } from '@wordpress/components';
+import { PanelBody, TextControl, SelectControl, ToggleControl, Disabled } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 const COLORS = [
@@ -16,18 +16,27 @@ const COLORS = [
 
 export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps();
-	const { label, color } = attributes;
+	const { label, color, useCategory } = attributes;
 
 	return (
 		<div {...blockProps}>
 			<InspectorControls>
 				<PanelBody title={__('Badge', 'snel')} initialOpen>
-					<TextControl
-						label={__('Label', 'snel')}
-						value={label}
-						onChange={(v) => setAttributes({ label: v })}
+					<ToggleControl
+						label={__('Use category', 'snel')}
+						checked={useCategory}
+						onChange={(v) => setAttributes({ useCategory: v })}
+						help={__('Shows the post/archive category (translated) instead of the label.', 'snel')}
 						__nextHasNoMarginBottom
 					/>
+					{!useCategory && (
+						<TextControl
+							label={__('Label', 'snel')}
+							value={label}
+							onChange={(v) => setAttributes({ label: v })}
+							__nextHasNoMarginBottom
+						/>
+					)}
 					<SelectControl
 						label={__('Color', 'snel')}
 						value={color}

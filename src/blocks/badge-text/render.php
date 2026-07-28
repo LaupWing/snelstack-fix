@@ -11,6 +11,22 @@
 defined('ABSPATH') || exit;
 
 $label = $attributes['label'] ?? '';
+
+// Opt-in: show the category in scope instead of the typed label. get_term is
+// filtered by Snel Translations, so the name is already in the current language.
+if ( ! empty( $attributes['useCategory'] ) ) {
+	if ( is_category() || is_tax() ) {
+		$term = get_queried_object();
+		if ( $term instanceof WP_Term ) {
+			$label = $term->name;
+		}
+	} elseif ( is_singular( 'post' ) ) {
+		$cats = get_the_category( $block->context['postId'] ?? get_the_ID() );
+		if ( ! empty( $cats ) ) {
+			$label = $cats[0]->name;
+		}
+	}
+}
 $color = $attributes['color'] ?? 'violet';
 $allowed = ['teal', 'sky', 'violet', 'pink', 'red'];
 $color = in_array($color, $allowed, true) ? $color : 'violet';
