@@ -7,7 +7,7 @@
  * Keep in sync with render.php (snel_background_open + snel_panel_open).
  */
 import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, SelectControl } from '@wordpress/components';
+import { ToggleControl, SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import PanelFrame from '../../components/PanelFrame';
@@ -67,8 +67,7 @@ export default function Edit({ attributes, setAttributes }) {
 					size={size} onSizeChange={(v) => setAttributes({ size: v })}
 					showBeams={showBeams} onShowBeamsChange={(v) => setAttributes({ showBeams: v })}
 					showGradient={showGradient} onShowGradientChange={(v) => setAttributes({ showGradient: v })}
-				/>
-				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
+				>
 					<SelectControl
 						label={__('Alignment', 'snel')}
 						value={justify}
@@ -102,7 +101,7 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(v) => setAttributes({ rounded: v })}
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
+				</SectionControl>
 			</InspectorControls>
 
 			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade} showBeams={showBeams} showGradient={showGradient}>

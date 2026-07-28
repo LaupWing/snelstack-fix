@@ -6,7 +6,7 @@
  * accepts blocks (capped 1 / 1 / 2). PanelFrame mirrors snel_panel_open().
  */
 import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
+import { SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import PanelFrame from '../../components/PanelFrame';
@@ -57,8 +57,7 @@ export default function Edit({ attributes, setAttributes }) {
 					disableBottom={disableBottom} onDisableBottomChange={(v) => setAttributes({ disableBottom: v })}
 					showBeams={showBeams} onShowBeamsChange={(v) => setAttributes({ showBeams: v })}
 					showGradient={showGradient} onShowGradientChange={(v) => setAttributes({ showGradient: v })}
-				/>
-				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
+				>
 					<SelectControl
 						label={__('Alignment', 'snel')}
 						value={justify}
@@ -79,7 +78,7 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(v) => setAttributes({ fullHeight: v })}
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
+				</SectionControl>
 			</InspectorControls>
 			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} showBeams={showBeams} showGradient={showGradient}>
 				<div className={paddingClass}>

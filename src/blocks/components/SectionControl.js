@@ -44,6 +44,10 @@ export function getSectionPaddingClass(size = 'md', disableTop = false, disableB
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
+// Two panels, same on every section block:
+//   Background → color + beams + gradient
+//   Layout     → block-specific controls (children) + padding
+// A control only renders when its onChange handler is passed.
 export default function SectionControl({
 	value, onChange,
 	size, onSizeChange,
@@ -51,49 +55,55 @@ export default function SectionControl({
 	disableBottom, onDisableBottomChange,
 	showBeams, onShowBeamsChange,
 	showGradient, onShowGradientChange,
+	children,
 }) {
 	return (
-		<PanelBody title={__('Section', 'snel')} initialOpen>
-			{onChange && <SelectControl
-				label={__('Background', 'snel')}
-				value={value}
-				options={BG_OPTIONS}
-				onChange={onChange}
-				__nextHasNoMarginBottom
-			/>}
-			{onSizeChange && <>
-				<SelectControl
-					label={__('Padding size', 'snel')}
-					value={size}
-					options={SIZE_OPTIONS}
-					onChange={onSizeChange}
+		<>
+			<PanelBody title={__('Background', 'snel')} initialOpen>
+				{onChange && <SelectControl
+					label={__('Color', 'snel')}
+					value={value}
+					options={BG_OPTIONS}
+					onChange={onChange}
 					__nextHasNoMarginBottom
-				/>
-				<ToggleControl
-					label={__('Remove top padding', 'snel')}
-					checked={!!disableTop}
-					onChange={onDisableTopChange}
+				/>}
+				{onShowBeamsChange && <ToggleControl
+					label={__('Beams', 'snel')}
+					checked={!!showBeams}
+					onChange={onShowBeamsChange}
 					__nextHasNoMarginBottom
-				/>
-				<ToggleControl
-					label={__('Remove bottom padding', 'snel')}
-					checked={!!disableBottom}
-					onChange={onDisableBottomChange}
+				/>}
+				{onShowGradientChange && <ToggleControl
+					label={__('Gradient', 'snel')}
+					checked={!!showGradient}
+					onChange={onShowGradientChange}
 					__nextHasNoMarginBottom
-				/>
-			</>}
-			{onShowBeamsChange && <ToggleControl
-				label={__('Beams', 'snel')}
-				checked={!!showBeams}
-				onChange={onShowBeamsChange}
-				__nextHasNoMarginBottom
-			/>}
-			{onShowGradientChange && <ToggleControl
-				label={__('Gradient', 'snel')}
-				checked={!!showGradient}
-				onChange={onShowGradientChange}
-				__nextHasNoMarginBottom
-			/>}
-		</PanelBody>
+				/>}
+			</PanelBody>
+			{(children || onSizeChange) && (
+				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
+					{children}
+					{onSizeChange && <SelectControl
+						label={__('Padding size', 'snel')}
+						value={size}
+						options={SIZE_OPTIONS}
+						onChange={onSizeChange}
+						__nextHasNoMarginBottom
+					/>}
+					{onDisableTopChange && <ToggleControl
+						label={__('Remove top padding', 'snel')}
+						checked={!!disableTop}
+						onChange={onDisableTopChange}
+						__nextHasNoMarginBottom
+					/>}
+					{onDisableBottomChange && <ToggleControl
+						label={__('Remove bottom padding', 'snel')}
+						checked={!!disableBottom}
+						onChange={onDisableBottomChange}
+						__nextHasNoMarginBottom
+					/>}
+				</PanelBody>
+			)}
+		</>
 	);
 }

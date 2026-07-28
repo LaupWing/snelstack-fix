@@ -5,11 +5,11 @@
  * Right: visual partial chosen from inspector dropdown (rendered server-side).
  */
 import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
+import { SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import PanelFrame from '../../components/PanelFrame';
-import SectionControl from '../../components/SectionControl';
+import SectionControl, { getSectionStyle, getSectionClass } from '../../components/SectionControl';
 
 const TEMPLATE = [
 	['snel/slot', { className: 'snel-slot-eyebrow', max: 1, orientation: 'vertical' }],
@@ -29,8 +29,13 @@ const VISUAL_OPTIONS = [
 ];
 
 export default function Edit({ attributes, setAttributes }) {
-	const { fullHeight, visual, showBeams, showGradient } = attributes;
-	const blockProps = useBlockProps({ className: `snel-hero${fullHeight ? ' min-h-screen' : ''}`, style: { backgroundColor: '#ffffff' } });
+	const { fullHeight, visual, theme, showBeams, showGradient } = attributes;
+	const isDark = theme === 'dark' || theme === 'canvas';
+	const fade   = theme === 'canvas' ? 'from-[#020617]' : theme === 'dark' ? 'from-[#2e1065]' : 'from-white';
+	const blockProps = useBlockProps({
+		className: `snel-hero${fullHeight ? ' min-h-screen' : ''} ${getSectionClass(theme)}`,
+		style: getSectionStyle(theme),
+	});
 	const innerProps = useInnerBlocksProps(
 		{ className: 'snel-intro-slots' },
 		{ template: TEMPLATE, templateLock: 'all' }
@@ -40,10 +45,10 @@ export default function Edit({ attributes, setAttributes }) {
 		<>
 			<InspectorControls>
 				<SectionControl
+					value={theme} onChange={(v) => setAttributes({ theme: v })}
 					showBeams={showBeams} onShowBeamsChange={(v) => setAttributes({ showBeams: v })}
 					showGradient={showGradient} onShowGradientChange={(v) => setAttributes({ showGradient: v })}
-				/>
-				<PanelBody title={__('Layout', 'snel')} initialOpen={false}>
+				>
 					<ToggleControl
 						label={__('Full height (min-h-screen)', 'snel')}
 						checked={fullHeight}
@@ -57,11 +62,11 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(v) => setAttributes({ visual: v })}
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
+				</SectionControl>
 			</InspectorControls>
-			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} showBeams={showBeams} showGradient={showGradient}>
+			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade} showBeams={showBeams} showGradient={showGradient}>
 				<div className="px-4 pt-40 pb-20 md:px-8 lg:pt-44">
-					<PanelFrame>
+					<PanelFrame dark={isDark}>
 						<div className="grid lg:grid-cols-2 gap-16 xl:gap-32 items-center">
 							<div {...innerProps} />
 							<div className="relative flex items-center justify-center min-h-64">

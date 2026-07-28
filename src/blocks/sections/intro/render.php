@@ -103,11 +103,19 @@ $_sp_def .= '</defs>';
 $visual        = sanitize_key($attributes['visual'] ?? '');
 $show_beams    = $attributes['showBeams']    ?? true;
 $show_gradient = $attributes['showGradient'] ?? true;
+
+$snel_theme   = $attributes['theme'] ?? 'white';
+$snel_is_dark = in_array($snel_theme, ['dark', 'canvas'], true);
+$theme_bg     = ['dark' => '#2e1065', 'canvas' => '#020617', 'white' => '#ffffff'][$snel_theme] ?? '#ffffff';
+$theme_fade   = ['dark' => 'from-[#2e1065]', 'canvas' => 'from-[#020617]'][$snel_theme] ?? 'from-white';
+if ($snel_theme === 'canvas')   $theme_class = 'is-dark bg-canvas';
+elseif ($snel_is_dark)          $theme_class = 'is-dark';
+else                            $theme_class = 'bg-white';
 ?>
-<section data-seo-content class="snel-hero relative rounded-t-3xl overflow-hidden<?php echo $full_h ? ' snel-hero--full' : ''; ?>">
-	<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'white', 'beams' => $show_beams, 'gradient' => $show_gradient]); ?>
+<section data-seo-content class="snel-hero relative rounded-t-3xl overflow-hidden <?php echo esc_attr($theme_class); ?><?php echo $full_h ? ' snel-hero--full' : ''; ?>" style="background-color:<?php echo esc_attr($theme_bg); ?>">
+	<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'transparent', 'fade' => $theme_fade, 'beams' => $show_beams, 'gradient' => $show_gradient]); ?>
 	<div class="<?php echo $full_h ? 'px-4 py-20 md:px-8' : 'px-4 pt-16 pb-20 md:px-8 lg:pt-20'; ?>">
-		<?php snel_panel_open(); ?>
+		<?php snel_panel_open(['dark' => $snel_is_dark]); ?>
 		<?php if ($visual) : ?>
 			<div class="grid lg:grid-cols-2 gap-16 xl:gap-32 items-center">
 				<div class="flex flex-col items-start gap-8 lg:gap-10"><?php echo $content; ?></div>
