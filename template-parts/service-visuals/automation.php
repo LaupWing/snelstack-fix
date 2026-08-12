@@ -56,7 +56,7 @@
 			<text x="336" y="158" text-anchor="middle" font-size="7" fill="white" opacity="0.4" font-family="sans-serif">CRM</text>
 		</g>
 	</svg>
-	<div class="grid grid-cols-3 gap-2 mt-4">
+	<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
 		<div class="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
 			<div class="text-xl font-bold text-sky-400">847</div>
 			<div class="text-[10px] text-white/35 mt-0.5">Runs</div>

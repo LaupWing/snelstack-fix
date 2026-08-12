@@ -39,7 +39,7 @@
 		<?php endforeach; ?>
 	</div>
 	<div class="border-t border-white/10 px-5 py-4">
-		<div class="grid grid-cols-3 gap-2">
+		<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
 			<div class="snel-stat-in rounded-xl border border-white/10 bg-white/5 p-3 text-center" style="animation-delay:0.5s">
 				<div class="text-lg font-bold text-sky-400 tabular-nums">247</div>
 				<div class="text-[10px] text-white/35 mt-0.5">Leads vandaag</div>
