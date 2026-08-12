@@ -81,7 +81,7 @@ if (! function_exists('snel_stack_icon')) {
 
 $email       = snel_business('email');
 $site_name   = snel_business('name') ?: get_bloginfo('name');
-$contact_url = get_permalink(get_page_by_path('contact')) ?: '#contact';
+$contact_url = 'https://calendly.com/snelstack/30min';
 
 $arrow_up_right = '<path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z" clip-rule="evenodd"/>';
 $cta_icon = '<span class="relative block size-5 overflow-hidden text-slate-950">'
@@ -89,7 +89,7 @@ $cta_icon = '<span class="relative block size-5 overflow-hidden text-slate-950">
     . '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="absolute inset-0 size-5 translate-y-[150%] transition-transform duration-300 ease-out group-hover:translate-y-0">' . $arrow_up_right . '</svg>'
     . '</span>';
 
-$whatsapp_url = get_theme_mod('snel_whatsapp_url', '#');
+$whatsapp_url = get_theme_mod('snel_whatsapp_url', 'https://wa.me/31654754116');
 $privacy_page = get_page_by_path('privacybeleid');
 $av_page      = get_page_by_path('algemene-voorwaarden');
 ?>
