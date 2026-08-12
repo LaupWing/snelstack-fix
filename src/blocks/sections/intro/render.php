@@ -101,6 +101,9 @@ $_sp_def .= '</defs>';
 </div>
 <?php
 $visual        = sanitize_key($attributes['visual'] ?? '');
+$image_id      = (int) ($attributes['imageId'] ?? 0);
+$image_ratio   = ['square' => 'aspect-square', 'landscape' => 'aspect-[4/3]', 'portrait' => 'aspect-[3/4]', 'wide' => 'aspect-video'][$attributes['imageRatio'] ?? 'original'] ?? '';
+$image_class   = 'w-full rounded-2xl' . ($image_ratio ? ' object-cover ' . $image_ratio : '');
 $show_beams    = $attributes['showBeams']    ?? true;
 $show_gradient = $attributes['showGradient'] ?? true;
 
@@ -116,11 +119,14 @@ else                            $theme_class = 'bg-white';
 	<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'transparent', 'fade' => $theme_fade, 'beams' => $show_beams, 'gradient' => $show_gradient]); ?>
 	<div class="<?php echo $full_h ? 'px-4 py-20 md:px-8' : 'px-4 pt-16 pb-20 md:px-8 lg:pt-20'; ?>">
 		<?php snel_panel_open(['dark' => $snel_is_dark]); ?>
-		<?php if ($visual) : ?>
+		<?php if ($image_id || $visual) : ?>
 			<div class="grid lg:grid-cols-2 gap-16 xl:gap-32 items-center">
 				<div class="flex flex-col items-start gap-8 lg:gap-10"><?php echo $content; ?></div>
 				<div class="relative flex items-center justify-center">
-					<?php get_template_part('template-parts/service-visuals/' . $visual); ?>
+					<?php
+					if ($image_id) echo wp_get_attachment_image($image_id, 'large', false, ['class' => $image_class]);
+					else           get_template_part('template-parts/service-visuals/' . $visual);
+					?>
 				</div>
 			</div>
 		<?php else : ?>

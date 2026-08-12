@@ -20,6 +20,9 @@
 		"contentWidth": { "type": "string", "default": "none" },
 		"fullHeight":   { "type": "boolean", "default": false },
 		"visual":       { "type": "string", "default": "" },
+		"imageId":      { "type": "number", "default": 0 },
+		"imageUrl":     { "type": "string", "default": "" },
+		"imageRatio":   { "type": "string", "default": "original" },
 		"theme":        { "type": "string", "default": "white" },
 		"showBeams":    { "type": "boolean", "default": true },
 		"showGradient": { "type": "boolean", "default": true }
