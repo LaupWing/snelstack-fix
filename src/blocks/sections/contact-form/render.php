@@ -83,7 +83,7 @@ $label_cls    = 'block text-sm font-medium text-slate-700 mb-1.5';
                         class="snel-cf-submit group relative inline-flex h-12 animate-glow-pulse cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
                     >
                         <span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
-                        <span class="snel-cf-btn-label relative inline-flex items-center justify-center whitespace-nowrap rounded-full bg-white px-6 text-base font-semibold text-gray-900">
+                        <span class="snel-cf-btn-label relative inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full bg-white px-6 text-base font-semibold text-gray-900">
                             <?php echo esc_html(snel__('Verstuur bericht')); ?>
                         </span>
                     </button>
