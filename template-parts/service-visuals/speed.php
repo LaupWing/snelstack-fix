@@ -12,7 +12,7 @@
 .snel-sv-loadbar    { animation: snel-loadbar 1.6s cubic-bezier(0.25,0.8,0.25,1) 0.3s both; transform-origin: left; }
 .snel-sv-score-ring { animation: snel-score-in 1.2s cubic-bezier(0.4,0,0.2,1) 0.6s both; }
 </style>
-<div class="w-full max-w-md rounded-3xl overflow-hidden border border-white/10 shadow-2xl" style="background:#020617">
+<div class="relative w-full max-w-md rounded-3xl overflow-hidden border border-white/10 shadow-2xl" style="background:#020617">
 
 	<!-- Blurred colour blobs -->
 	<div class="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl" aria-hidden="true">
@@ -77,16 +77,16 @@
 	</div>
 
 	<!-- Bottom stats -->
-	<div class="relative flex items-center" style="border-top:1px solid rgba(255,255,255,0.07);gap:1px;background:rgba(255,255,255,0.07)">
-		<div class="flex-1 px-4 py-3 text-center" style="background:#020617">
+	<div class="relative flex items-stretch" style="border-top:1px solid rgba(255,255,255,0.07);gap:1px;background:rgba(255,255,255,0.07)">
+		<div class="flex-1 px-4 py-3 text-center flex flex-col justify-center" style="background:#020617">
 			<div class="text-sm font-semibold" style="color:rgba(255,255,255,0.8)">2.6s</div>
 			<div class="text-[10px] mt-0.5" style="color:rgba(255,255,255,0.35)">Eerste indruk</div>
 		</div>
-		<div class="flex-1 px-4 py-3 text-center" style="background:#020617">
+		<div class="flex-1 px-4 py-3 text-center flex flex-col justify-center" style="background:#020617">
 			<div class="text-sm font-semibold" style="color:rgba(255,255,255,0.8)">94%</div>
 			<div class="text-[10px] mt-0.5" style="color:rgba(255,255,255,0.35)">Visueel bepaald</div>
 		</div>
-		<div class="flex-1 px-4 py-3 text-center" style="background:#020617">
+		<div class="flex-1 px-4 py-3 text-center flex flex-col justify-center" style="background:#020617">
 			<div class="text-sm font-semibold" style="color:#5eead4">Top 3%</div>
 			<div class="text-[10px] mt-0.5" style="color:rgba(255,255,255,0.35)">NL snelheid</div>
 		</div>
