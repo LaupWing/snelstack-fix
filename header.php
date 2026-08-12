@@ -81,9 +81,7 @@
     $nav_active_classes   = 'animate-gradient-x bg-gradient-to-r from-blue-500 via-violet-500 to-blue-500 bg-[length:200%_100%] bg-clip-text font-semibold text-transparent';
     $nav_inactive_classes = 'font-medium text-slate-700 hover:text-slate-900';
 
-    $contact_href = $email
-        ? 'mailto:' . antispambot($email) . '?subject=' . rawurlencode('Project Aanvraag')
-        : '#';
+    $contact_href = snel_url('/contact/');
 
     $chevron_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5 transition-transform duration-200"><path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>';
     $arrow_svg   = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 transition-transform duration-200 group-hover:-rotate-45"><path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd" /></svg>';
