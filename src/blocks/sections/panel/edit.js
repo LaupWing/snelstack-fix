@@ -104,12 +104,24 @@ export default function Edit({ attributes, setAttributes }) {
 				</SectionControl>
 			</InspectorControls>
 
-			<BackgroundWrapper blockProps={blockProps} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade} showBeams={showBeams} showGradient={showGradient}>
+			{/* Mirror render.php: the beams/mesh band lives INSIDE the rounded
+			    wrapper — outside it, the wrapper's opaque bg would cover it. */}
+			<div {...blockProps}>
 				{rounded
-					? <div className={innerWrapClass} style={innerWrapStyle}>{content}</div>
-					: content
+					? (
+						<div className={innerWrapClass} style={innerWrapStyle}>
+							<BackgroundWrapper blockProps={{}} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade} showBeams={showBeams} showGradient={showGradient}>
+								{content}
+							</BackgroundWrapper>
+						</div>
+					)
+					: (
+						<BackgroundWrapper blockProps={{}} attributes={{ bgPosition: 'absolute', backdrop: 'transparent' }} fade={fade} showBeams={showBeams} showGradient={showGradient}>
+							{content}
+						</BackgroundWrapper>
+					)
 				}
-			</BackgroundWrapper>
+			</div>
 		</>
 	);
 }

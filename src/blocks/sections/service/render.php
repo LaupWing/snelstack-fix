@@ -34,28 +34,31 @@ if (true) {
 	$w_a    = 28; $w_d = 10; $w_b = 28;
 	$w_offs = [17, 34, 51, 68];
 
-	// Beam pulses share one duration and no offset so every wire fires in sync.
-	$add_wire = function ($path_d, $px, $py) use (&$chip_decorations) {
+	// Beam pulses: same brand palette as the intro/process wires, one per wire,
+	// all in sync. Wires are short (~66 units) so the dash segment is widened
+	// (0.45 of the path) or the beam would be a barely visible speck.
+	$beam_colors = ['#38bdf8', '#a78bfa', '#f472b6', '#2dd4bf'];
+	$add_wire = function ($path_d, $px, $py, $color) use (&$chip_decorations) {
 		$chip_decorations .= '<path class="snel-deco-wire" d="' . $path_d . '" />'
-		                   . '<path class="snel-bg-beam" d="' . $path_d . '" pathLength="1" stroke="#5eead4" filter="url(#snel-svc-glow)" style="animation-duration:4s"/>'
+		                   . '<path class="snel-bg-beam" d="' . $path_d . '" pathLength="1" stroke="' . $color . '" filter="url(#snel-svc-glow)" style="animation-duration:3s;stroke-dasharray:0.45 1.55"/>'
 		                   . '<circle class="snel-deco-pad" cx="' . round($px, 1) . '" cy="' . round($py, 1) . '" r="2.5" />';
 	};
 
-	foreach ($w_offs as $off) { // left
+	foreach ($w_offs as $k => $off) { // left
 		$wy = $chip_y_pos + $off;
 		$x1 = $chip_x - $w_a; $x2 = $x1 - $w_d; $x3 = $x2 - $w_b; $ye = $wy + $w_d;
-		$add_wire("M $chip_x $wy L $x1 $wy L $x2 $ye L $x3 $ye", $x3, $ye);
+		$add_wire("M $chip_x $wy L $x1 $wy L $x2 $ye L $x3 $ye", $x3, $ye, $beam_colors[$k]);
 	}
-	foreach ($w_offs as $off) { // top
+	foreach ($w_offs as $k => $off) { // top
 		$tx = $chip_x + $off;
 		$y1 = $chip_y_pos - $w_a; $y2 = $y1 - $w_d; $y3 = $y2 - $w_b; $xe = $tx + $w_d;
-		$add_wire("M $tx $chip_y_pos L $tx $y1 L $xe $y2 L $xe $y3", $xe, $y3);
+		$add_wire("M $tx $chip_y_pos L $tx $y1 L $xe $y2 L $xe $y3", $xe, $y3, $beam_colors[$k]);
 	}
 	$bot_y = $chip_y_pos + $chip_h;
-	foreach ($w_offs as $off) { // bottom
+	foreach ($w_offs as $k => $off) { // bottom
 		$bx = $chip_x + $off;
 		$y1 = $bot_y + $w_a; $y2 = $y1 + $w_d; $y3 = $y2 + $w_b; $xe = $bx + $w_d;
-		$add_wire("M $bx $bot_y L $bx $y1 L $xe $y2 L $xe $y3", $xe, $y3);
+		$add_wire("M $bx $bot_y L $bx $y1 L $xe $y2 L $xe $y3", $xe, $y3, $beam_colors[$k]);
 	}
 }
 
