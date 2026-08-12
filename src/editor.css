@@ -36,6 +36,18 @@
 .snel-hero-slots.is-layout-flex.snel-justify-end,
 .snel-panel-slots.is-layout-flex.snel-justify-end    { align-items: flex-end; }
 
+/* Scroll-reveal elements start at opacity 0 until their view.js adds the
+   reveal class — but viewScripts never run in the editor, so force them
+   visible here or server-rendered previews (cases, posts, …) look empty. */
+.snel-case-card,
+.snel-post-reveal,
+.snel-archive-inner,
+.snel-proc-reveal,
+.wr-word {
+    opacity: 1;
+    transform: none;
+}
+
 .snel-hero--full {
     min-height: 100svh;
     display: flex;
