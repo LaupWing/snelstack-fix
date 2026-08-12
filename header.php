@@ -279,7 +279,15 @@
 
                     <a href="<?php echo esc_url($archive_url); ?>"
                        class="group flex w-full items-center justify-center gap-2 p-4 text-sm font-medium text-slate-600 transition hover:bg-brand-primary/5 hover:text-brand-primary">
-                        <?php printf(esc_html(snel__('Bekijk alle %s')), esc_html(strtolower($resolved['title']))); ?>
+                        <?php
+                        // Lowercase the menu title but keep acronyms ("AI Diensten" → "AI diensten").
+                        $archive_label = preg_replace_callback(
+                            '/\pL+/u',
+                            fn($m) => (mb_strlen($m[0]) > 1 && $m[0] === mb_strtoupper($m[0])) ? $m[0] : mb_strtolower($m[0]),
+                            $resolved['title']
+                        );
+                        printf(esc_html(snel__('Bekijk alle %s')), esc_html($archive_label));
+                        ?>
                         <?php echo $arrow_svg; ?>
                     </a>
                 </div>
