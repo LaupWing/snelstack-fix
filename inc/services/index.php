@@ -99,6 +99,7 @@ function snel_service_meta_box_render(WP_Post $post): void
                 $options = [
                     ''           => 'None',
                     'website'    => 'Browser mockup',
+                    'speed'      => 'Speed & First Impression',
                     'ai'         => 'AI Chat',
                     'automation' => 'n8n Flow',
                     'software'   => 'Code Editor',
