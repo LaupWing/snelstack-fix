@@ -133,7 +133,8 @@
                             $item_path    = '/' . trim((string) parse_url($url, PHP_URL_PATH), '/');
                             $has_children = ! empty($item->children);
                             $is_active    = ($item_path === $snel_current_path)
-                                         || ($item_path === '/cases' && is_singular('case'));
+                                         || (basename($item_path) === 'cases' && is_singular('case'))
+                                         || (basename($item_path) === 'blog' && (is_singular('post') || is_category() || is_tag()));
                             if (! $is_active && $has_children) {
                                 foreach ($item->children as $child) {
                                     $ch_url = snel_nav_item($child)['url'];
@@ -295,7 +296,9 @@
                         $url       = $resolved['url'];
                         $title     = $resolved['title'];
                         $item_path = '/' . trim((string) parse_url($url, PHP_URL_PATH), '/');
-                        $is_active = ($item_path === $snel_current_path);
+                        $is_active = ($item_path === $snel_current_path)
+                                  || (basename($item_path) === 'cases' && is_singular('case'))
+                                  || (basename($item_path) === 'blog' && (is_singular('post') || is_category() || is_tag()));
                     ?>
                         <a href="<?php echo esc_url($url); ?>"
                             class="rounded-lg px-4 py-3 text-sm transition-colors <?php echo $is_active ? 'bg-gradient-to-r from-blue-500/10 to-violet-500/10' : 'hover:bg-gray-100'; ?>">
