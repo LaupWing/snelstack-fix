@@ -34,8 +34,10 @@ if (true) {
 	$w_a    = 28; $w_d = 10; $w_b = 28;
 	$w_offs = [17, 34, 51, 68];
 
+	// Beam pulses share one duration and no offset so every wire fires in sync.
 	$add_wire = function ($path_d, $px, $py) use (&$chip_decorations) {
 		$chip_decorations .= '<path class="snel-deco-wire" d="' . $path_d . '" />'
+		                   . '<path class="snel-bg-beam" d="' . $path_d . '" pathLength="1" stroke="#5eead4" filter="url(#snel-svc-glow)" style="animation-duration:4s"/>'
 		                   . '<circle class="snel-deco-pad" cx="' . round($px, 1) . '" cy="' . round($py, 1) . '" r="2.5" />';
 	};
 
@@ -88,6 +90,10 @@ $arrow = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="curr
 					<stop offset="100%" stop-color="#f472b6"/>
 					<animateTransform attributeName="gradientTransform" type="rotate" from="0 0.5 0.5" to="360 0.5 0.5" dur="5s" repeatCount="indefinite"/>
 				</linearGradient>
+				<filter id="snel-svc-glow" x="-100%" y="-100%" width="300%" height="300%">
+					<feGaussianBlur stdDeviation="2" result="b"/>
+					<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+				</filter>
 			</defs>
 			<?php echo $chip_decorations; ?>
 			<rect class="snel-cpu-chip fill-slate-950/3 stroke-violet-500/40 stroke-[1.5]"
