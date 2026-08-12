@@ -38,7 +38,7 @@ add_action('init', function () {
             ['snel/intro'],
             ['snel/panel'],
             ['snel/features'],
-            ['snel/statement'],
+            ['snel/statement', ['bg' => 'canvas']],
             ['snel/partners'],
             ['snel/content'],
         ],
