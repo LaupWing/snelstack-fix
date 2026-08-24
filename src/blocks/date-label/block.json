@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "snel/date-label",
+	"version": "1.0.0",
+	"title": "Snel Date Label",
+	"category": "snel",
+	"icon": "calendar-alt",
+	"description": "Simple publish-date label for the post in scope. Uses the site date format unless overridden.",
+	"keywords": ["date", "label", "published", "meta"],
+	"textdomain": "snel",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php",
+	"supports": { "html": false },
+	"attributes": {
+		"format": { "type": "string", "default": "" },
+		"showModified": { "type": "boolean", "default": false }
+	},
+	"usesContext": ["postId"]
+}

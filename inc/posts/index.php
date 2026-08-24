@@ -70,6 +70,9 @@ add_action('init', function () {
             ['snel/slot', ['max' => 1, 'className' => 'snel-slot-heading'], [
                 ['snel/heading', ['level' => 'h1', 'size' => '2xl', 'weight' => 'bold']],
             ]],
+            ['snel/slot', ['max' => 1, 'className' => 'snel-slot-body'], [
+                ['snel/date-label', []],
+            ]],
         ]],
         ['snel/thumbnail', ['bg' => 'white', 'backUrl' => '/blog/', 'backLabel' => 'Blog']],
         ['snel/content', []],
