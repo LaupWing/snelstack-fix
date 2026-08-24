@@ -18,16 +18,16 @@
 		<span class="h-2.5 w-2.5 rounded-full bg-green-400/50"></span>
 		<div class="ml-2 flex-1 rounded-md bg-white/5 border border-white/10 px-3 py-1 text-xs text-white/25 font-mono">dashboard.jouwbedrijf.nl</div>
 	</div>
-	<div class="p-5 space-y-3 font-mono text-xs">
+	<div class="p-4 sm:p-5 space-y-3 font-mono text-[10px] sm:text-xs">
 		<?php
 		$lines = [
-			['num' => '01', 'html' => '<span class="text-white/30">import</span> <span class="text-sky-300">Dashboard</span> <span class="text-white/30">from</span> <span class="text-teal-300">\'./components\'</span>', 'delay' => '0.05s'],
+			['num' => '01', 'html' => '<span class="text-white/30">import</span> <span class="text-sky-300">Dashboard</span> <span class="text-white/30">from</span> <span class="text-teal-300">\'./ui\'</span>', 'delay' => '0.05s'],
 			['num' => '02', 'html' => '', 'delay' => '0.1s'],
 			['num' => '03', 'html' => '<span class="text-pink-400">function</span> <span class="text-sky-300">App</span><span class="text-white/50">() {</span>', 'delay' => '0.15s'],
 			['num' => '04', 'html' => '<span class="pl-4 text-white/30">return</span> <span class="text-white/50">(</span>', 'delay' => '0.2s'],
-			['num' => '05', 'html' => '<span class="pl-8 text-teal-300">&lt;Dashboard</span> <span class="text-sky-300">data</span><span class="text-white/40">=</span><span class="text-amber-300">{leads}</span> <span class="inline-block w-0.5 h-3.5 bg-teal-300 align-middle animate-pulse"></span>', 'delay' => '0.25s'],
-			['num' => '06', 'html' => '<span class="pl-8 text-sky-300">realtime</span><span class="text-white/40">=</span><span class="text-amber-300">{true}</span>', 'delay' => '0.3s'],
-			['num' => '07', 'html' => '<span class="pl-8 text-teal-300">/&gt;</span>', 'delay' => '0.35s'],
+			['num' => '05', 'html' => '<span class="pl-6 text-teal-300">&lt;Dashboard</span> <span class="text-sky-300">data</span><span class="text-white/40">=</span><span class="text-amber-300">{leads}</span> <span class="inline-block w-0.5 h-3.5 bg-teal-300 align-middle animate-pulse"></span>', 'delay' => '0.25s'],
+			['num' => '06', 'html' => '<span class="pl-6 text-sky-300">realtime</span><span class="text-white/40">=</span><span class="text-amber-300">{true}</span>', 'delay' => '0.3s'],
+			['num' => '07', 'html' => '<span class="pl-6 text-teal-300">/&gt;</span>', 'delay' => '0.35s'],
 			['num' => '08', 'html' => '<span class="pl-4 text-white/50">)</span>', 'delay' => '0.4s'],
 			['num' => '09', 'html' => '<span class="text-white/50">}</span>', 'delay' => '0.45s'],
 		];
