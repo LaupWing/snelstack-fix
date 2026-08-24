@@ -130,23 +130,6 @@ add_action('admin_post_snel_reseed_posts', function () {
     exit;
 });
 
-add_action('admin_post_snel_backfill_date_labels', function () {
-    check_admin_referer('snel_backfill_date_labels');
-
-    if (! current_user_can('manage_options')) {
-        wp_die(__('Geen toegang.', 'snel'));
-    }
-
-    $updated = snel_backfill_date_labels();
-
-    wp_redirect(add_query_arg([
-        'page'   => 'snel-seed',
-        'seeded' => $updated,
-        'type'   => 'date_labels',
-    ], admin_url('tools.php')));
-    exit;
-});
-
 add_action('admin_post_snel_seed_partners', function () {
     check_admin_referer('snel_seed_partners');
     if (! current_user_can('manage_options')) wp_die('Unauthorized');
@@ -299,13 +282,6 @@ function snel_seed_page_render(): void
             : '<div class="notice notice-info is-dismissible"><p>' . __('Geen nieuwe partners aangemaakt — ze bestaan al.', 'snel') . '</p></div>';
     }
 
-    if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'date_labels') {
-        $n      = (int) $_GET['seeded'];
-        $notice = $n > 0
-            ? sprintf('<div class="notice notice-success is-dismissible"><p>%s</p></div>', sprintf(__('%d post(s) voorzien van een date label.', 'snel'), $n))
-            : '<div class="notice notice-info is-dismissible"><p>' . __('Geen posts bijgewerkt — alles heeft al een date label.', 'snel') . '</p></div>';
-    }
-
     if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'blog_page') {
         $notice = (int) $_GET['seeded']
             ? '<div class="notice notice-success is-dismissible"><p>' . __('Blog-pagina geseed.', 'snel') . '</p></div>'
@@ -419,18 +395,6 @@ function snel_seed_page_render(): void
                     <?php wp_nonce_field('snel_reseed_posts'); ?>
                     <input type="hidden" name="action" value="snel_reseed_posts" />
                     <button type="submit" class="button button-secondary"><?php _e('Re-seed (wis + hermaak)', 'snel'); ?></button>
-                </form>
-            </div>
-
-            <div style="border:1px solid #c3c4c7;border-radius:4px;padding:20px 24px;background:#fff">
-                <h2 style="margin-top:0"><?php _e('Date labels backfill', 'snel'); ?></h2>
-                <p style="color:#646970">
-                    <?php _e('Voegt bij bestaande blogposts de date label onder de titel toe (body-slot in de intro). Posts die er al één hebben worden overgeslagen.', 'snel'); ?>
-                </p>
-                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block">
-                    <?php wp_nonce_field('snel_backfill_date_labels'); ?>
-                    <input type="hidden" name="action" value="snel_backfill_date_labels" />
-                    <button type="submit" class="button button-primary"><?php _e('Backfill date labels', 'snel'); ?></button>
                 </form>
             </div>
 
