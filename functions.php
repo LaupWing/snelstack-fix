@@ -149,7 +149,7 @@ add_action('wp_head', function () {
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('snelstack-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap', [], null);
-    wp_enqueue_style('snelstack', get_template_directory_uri() . '/build/index.css', ['snelstack-fonts'], '1.0.0');
-    wp_enqueue_script('snelstack-main', get_template_directory_uri() . '/assets/js/main.js', [], '1.0.0', true);
+    wp_enqueue_style('snelstack', get_template_directory_uri() . '/build/index.css', ['snelstack-fonts'], (string) filemtime(get_template_directory() . '/build/index.css'));
+    wp_enqueue_script('snelstack-main', get_template_directory_uri() . '/assets/js/main.js', [], (string) filemtime(get_template_directory() . '/assets/js/main.js'), true);
 });
 

@@ -10,6 +10,7 @@
 	"keywords": ["category", "filter", "nav", "blog"],
 	"textdomain": "snel",
 	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
 	"supports": { "html": false },
 	"attributes": {

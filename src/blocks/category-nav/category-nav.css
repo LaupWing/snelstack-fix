@@ -1,0 +1,30 @@
+/* Snel Category Nav — hidden scrollbar, chevron nav toggled by view.js. */
+
+/* The slot holding the nav sits in an items-start flex column, so it
+   shrink-to-fits to its content and the nav's max-width resolves against
+   its own content width (no overflow ever happens). Stretch it instead. */
+.wp-block-snel-slot:has(> .snel-category-nav) {
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+}
+
+.snel-catnav-track {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.snel-catnav-track::-webkit-scrollbar {
+    display: none;
+}
+
+/* Chevrons sit absolutely outside the pill so toggling them never
+   changes the track width (which would shift the scroll math). */
+.snel-catnav-btn {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+.snel-catnav-btn.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
