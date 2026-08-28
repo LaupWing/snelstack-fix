@@ -96,23 +96,6 @@ add_action('admin_post_snel_reseed_services', function () {
     exit;
 });
 
-add_action('admin_post_snel_seed_cases', function () {
-    check_admin_referer('snel_seed_cases');
-
-    if (! current_user_can('manage_options')) {
-        wp_die(__('Geen toegang.', 'snel'));
-    }
-
-    $seeded = snel_seed_cases();
-
-    wp_redirect(add_query_arg([
-        'page'    => 'snel-seed',
-        'seeded'  => $seeded,
-        'type'    => 'cases',
-    ], admin_url('tools.php')));
-    exit;
-});
-
 add_action('admin_post_snel_reseed_posts', function () {
     check_admin_referer('snel_reseed_posts');
 
@@ -159,23 +142,6 @@ add_action('admin_post_snel_backfill_case_sliders', function () {
         'page'   => 'snel-seed',
         'seeded' => $updated,
         'type'   => 'case_sliders',
-    ], admin_url('tools.php')));
-    exit;
-});
-
-add_action('admin_post_snel_reseed_cases', function () {
-    check_admin_referer('snel_reseed_cases');
-
-    if (! current_user_can('manage_options')) {
-        wp_die(__('Geen toegang.', 'snel'));
-    }
-
-    $seeded = snel_seed_cases(true);
-
-    wp_redirect(add_query_arg([
-        'page'   => 'snel-seed',
-        'seeded' => $seeded,
-        'type'   => 'cases',
     ], admin_url('tools.php')));
     exit;
 });
@@ -266,7 +232,6 @@ add_action('admin_post_snel_reseed_contact_page', function () {
 
 function snel_seed_page_render(): void
 {
-    $case_count     = wp_count_posts('case')->publish ?? 0;
     $post_count     = wp_count_posts('post')->publish ?? 0;
     $service_count  = wp_count_posts('service')->publish ?? 0;
     $partner_count  = wp_count_posts('snel_partner')->publish ?? 0;
@@ -336,12 +301,6 @@ function snel_seed_page_render(): void
             : '<div class="notice notice-info is-dismissible"><p>' . __('Geen cases omgezet — alles gebruikt al de case slider.', 'snel') . '</p></div>';
     }
 
-    if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'cases') {
-        $n      = (int) $_GET['seeded'];
-        $notice = $n > 0
-            ? sprintf('<div class="notice notice-success is-dismissible"><p>%s</p></div>', sprintf(__('%d case(s) aangemaakt.', 'snel'), $n))
-            : '<div class="notice notice-info is-dismissible"><p>' . __('Geen nieuwe cases aangemaakt — ze bestaan al.', 'snel') . '</p></div>';
-    }
     // Diagnostics.
     $primary_loc  = get_nav_menu_locations()['primary'] ?? 0;
     $primary_menu = $primary_loc ? wp_get_nav_menu_object($primary_loc) : null;
@@ -437,25 +396,6 @@ function snel_seed_page_render(): void
                 </form>
             </div>
 
-            <div style="border:1px solid #c3c4c7;border-radius:4px;padding:20px 24px;background:#fff">
-                <h2 style="margin-top:0"><?php _e('Cases', 'snel'); ?></h2>
-                <p style="color:#646970">
-                    <?php printf(__('Huidig aantal gepubliceerde cases: <strong>%d</strong>', 'snel'), $case_count); ?>
-                </p>
-                <p style="color:#646970">
-                    <?php _e('Maakt voorbeeldcases aan. Al bestaande cases worden overgeslagen.', 'snel'); ?>
-                </p>
-                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block;margin-right:8px">
-                    <?php wp_nonce_field('snel_seed_cases'); ?>
-                    <input type="hidden" name="action" value="snel_seed_cases" />
-                    <button type="submit" class="button button-primary"><?php _e('Seed cases', 'snel'); ?></button>
-                </form>
-                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block" onsubmit="return confirm('Alle bestaande cases worden verwijderd. Doorgaan?')">
-                    <?php wp_nonce_field('snel_reseed_cases'); ?>
-                    <input type="hidden" name="action" value="snel_reseed_cases" />
-                    <button type="submit" class="button button-secondary"><?php _e('Re-seed (wis + hermaak)', 'snel'); ?></button>
-                </form>
-            </div>
             <div style="border:1px solid #c3c4c7;border-radius:4px;padding:20px 24px;background:#fff">
                 <h2 style="margin-top:0"><?php _e('Case sliders backfill', 'snel'); ?></h2>
                 <p style="color:#646970">

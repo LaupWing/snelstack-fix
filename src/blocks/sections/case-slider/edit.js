@@ -27,7 +27,9 @@ export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps({ className: 'snel-case-slider-editor relative p-3', ref: wrapRef });
 	const innerProps = useInnerBlocksProps(
 		{ className: 'snel-case-slider-editor-track flex w-full overflow-x-auto snap-x snap-mandatory rounded-xl bg-slate-900' },
-		{ allowedBlocks: ['snel/case-slide'], template: TEMPLATE, orientation: 'horizontal' }
+		// templateLock:false — opt out of the CPT-template lock cascade so slides
+		// can still be added/removed inside a locked case skeleton.
+		{ allowedBlocks: ['snel/case-slide'], template: TEMPLATE, orientation: 'horizontal', templateLock: false }
 	);
 
 	const slide = (dir) => {

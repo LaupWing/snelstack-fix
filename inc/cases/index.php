@@ -36,6 +36,30 @@ add_action('init', function () {
         'menu_icon'         => 'dashicons-portfolio',
         'menu_position'     => 5,
         'rewrite'           => ['slug' => 'cases'],
+        // New cases open with the standard case skeleton: intro + slider + content.
+        // Lock covers the skeleton only — slots, slider en content blijven bewerkbaar.
+        'template'          => [
+            ['snel/intro', ['showBeams' => false, 'showGradient' => false], [
+                ['snel/slot', ['max' => 1, 'className' => 'snel-slot-eyebrow'], [
+                    ['snel/badge-text', []],
+                ]],
+                ['snel/slot', ['max' => 1, 'className' => 'snel-slot-heading'], [
+                    ['snel/heading', ['level' => 'h1', 'size' => 'xl', 'weight' => 'extrabold']],
+                ]],
+                ['snel/slot', ['max' => 1, 'className' => 'snel-slot-body'], [
+                    ['snel/paragraph', ['size' => 'md']],
+                ]],
+                ['snel/slot', ['max' => 2, 'orientation' => 'horizontal', 'className' => 'snel-slot-cta'], [
+                    ['snel/button-gradient', ['label' => 'Bekijk live']],
+                    ['snel/button', ['label' => 'Alle cases', 'url' => '/cases']],
+                ]],
+            ]],
+            ['snel/case-slider', ['backUrl' => '/cases/', 'backLabel' => 'Cases'], [
+                ['snel/case-slide', []],
+            ]],
+            ['snel/content', []],
+        ],
+        'template_lock'     => 'all',
     ]);
 });
 
