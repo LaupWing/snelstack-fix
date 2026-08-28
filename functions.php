@@ -56,6 +56,8 @@ add_filter('snel_block_text_attrs', function ($map) {
     $map['snel/badge-text']      = ['label'];
     $map['snel/posts']           = ['heading'];
     $map['snel/thumbnail']       = ['backLabel'];
+    $map['snel/case-slider']     = ['backLabel'];
+    $map['snel/case-slide']      = ['label', 'value'];
     return $map;
 });
 

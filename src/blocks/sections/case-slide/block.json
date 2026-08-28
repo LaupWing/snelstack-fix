@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "snel/case-slide",
+    "version": "1.0.0",
+    "title": "Snel Case Slide",
+    "category": "snel",
+    "icon": "format-image",
+    "description": "Slide in the case slider: an image with an optional label/value card.",
+    "keywords": ["case", "slide", "image"],
+    "textdomain": "snel",
+    "parent": ["snel/case-slider"],
+    "supports": { "html": false, "reusable": false },
+    "attributes": {
+        "imageId":  { "type": "number", "default": 0 },
+        "imageUrl": { "type": "string", "default": "" },
+        "imageAlt": { "type": "string", "default": "" },
+        "label":    { "type": "string", "default": "" },
+        "value":    { "type": "string", "default": "" }
+    },
+    "editorScript": "file:./index.js",
+    "render": "file:./render.php"
+}

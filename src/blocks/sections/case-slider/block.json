@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "snel/case-slider",
+    "version": "1.0.0",
+    "title": "Snel Case Slider",
+    "category": "snel",
+    "icon": "images-alt2",
+    "description": "Full-width image slider for cases — per slide an image with an optional label/value card. Same frame and breadcrumb bar as Snel Thumbnail.",
+    "keywords": ["case", "slider", "gallery", "thumbnail"],
+    "textdomain": "snel",
+    "supports": { "html": false, "align": false },
+    "attributes": {
+        "bg":        { "type": "string", "default": "white" },
+        "backUrl":   { "type": "string", "default": "/cases/" },
+        "backLabel": { "type": "string", "default": "Cases" }
+    },
+    "editorScript": "file:./index.js",
+    "viewScript": "file:./view.js",
+    "render": "file:./render.php"
+}
