@@ -146,6 +146,23 @@ add_action('admin_post_snel_reseed_partners', function () {
     exit;
 });
 
+add_action('admin_post_snel_backfill_case_sliders', function () {
+    check_admin_referer('snel_backfill_case_sliders');
+
+    if (! current_user_can('manage_options')) {
+        wp_die(__('Geen toegang.', 'snel'));
+    }
+
+    $updated = snel_backfill_case_sliders();
+
+    wp_redirect(add_query_arg([
+        'page'   => 'snel-seed',
+        'seeded' => $updated,
+        'type'   => 'case_sliders',
+    ], admin_url('tools.php')));
+    exit;
+});
+
 add_action('admin_post_snel_reseed_cases', function () {
     check_admin_referer('snel_reseed_cases');
 
@@ -312,6 +329,13 @@ function snel_seed_page_render(): void
             : '<div class="notice notice-info is-dismissible"><p>' . __('Contactpagina bestaat al — gebruik Re-seed om de content te overschrijven.', 'snel') . '</p></div>';
     }
 
+    if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'case_sliders') {
+        $n      = (int) $_GET['seeded'];
+        $notice = $n > 0
+            ? sprintf('<div class="notice notice-success is-dismissible"><p>%s</p></div>', sprintf(__('%d case(s) omgezet naar case slider.', 'snel'), $n))
+            : '<div class="notice notice-info is-dismissible"><p>' . __('Geen cases omgezet — alles gebruikt al de case slider.', 'snel') . '</p></div>';
+    }
+
     if (isset($_GET['seeded'], $_GET['type']) && $_GET['type'] === 'cases') {
         $n      = (int) $_GET['seeded'];
         $notice = $n > 0
@@ -432,6 +456,18 @@ function snel_seed_page_render(): void
                     <button type="submit" class="button button-secondary"><?php _e('Re-seed (wis + hermaak)', 'snel'); ?></button>
                 </form>
             </div>
+            <div style="border:1px solid #c3c4c7;border-radius:4px;padding:20px 24px;background:#fff">
+                <h2 style="margin-top:0"><?php _e('Case sliders backfill', 'snel'); ?></h2>
+                <p style="color:#646970">
+                    <?php _e('Vervangt het oude thumbnail-blok in bestaande cases (alle talen) door de case slider met 1 slide van de featured image. Al omgezette cases worden overgeslagen.', 'snel'); ?>
+                </p>
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline-block">
+                    <?php wp_nonce_field('snel_backfill_case_sliders'); ?>
+                    <input type="hidden" name="action" value="snel_backfill_case_sliders" />
+                    <button type="submit" class="button button-primary"><?php _e('Backfill case sliders', 'snel'); ?></button>
+                </form>
+            </div>
+
             <div style="border:1px solid #c3c4c7;border-radius:4px;padding:20px 24px;background:#fff">
                 <h2 style="margin-top:0"><?php _e('Cases pagina', 'snel'); ?></h2>
                 <p style="color:#646970"><?php _e('Maakt de /cases/ pagina aan (intro + cases grid + content). Navigatiemenu wijst al naar /cases/.', 'snel'); ?></p>

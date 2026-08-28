@@ -50,26 +50,77 @@ function snel_case_page_blocks(array $data): string
          . "\n<!-- /wp:snel/slot -->"
          . "\n<!-- /wp:snel/intro -->";
 
-    // ── Thumbnail (featured image + breadcrumb + info cards) ──────────────────
+    // ── Case slider (breadcrumb + 1 slide; slide falls back to featured image) ─
     $flags    = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
     $services = implode(' · ', (array) ($data['services'] ?? []));
-    $thumb_attrs = json_encode([
+    $slider_attrs = json_encode([
         'bg'        => 'white',
         'backUrl'   => '/cases/',
         'backLabel' => 'Cases',
-        'label1'    => 'Type',
-        'value1'    => $data['type'] ?? '',
-        'label2'    => 'Klant',
-        'value2'    => $data['client'] ?? '',
-        'label3'    => 'Technologie',
-        'value3'    => $services,
     ], $flags);
-    $b[] = '<!-- wp:snel/thumbnail ' . $thumb_attrs . ' /-->';
+    $slide_attrs = json_encode([
+        'label' => 'Technologie',
+        'value' => $services,
+    ], $flags);
+    $b[] = '<!-- wp:snel/case-slider ' . $slider_attrs . " -->\n"
+         . '<!-- wp:snel/case-slide ' . $slide_attrs . " /-->\n"
+         . '<!-- /wp:snel/case-slider -->';
 
     // ── Case content ──────────────────────────────────────────────────────────
     $b[] = $data['content'];
 
     return implode("\n\n", $b);
+}
+
+/**
+ * Backfill: vervang het oude snel/thumbnail blok in bestaande cases (alle
+ * talen) door snel/case-slider met 1 slide van de featured image. Cases
+ * zonder thumbnail-blok (al omgezet) worden overgeslagen.
+ */
+function snel_backfill_case_sliders(): int
+{
+    $cases = get_posts([
+        'post_type'      => 'case',
+        'posts_per_page' => -1,
+        'post_status'    => 'any',
+    ]);
+
+    $flags   = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+    $updated = 0;
+
+    foreach ($cases as $case) {
+        if (! preg_match('/<!-- wp:snel\/thumbnail (\{.*?\}) \/-->/s', $case->post_content, $m)) {
+            continue;
+        }
+        $old = json_decode($m[1], true) ?: [];
+
+        $services = implode(' · ', (array) (get_post_meta($case->ID, '_case_services', true) ?: []));
+        $thumb_id = (int) get_post_thumbnail_id($case->ID);
+
+        $slider_attrs = json_encode([
+            'bg'        => $old['bg'] ?? 'white',
+            'backUrl'   => $old['backUrl'] ?? '/cases/',
+            'backLabel' => $old['backLabel'] ?? 'Cases',
+        ], $flags);
+
+        $slide = ['label' => $old['label3'] ?? 'Technologie', 'value' => ($old['value3'] ?? '') ?: $services];
+        if ($thumb_id) {
+            $slide = ['imageId' => $thumb_id] + $slide;
+        }
+        $slide_attrs = json_encode($slide, $flags);
+
+        $new_block = '<!-- wp:snel/case-slider ' . $slider_attrs . " -->\n"
+                   . '<!-- wp:snel/case-slide ' . $slide_attrs . " /-->\n"
+                   . '<!-- /wp:snel/case-slider -->';
+
+        wp_update_post([
+            'ID'           => $case->ID,
+            'post_content' => str_replace($m[0], $new_block, $case->post_content),
+        ]);
+        $updated++;
+    }
+
+    return $updated;
 }
 
 function snel_seed_cases(bool $wipe = false): int
