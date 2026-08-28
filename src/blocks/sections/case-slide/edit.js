@@ -49,7 +49,7 @@ export default function Edit({ attributes, setAttributes }) {
 			<div {...blockProps}>
 				<div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#0f172a', minHeight: '120px' }}>
 					{imageUrl
-						? <img src={imageUrl} alt="" style={{ display: 'block', width: '100%', aspectRatio: '1/1', objectFit: 'cover' }} />
+						? <img src={imageUrl} alt="" style={{ display: 'block', width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
 						: (
 							<MediaUploadCheck>
 								<MediaUpload

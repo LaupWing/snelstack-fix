@@ -30,7 +30,7 @@ $snel_case_slide_first = false;
     <img
         src="<?php echo esc_url($img_url); ?>"
         alt="<?php echo esc_attr($img_alt); ?>"
-        class="w-full h-full object-cover object-center aspect-square"
+        class="w-full h-full object-cover object-center aspect-[4/5] md:aspect-[16/9]"
         <?php echo $is_first ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'; ?>
     />
 
