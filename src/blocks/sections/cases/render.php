@@ -99,8 +99,9 @@ $arrow_hover  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fil
             $arrow_path = '<path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z" clip-rule="evenodd"/>';
         ?>
         <div class="mt-10 flex justify-center">
-            <a href="<?php echo esc_url($cases_url); ?>" class="inline-flex">
-                <span class="group relative inline-flex animate-glow-pulse cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] h-12">
+            <a href="<?php echo esc_url($cases_url); ?>" class="relative inline-flex">
+                <span class="snel-btn-glow" aria-hidden="true"></span>
+                <span class="group relative inline-flex cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] h-12">
                     <span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
                     <span class="relative inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-full bg-slate-950 pl-6 pr-2 text-base font-semibold text-white">
                         <?php echo esc_html(snel__('Meer cases bekijken')); ?>

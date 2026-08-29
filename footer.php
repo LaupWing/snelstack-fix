@@ -138,8 +138,9 @@ $av_page      = get_page_by_path('algemene-voorwaarden');
                 ]);
                 ?>
 
-                <a href="<?php echo esc_url($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex">
-                    <span class="group relative inline-flex animate-glow-pulse cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] h-12">
+                <a href="<?php echo esc_url($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer" class="relative inline-flex">
+                    <span class="snel-btn-glow" aria-hidden="true"></span>
+                    <span class="group relative inline-flex cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] h-12">
                         <span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
                         <span class="relative inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-full bg-slate-950 pl-6 pr-2 text-base font-semibold text-white">
                             <?php echo esc_html(snel__('Stuur een WhatsApp')); ?>

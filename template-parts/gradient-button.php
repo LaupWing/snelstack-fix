@@ -23,8 +23,10 @@ $outer_class = $args['outer_class'] ?? ''; // e.g. 'h-11' to pin total height
 
 $target_attr = $target ? ' target="' . esc_attr($target) . '" rel="noopener noreferrer"' : '';
 ?>
-<a href="<?php echo esc_url($href); ?>" class="inline-flex"<?php echo $target_attr; ?>>
-	<span class="group relative inline-flex animate-glow-pulse cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] <?php echo esc_attr($outer_class); ?>">
+<a href="<?php echo esc_url($href); ?>" class="relative inline-flex"<?php echo $target_attr; ?>>
+	<?php // Glow on its own layer (opacity pulse, composited) — outside the overflow-hidden pill ?>
+	<span class="snel-btn-glow" aria-hidden="true"></span>
+	<span class="group relative inline-flex cursor-pointer overflow-hidden rounded-full p-[3px] transition-transform hover:scale-[1.02] active:scale-[0.98] <?php echo esc_attr($outer_class); ?>">
 		<?php // Rotating gradient ring — fills the pill exactly, auto-sizes to any button ?>
 		<span class="snel-gradient-ring absolute inset-0 rounded-full"></span>
 		<?php // Button face ?>

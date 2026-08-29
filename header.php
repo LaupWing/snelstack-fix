@@ -78,7 +78,9 @@
         'youtube'  => 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
     ];
 
-    $nav_active_classes   = 'animate-gradient-x bg-gradient-to-r from-blue-500 via-violet-500 to-blue-500 bg-[length:200%_100%] bg-clip-text font-semibold text-transparent';
+    // Static gradient text — the old animate-gradient-x (background-position
+    // animation) forced a repaint of the fixed header every frame.
+    $nav_active_classes   = 'bg-gradient-to-r from-blue-500 via-violet-500 to-blue-500 bg-clip-text font-semibold text-transparent';
     $nav_inactive_classes = 'font-medium text-slate-700 hover:text-slate-900';
 
     $contact_href = snel_url('/contact/');

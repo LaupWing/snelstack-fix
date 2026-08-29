@@ -45,10 +45,8 @@ html.snel-anim-frozen *::after {
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
   --animate-slide-down: slide-down 0.3s ease-out forwards;
 
-  /* Header + gradient button */
+  /* Header glow */
   --animate-header-glow: header-glow 4s ease-in-out infinite;
-  --animate-glow-pulse: glow-pulse 2.5s ease-in-out infinite;
-  --animate-gradient-x: gradient-x 2s ease infinite;
 
   /* Drifting gradient-mesh blobs */
   --animate-mesh-1: mesh-1 16s ease-in-out infinite;
@@ -81,26 +79,43 @@ html.snel-anim-frozen *::after {
 }
 
 /* Rotating conic-gradient border for the gradient button.
-   Animates the gradient's angle in place (via @property) so the ring fills the
-   button exactly (inset-0) and auto-sizes to any button — no oversized square,
-   no JS. The brand gradient: teal → sky → violet → pink → red → (loop). */
-@property --snel-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes snel-angle-spin {
-  to { --snel-angle: 360deg; }
-}
+   The gradient is painted ONCE on an oversized square ::before that spins via
+   transform (GPU-composited) — animating the gradient's from-angle (@property)
+   repainted the button every frame. Visually identical: rotating the element
+   rotates the full-circle conic. The brand gradient: teal → sky → violet →
+   pink → red → (loop). */
 .snel-gradient-ring {
-  background: conic-gradient(from var(--snel-angle), #5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #5eead4);
-  animation: snel-angle-spin 2s linear infinite;
+  overflow: hidden;
+}
+.snel-gradient-ring::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 340%;
+  aspect-ratio: 1;
+  background: conic-gradient(#5eead4, #38bdf8, #a78bfa, #f472b6, #fca5a5, #5eead4);
+  animation: snel-ring-spin 2s linear infinite;
+}
+@keyframes snel-ring-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Pulsing glow for the gradient button — sky + pink to match the spin palette */
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.25), 0 0 22px rgba(244, 114, 182, 0.18); }
-  50%      { box-shadow: 0 0 16px rgba(56, 189, 248, 0.40), 0 0 34px rgba(244, 114, 182, 0.28); }
+/* Pulsing glow for the gradient button — sky + pink to match the spin palette.
+   The glow lives on its own layer with a STATIC box-shadow; only its opacity
+   breathes (composited). Animating box-shadow itself repainted every frame. */
+.snel-btn-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.40), 0 0 34px rgba(244, 114, 182, 0.28);
+  animation: snel-glow-fade 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes snel-glow-fade {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
 }
 
 /* Animated gradient for active nav links (clipped to text) */

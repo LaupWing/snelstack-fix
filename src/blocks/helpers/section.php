@@ -26,27 +26,41 @@ if (! function_exists('snel_mesh')) {
                     { cx:  1.08, cy: -0.1, color: [94,  234, 212] },
                 ];
                 var times = blobs.map(function (_, i) { return i * 2.1; });
+                // Each blob's radial gradient is rasterized ONCE to a small
+                // offscreen sprite; the frame loop only clears + drawImage's
+                // them at their drifted positions. Upscaling a smooth gradient
+                // sprite is visually identical to re-filling it every frame,
+                // but ~10x cheaper — full-canvas gradient fills per frame were
+                // the main paint cost on laptops.
+                var SPRITE = 512;
+                var sprites = blobs.map(function (b) {
+                    var s = document.createElement('canvas');
+                    s.width = s.height = SPRITE;
+                    var sc = s.getContext('2d');
+                    var g  = sc.createRadialGradient(SPRITE / 2, SPRITE / 2, 0, SPRITE / 2, SPRITE / 2, SPRITE / 2);
+                    var c  = b.color.join(',');
+                    g.addColorStop(0,    'rgba(' + c + ',0.35)');
+                    g.addColorStop(0.25, 'rgba(' + c + ',0.18)');
+                    g.addColorStop(0.5,  'rgba(' + c + ',0.07)');
+                    g.addColorStop(0.75, 'rgba(' + c + ',0.02)');
+                    g.addColorStop(1,    'rgba(' + c + ',0)');
+                    sc.fillStyle = g;
+                    sc.fillRect(0, 0, SPRITE, SPRITE);
+                    return s;
+                });
                 function resize() {
                     canvas.width  = canvas.offsetWidth;
                     canvas.height = canvas.offsetHeight;
                 }
                 function draw() {
                     var w = canvas.width, h = canvas.height;
+                    var r = Math.max(600, w * 0.7);
                     ctx.clearRect(0, 0, w, h);
                     blobs.forEach(function (b, i) {
                         times[i] += 0.003;
                         var cx = b.cx * w + Math.sin(times[i] * 0.7) * w * 0.06;
                         var cy = b.cy * h + Math.cos(times[i] * 0.5) * h * 0.05;
-                        var r  = Math.max(600, w * 0.7);
-                        var g  = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-                        var c  = b.color.join(',');
-                        g.addColorStop(0,    'rgba(' + c + ',0.35)');
-                        g.addColorStop(0.25, 'rgba(' + c + ',0.18)');
-                        g.addColorStop(0.5,  'rgba(' + c + ',0.07)');
-                        g.addColorStop(0.75, 'rgba(' + c + ',0.02)');
-                        g.addColorStop(1,    'rgba(' + c + ',0)');
-                        ctx.fillStyle = g;
-                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(sprites[i], cx - r, cy - r, r * 2, r * 2);
                     });
                 }
                 resize();
