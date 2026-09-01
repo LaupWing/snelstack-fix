@@ -37,7 +37,7 @@ $bg = $attributes['bg'] ?? 'white';
 
         <?php if ($tech_label && $tech_value) : ?>
         <div class="absolute bottom-0 left-0 right-0 z-10 p-4 lg:p-8">
-            <div class="inline-flex rounded-xl p-4 lg:p-6 border border-white/10 bg-black/25 backdrop-blur-sm">
+            <div class="inline-flex rounded-xl p-4 lg:p-6 border border-white/10 bg-black/45">
                 <div>
                     <span class="block text-xs font-normal text-white/50 sm:text-sm"><?php echo esc_html($tech_label); ?></span>
                     <span class="mt-1 block text-base font-normal text-white sm:text-lg md:text-xl lg:text-2xl"><?php echo esc_html($tech_value); ?></span>

@@ -23,7 +23,7 @@ function snel_breadcrumb_bar(string $back_url, string $back_label, string $title
     ob_start();
     ?>
     <div class="hidden md:block absolute z-10 top-0 left-1/2 -translate-x-1/2 <?php echo esc_attr($offset); ?> w-full max-w-7xl px-8 md:px-12 lg:px-16">
-        <div class="flex justify-between py-2 px-3 lg:py-4 lg:px-6 border border-white/10 rounded-full bg-black/25 backdrop-blur-sm">
+        <div class="flex justify-between py-2 px-3 lg:py-4 lg:px-6 border border-white/10 rounded-full bg-black/45">
             <nav aria-label="Breadcrumb" class="hidden md:flex">
                 <ol role="list" class="flex items-center gap-0 text-white/50">
                     <?php foreach ($breadcrumbs as $crumb) : ?>

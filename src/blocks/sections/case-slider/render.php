@@ -43,10 +43,10 @@ $chevron_right = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                 <div class="snel-case-slider-bar h-full rounded-full bg-white will-change-transform" style="width:0;transform:translateX(0)"></div>
             </div>
             <div class="flex items-center gap-1.5">
-                <button type="button" class="snel-case-slider-prev flex size-8 lg:size-9 items-center justify-center rounded-full border border-white/10 bg-black/25 backdrop-blur-sm text-white transition hover:bg-black/50 disabled:opacity-40 disabled:hover:bg-black/25" aria-label="<?php echo esc_attr(snel__('Vorige')); ?>">
+                <button type="button" class="snel-case-slider-prev flex size-8 lg:size-9 items-center justify-center rounded-full border border-white/10 bg-black/45 text-white transition hover:bg-black/60 disabled:opacity-40 disabled:hover:bg-black/45" aria-label="<?php echo esc_attr(snel__('Vorige')); ?>">
                     <?php echo $chevron_left; ?>
                 </button>
-                <button type="button" class="snel-case-slider-next flex size-8 lg:size-9 items-center justify-center rounded-full border border-white/10 bg-black/25 backdrop-blur-sm text-white transition hover:bg-black/50 disabled:opacity-40 disabled:hover:bg-black/25" aria-label="<?php echo esc_attr(snel__('Volgende')); ?>">
+                <button type="button" class="snel-case-slider-next flex size-8 lg:size-9 items-center justify-center rounded-full border border-white/10 bg-black/45 text-white transition hover:bg-black/60 disabled:opacity-40 disabled:hover:bg-black/45" aria-label="<?php echo esc_attr(snel__('Volgende')); ?>">
                     <?php echo $chevron_right; ?>
                 </button>
             </div>
