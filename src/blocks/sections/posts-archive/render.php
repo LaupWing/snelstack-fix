@@ -107,6 +107,8 @@ if ($query->max_num_pages > 1) {
 
             <?php while ($query->have_posts()) : $query->the_post();
                 $img        = get_the_post_thumbnail_url(null, 'large');
+                $srcset     = $img ? (wp_get_attachment_image_srcset(get_post_thumbnail_id(), 'full') ?: '') : '';
+                $sizes      = '(min-width: 1536px) 400px, (min-width: 640px) 50vw, 100vw';
                 $title      = get_the_title();
                 $excerpt    = get_the_excerpt();
                 $href       = get_permalink();
@@ -129,6 +131,7 @@ if ($query->max_num_pages > 1) {
                             <img loading="lazy"
                                  class="z-0 object-cover object-center absolute rounded-t-lg w-full h-full scale-100 group-hover:scale-[1.05] transition duration-300"
                                  src="<?php echo esc_url($img); ?>"
+                                 <?php if ($srcset) : ?>srcset="<?php echo esc_attr($srcset); ?>" sizes="<?php echo esc_attr($sizes); ?>"<?php endif; ?>
                                  alt="<?php echo esc_attr($title); ?>" />
                         </div>
 

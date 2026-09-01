@@ -38,6 +38,8 @@ $arrow_hover  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fil
                 $result   = get_post_meta($case->ID, '_case_result', true);
                 $live_url = get_post_meta($case->ID, '_case_url', true);
                 $img      = get_the_post_thumbnail_url($case->ID, 'large');
+                $srcset   = wp_get_attachment_image_srcset(get_post_thumbnail_id($case->ID), 'full') ?: '';
+                $sizes    = '(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw';
                 $title    = get_the_title($case->ID);
                 $href     = get_permalink($case->ID);
                 $delay    = $i * 100;
@@ -60,7 +62,7 @@ $arrow_hover  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fil
                        class="snel-case-link group absolute inset-0 overflow-hidden rounded-lg [text-shadow:0_1px_3px_rgba(0,0,0,0.25)]">
 
                         <?php if ($img) : ?>
-                            <img loading="lazy" class="absolute inset-0 z-0 size-full scale-100 object-cover object-center transition duration-500 group-hover:scale-[1.025]" src="<?php echo esc_url($img); ?>" alt="<?php echo esc_attr($title); ?>"/>
+                            <img loading="lazy" class="absolute inset-0 z-0 size-full scale-100 object-cover object-center transition duration-500 group-hover:scale-[1.025]" src="<?php echo esc_url($img); ?>"<?php if ($srcset) : ?> srcset="<?php echo esc_attr($srcset); ?>" sizes="<?php echo esc_attr($sizes); ?>"<?php endif; ?> alt="<?php echo esc_attr($title); ?>"/>
                         <?php else : ?>
                             <img class="absolute inset-0 z-0 size-full object-cover object-center" src="<?php echo esc_url('https://picsum.photos/seed/' . $case->ID . '/800/800'); ?>" alt=""/>
                         <?php endif; ?>

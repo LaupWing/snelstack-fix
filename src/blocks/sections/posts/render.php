@@ -68,6 +68,8 @@ $arrow_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="
 
             <?php foreach ($posts as $post) :
                 $img     = get_the_post_thumbnail_url($post->ID, 'large');
+                $srcset  = $img ? (wp_get_attachment_image_srcset(get_post_thumbnail_id($post->ID), 'full') ?: '') : '';
+                $sizes   = '(min-width: 1024px) 420px, (min-width: 768px) 44vw, 85vw';
                 $title   = get_the_title($post->ID);
                 $excerpt = get_the_excerpt($post->ID);
                 $href    = get_permalink($post->ID);
@@ -86,6 +88,7 @@ $arrow_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="
                         <img loading="lazy"
                              class="absolute inset-0 z-0 size-full object-cover object-center scale-100 group-hover:scale-[1.05] transition duration-500"
                              src="<?php echo esc_url($img ?: 'https://picsum.photos/seed/' . $post->ID . '/640/360'); ?>"
+                             <?php if ($srcset) : ?>srcset="<?php echo esc_attr($srcset); ?>" sizes="<?php echo esc_attr($sizes); ?>"<?php endif; ?>
                              alt="<?php echo esc_attr($title); ?>" />
                     </div>
 

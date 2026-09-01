@@ -10,6 +10,8 @@ defined('ABSPATH') || exit;
 $post_id   = get_the_ID();
 $title     = get_the_title($post_id);
 $img_url   = get_the_post_thumbnail_url($post_id, 'full');
+$img_srcset = wp_get_attachment_image_srcset(get_post_thumbnail_id($post_id), 'full') ?: '';
+$img_sizes  = '(min-width: 1280px) 1216px, calc(100vw - 2rem)';
 $back_url  = $attributes['backUrl']   ?? '';
 $back_label = $attributes['backLabel'] ?? 'Terug';
 
@@ -28,8 +30,9 @@ $bg = $attributes['bg'] ?? 'white';
         <?php if ($img_url) : ?>
             <img
                 src="<?php echo esc_url($img_url); ?>"
+                <?php if ($img_srcset) : ?>srcset="<?php echo esc_attr($img_srcset); ?>" sizes="<?php echo esc_attr($img_sizes); ?>"<?php endif; ?>
                 alt="<?php echo esc_attr($title); ?>"
-                class="w-full object-cover object-center aspect-[4/5] md:aspect-auto"
+                class="snel-lcp w-full object-cover object-center aspect-[4/5] md:aspect-auto"
                 loading="eager"
                 fetchpriority="high"
             />
