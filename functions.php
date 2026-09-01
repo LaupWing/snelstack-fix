@@ -141,6 +141,13 @@ add_filter('block_categories_all', function ($categories) {
 
 add_filter('show_admin_bar', '__return_false');
 
+// SiteGround Optimizer: never lazy-load the LCP image (first case slide) —
+// its lazy loader replaces the eager, fetchpriority=high src with a 1px gif.
+add_filter('sgo_lazy_load_exclude_classes', function ($classes) {
+    $classes[] = 'snel-lcp';
+    return $classes;
+});
+
 remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
 

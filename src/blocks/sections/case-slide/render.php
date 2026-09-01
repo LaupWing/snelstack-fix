@@ -34,7 +34,7 @@ $snel_case_slide_first = false;
     <img
         src="<?php echo esc_url($img_url); ?>"
         alt="<?php echo esc_attr($img_alt); ?>"
-        class="w-full h-full object-cover object-center aspect-[4/5] md:aspect-[16/9]"
+        class="w-full h-full object-cover object-center aspect-[4/5] md:aspect-[16/9]<?php echo $is_first ? ' snel-lcp' : ''; ?>"
         <?php if ($srcset) : ?>srcset="<?php echo esc_attr($srcset); ?>" sizes="<?php echo esc_attr($sizes); ?>"<?php endif; ?>
         <?php echo $is_first ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'; ?>
     />
