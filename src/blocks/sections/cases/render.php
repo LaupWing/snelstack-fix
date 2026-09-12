@@ -44,7 +44,7 @@ $arrow_hover  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fil
                 $href     = get_permalink($case->ID);
                 $delay    = $i * 100;
 
-                $meta_line = implode(' — ', array_filter([$client, implode(', ', (array) $services)]));
+                $meta_line = implode(' · ', array_filter([$client, implode(', ', (array) $services)]));
             ?>
             <div>
 
