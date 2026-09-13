@@ -9,7 +9,7 @@ import { PanelBody, TextControl, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 export default function Edit({ attributes, setAttributes }) {
-	const { imageId, imageUrl, label, value } = attributes;
+	const { imageId, imageUrl, mobileImageId, mobileImageUrl, label, value } = attributes;
 	const blockProps = useBlockProps({ className: 'snel-case-slide-editor' });
 
 	return (
@@ -32,6 +32,36 @@ export default function Edit({ attributes, setAttributes }) {
 									</Button>
 									{imageUrl && (
 										<Button variant="tertiary" isDestructive onClick={() => setAttributes({ imageId: 0, imageUrl: '', imageAlt: '' })}>
+											{__('Verwijderen', 'snel')}
+										</Button>
+									)}
+								</div>
+							)}
+						/>
+					</MediaUploadCheck>
+				</PanelBody>
+				<PanelBody title={__('Mobiele afbeelding (optioneel)', 'snel')} initialOpen={false}>
+					<p style={{ fontSize: '12px', color: '#757575', marginTop: 0 }}>
+						{__('Getoond onder 768px. Leeg = desktop-afbeelding overal.', 'snel')}
+					</p>
+					<MediaUploadCheck>
+						<MediaUpload
+							allowedTypes={['image']}
+							value={mobileImageId}
+							onSelect={(media) => setAttributes({
+								mobileImageId: media.id,
+								mobileImageUrl: media.sizes?.large?.url ?? media.url,
+							})}
+							render={({ open }) => (
+								<div>
+									{mobileImageUrl && (
+										<img src={mobileImageUrl} alt="" style={{ display: 'block', width: '100%', borderRadius: '8px', marginBottom: '8px', aspectRatio: '4/5', objectFit: 'cover' }} />
+									)}
+									<Button variant="secondary" onClick={open}>
+										{mobileImageUrl ? __('Afbeelding vervangen', 'snel') : __('Afbeelding kiezen', 'snel')}
+									</Button>
+									{mobileImageUrl && (
+										<Button variant="tertiary" isDestructive onClick={() => setAttributes({ mobileImageId: 0, mobileImageUrl: '' })}>
 											{__('Verwijderen', 'snel')}
 										</Button>
 									)}

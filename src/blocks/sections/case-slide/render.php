@@ -18,6 +18,12 @@ $img_alt  = trim($attributes['imageAlt'] ?? '') ?: get_the_title();
 // must never decode the full 2560px original (26MB bitmap, janky scroll).
 $srcset   = $image_id ? (wp_get_attachment_image_srcset($image_id, 'full') ?: '') : '';
 $sizes    = '(min-width: 1280px) 1216px, calc(100vw - 2rem)';
+
+// Optional mobile image: shown below the md breakpoint via <picture>, matching
+// the aspect switch (4/5 mobiel, 16/9 desktop). Empty = desktop image overal.
+$mobile_id     = (int) ($attributes['mobileImageId'] ?? 0);
+$mobile_url    = $mobile_id ? wp_get_attachment_image_url($mobile_id, 'full') : ($attributes['mobileImageUrl'] ?? '');
+$mobile_srcset = $mobile_id ? (wp_get_attachment_image_srcset($mobile_id, 'full') ?: '') : '';
 $label    = trim($attributes['label'] ?? '');
 $value    = trim($attributes['value'] ?? '');
 
@@ -31,13 +37,22 @@ $is_first = $snel_case_slide_first;
 $snel_case_slide_first = false;
 ?>
 <div class="snel-case-slide relative w-full flex-none snap-center">
-    <img
-        src="<?php echo esc_url($img_url); ?>"
-        alt="<?php echo esc_attr($img_alt); ?>"
-        class="w-full h-full object-cover object-center aspect-[4/5] md:aspect-[16/9]<?php echo $is_first ? ' snel-lcp' : ''; ?>"
-        <?php if ($srcset) : ?>srcset="<?php echo esc_attr($srcset); ?>" sizes="<?php echo esc_attr($sizes); ?>"<?php endif; ?>
-        <?php echo $is_first ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'; ?>
-    />
+    <picture class="contents">
+        <?php if ($mobile_url) : ?>
+        <source
+            media="(max-width: 767px)"
+            srcset="<?php echo esc_attr($mobile_srcset ?: $mobile_url); ?>"
+            sizes="calc(100vw - 2rem)"
+        />
+        <?php endif; ?>
+        <img
+            src="<?php echo esc_url($img_url); ?>"
+            alt="<?php echo esc_attr($img_alt); ?>"
+            class="w-full h-full object-cover object-center aspect-[4/5] md:aspect-[16/9]<?php echo $is_first ? ' snel-lcp' : ''; ?>"
+            <?php if ($srcset) : ?>srcset="<?php echo esc_attr($srcset); ?>" sizes="<?php echo esc_attr($sizes); ?>"<?php endif; ?>
+            <?php echo $is_first ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'; ?>
+        />
+    </picture>
 
     <?php if ($label && $value) : ?>
     <div class="absolute bottom-0 left-0 right-0 z-10 p-4 lg:p-8">
