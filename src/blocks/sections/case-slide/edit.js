@@ -4,13 +4,33 @@
  * Image via MediaUpload + label/value card fields in the sidebar. The preview
  * mirrors the front-end card styling loosely; render.php is the source of truth.
  */
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck, store as blockEditorStore } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Button } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
-export default function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes, clientId }) {
 	const { imageId, imageUrl, mobileImageId, mobileImageUrl, label, value } = attributes;
 	const blockProps = useBlockProps({ className: 'snel-case-slide-editor' });
+
+	// Volgorde: positie binnen de slider + verplaatsen zonder list view.
+	const { rootClientId, index, count } = useSelect((select) => {
+		const { getBlockRootClientId, getBlockIndex, getBlockCount } = select(blockEditorStore);
+		const root = getBlockRootClientId(clientId);
+		return {
+			rootClientId: root,
+			index: getBlockIndex(clientId),
+			count: getBlockCount(root),
+		};
+	}, [clientId]);
+	const { moveBlocksUp, moveBlocksDown } = useDispatch(blockEditorStore);
+
+	const moverBtn = {
+		display: 'flex', alignItems: 'center', justifyContent: 'center',
+		width: '28px', height: '28px', borderRadius: '9999px',
+		border: '1px solid rgba(255,255,255,.2)', background: 'rgba(0,0,0,.55)',
+		color: '#fff', cursor: 'pointer', fontSize: '14px', lineHeight: 1,
+	};
 
 	return (
 		<>
@@ -78,6 +98,25 @@ export default function Edit({ attributes, setAttributes }) {
 
 			<div {...blockProps}>
 				<div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#0f172a', minHeight: '120px' }}>
+					<div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 10, display: 'flex', alignItems: 'center', gap: '6px' }}>
+						<button
+							type="button"
+							style={{ ...moverBtn, opacity: index === 0 ? 0.35 : 1 }}
+							disabled={index === 0}
+							onClick={() => moveBlocksUp([clientId], rootClientId)}
+							aria-label={__('Slide naar links', 'snel')}
+						>←</button>
+						<span style={{ padding: '4px 10px', borderRadius: '9999px', background: 'rgba(0,0,0,.55)', color: 'rgba(255,255,255,.8)', fontSize: '12px' }}>
+							{index + 1}/{count}
+						</span>
+						<button
+							type="button"
+							style={{ ...moverBtn, opacity: index >= count - 1 ? 0.35 : 1 }}
+							disabled={index >= count - 1}
+							onClick={() => moveBlocksDown([clientId], rootClientId)}
+							aria-label={__('Slide naar rechts', 'snel')}
+						>→</button>
+					</div>
 					{imageUrl
 						? <img src={imageUrl} alt="" style={{ display: 'block', width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
 						: (
