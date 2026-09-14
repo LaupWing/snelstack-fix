@@ -1,0 +1,107 @@
+<!-- wp:snel/intro {"visual":"software","showBeams":false} -->
+<!-- wp:snel/slot {"max":1,"className":"snel-slot-eyebrow"} -->
+<div class="wp-block-snel-slot is-layout-flex snel-slot-eyebrow"><!-- wp:snel/badge-text {"label":"Automatisering"} /--></div>
+<!-- /wp:snel/slot -->
+
+<!-- wp:snel/slot {"max":1,"className":"snel-slot-heading"} -->
+<div class="wp-block-snel-slot is-layout-flex snel-slot-heading"><!-- wp:snel/heading {"level":"h1","size":"xl","weight":"extrabold"} -->
+<h1 class="wp-block-snel-heading snel-heading max-w-4xl snel-h-xl snel-hw-extrabold">Geautomatiseerde E-mailsequentie met n8n en Notion</h1>
+<!-- /wp:snel/heading --></div>
+<!-- /wp:snel/slot -->
+
+<!-- wp:snel/slot {"max":1,"className":"snel-slot-body"} -->
+<div class="wp-block-snel-slot is-layout-flex snel-slot-body"><!-- wp:snel/paragraph -->
+<p class="wp-block-snel-paragraph snel-text max-w-4xl snel-text-md">Elke follow-up op tijd, 4+ uur per week terug</p>
+<!-- /wp:snel/paragraph --></div>
+<!-- /wp:snel/slot -->
+
+<!-- wp:snel/slot {"max":2,"orientation":"horizontal","className":"snel-slot-cta"} -->
+<div class="wp-block-snel-slot is-layout-flex snel-slot-cta"><!-- wp:snel/button {"label":"Alle cases","url":"/cases"} /--></div>
+<!-- /wp:snel/slot -->
+<!-- /wp:snel/intro -->
+
+<!-- wp:snel/case-slider {"bg":"white","backUrl":"/cases/","backLabel":"Cases"} -->
+<!-- wp:snel/case-slide {"imageId":160,"label":"Technologie","value":"n8n · Notion · JavaScript · Outlook"} /-->
+<!-- /wp:snel/case-slider -->
+
+<!-- wp:snel/content -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Het probleem</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Cold outreach valt of staat met opvolgen, en juist dat gaat mis als je het met de hand doet. Ik deed het zelf handmatig: follow-ups vergeten, twijfelen of ik iemand al gemaild had, en oppassen dat ik niet te veel verstuurde vanaf één account. Dat laatste is niet klein: wie over zijn daglimiet gaat, belandt in spam en dan is het hele account waardeloos.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">De oplossing</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Een workflow in n8n die elke ochtend zelf draait, met Notion als CRM. Ik kijk alleen nog naar het rapport.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":156,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image size-large"><img src="https://snelstack.com/wp-content/uploads/2026/06/case-img-51c9c4b1b4c64ed822011633b4e12300-1.png" alt="De volledige e-mailworkflow in n8n" class="wp-image-156"/><figcaption class="wp-element-caption">De volledige workflow in n8n: van trigger tot rapportage, met een tak per e-mailstap.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:list {"className":"wp-block-list"} -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>Berekent per dag hoeveel mails er veilig verstuurd kunnen worden, per account, binnen de warm-up limieten</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Vijf stappen: eerste contact en vier follow-ups, elk met een eigen template per sector</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Rouleert automatisch tussen meerdere verzendaccounts, zodat geen enkel account overbelast raakt</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Follow-ups gaan altijd voor nieuwe leads. Een warme lead laten liggen is duurder dan een dag later starten.</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":157,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image size-large"><img src="https://snelstack.com/wp-content/uploads/2026/06/case-img-196d32622fa47040e8ab24a08645c51e-1.png" alt="De leads-database in Notion" class="wp-image-157"/><figcaption class="wp-element-caption">Alle leads in Notion. Na elke verstuurde mail wordt de status automatisch bijgewerkt.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Waarom Notion als CRM? Omdat het er al lag. Geen extra tool, geen extra login, en iedereen die mee wil kijken snapt het meteen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":158,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image size-large"><img src="https://snelstack.com/wp-content/uploads/2026/06/case-img-37c70e85310cc38bc5937aafd92aceb5-1.png" alt="Het dagelijkse rapport in de mailbox" class="wp-image-158"/><figcaption class="wp-element-caption">Elke ochtend een rapport: capaciteit, wat er per stap klaarstaat, en wat er verstuurd is.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Het resultaat</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"className":"wp-block-list"} -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>4+ uur per week aan handmatige opvolging weg</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Geen lead wordt vergeten, elke follow-up gaat op tijd</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Deliverability blijft goed door de rotatie en de daglimieten</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Het systeem draait elke ochtend, of ik nou werk of niet</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><em>Technisch detail: n8n self-hosted, Notion API, Microsoft Outlook API, eigen JavaScript-nodes voor de capaciteits- en groepeerlogica.</em></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Zelf uren per week kwijt aan opvolgen? <a href="/contact/">Neem contact op</a>, dan bouw ik dit voor jouw proces.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:snel/content -->
