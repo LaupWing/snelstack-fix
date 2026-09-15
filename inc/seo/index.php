@@ -44,6 +44,34 @@ function snel_seo_archive_copy(): ?array
     return null;
 }
 
+/**
+ * Branded share card for the pages that have no featured image of their own:
+ * the front page, the blog index, the two archives and the service singles.
+ * Returns an absolute URL, or null when the page carries its own image.
+ */
+function snel_seo_share_card(): ?string
+{
+    $en   = function_exists('snel_get_lang') && snel_get_lang() === 'en';
+    $card = null;
+
+    if (is_front_page()) {
+        $card = 'og-home';
+    } elseif (is_post_type_archive('case')) {
+        $card = 'og-cases';
+    } elseif (is_post_type_archive('service') || is_singular('service')) {
+        $card = 'og-diensten';
+    } elseif (is_singular('page') && ! has_post_thumbnail()) {
+        // /blog/ and the remaining content pages.
+        $card = is_page(['blog']) ? 'og-blog' : 'og-home';
+    }
+
+    if (! $card) {
+        return null;
+    }
+
+    return get_template_directory_uri() . '/assets/images/og/' . $card . ($en ? '-en' : '') . '.jpg';
+}
+
 add_filter('wpseo_title', function ($title) {
     $copy = snel_seo_archive_copy();
 
@@ -69,3 +97,20 @@ add_filter('wpseo_opengraph_desc', function ($desc) {
 
     return $copy ? $copy['desc'] : $desc;
 });
+
+add_filter('wpseo_opengraph_image', function ($image) {
+    return snel_seo_share_card() ?: $image;
+});
+
+add_filter('wpseo_twitter_image', function ($image) {
+    return snel_seo_share_card() ?: $image;
+});
+
+// Yoast skips the width/height tags for a filtered URL; without them some
+// platforms render the card small on first fetch.
+add_action('wpseo_opengraph', function () {
+    if (snel_seo_share_card()) {
+        echo '<meta property="og:image:width" content="1200" />' . "\n";
+        echo '<meta property="og:image:height" content="630" />' . "\n";
+    }
+}, 30);
