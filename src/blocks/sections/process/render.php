@@ -152,6 +152,7 @@ $make_track = function (int $pitch, string $id_sfx, string $svg_w, string $ol_le
 		}
 		$rows .= '<h4 class="snel-heading snel-h-md"><span class="text-pink-400">' . esc_html($s['n']) . '</span> ' . esc_html($s['heading']) . '</h4>';
 		$rows .= '<p class="snel-text snel-text-md mt-3">' . esc_html($s['body']) . '</p>';
+		if (! in_array(trim((string) $s['btn_url']), ['', '#'], true))
 		$rows .= '<a href="' . esc_url($s['btn_url']) . '" class="group mt-4 inline-flex md:mt-8 h-8 items-center gap-2 rounded-md border-2 border-teal-400 bg-teal-400 px-3 text-xs font-medium text-violet-950 transition-all duration-300 hover:bg-teal-400/90"><span class="whitespace-nowrap">' . esc_html($s['btn_label']) . '</span><span class="relative block size-3 overflow-hidden">' . $arrow_svg . '</span></a>';
 		$rows .= '</div>';
 		$rows .= '</div>';
