@@ -56,13 +56,14 @@ function snel_seo_share_card(): ?string
 
     if (is_front_page()) {
         $card = 'og-home';
+    } elseif (is_home()) {
+        $card = 'og-blog';
     } elseif (is_post_type_archive('case')) {
         $card = 'og-cases';
     } elseif (is_post_type_archive('service') || is_singular('service')) {
         $card = 'og-diensten';
     } elseif (is_singular('page') && ! has_post_thumbnail()) {
-        // /blog/ and the remaining content pages.
-        $card = is_page(['blog']) ? 'og-blog' : 'og-home';
+        $card = 'og-home';
     }
 
     if (! $card) {
