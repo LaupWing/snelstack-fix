@@ -98,19 +98,15 @@ add_filter('wpseo_opengraph_desc', function ($desc) {
     return $copy ? $copy['desc'] : $desc;
 });
 
-add_filter('wpseo_opengraph_image', function ($image) {
-    return snel_seo_share_card() ?: $image;
+// wpseo_opengraph_image only filters an image Yoast already found; these pages
+// have none, so the card has to be added to the image container instead.
+add_action('wpseo_add_opengraph_images', function ($images) {
+    $card = snel_seo_share_card();
+    if ($card) {
+        $images->add_image(['url' => $card, 'width' => 1200, 'height' => 630]);
+    }
 });
 
 add_filter('wpseo_twitter_image', function ($image) {
     return snel_seo_share_card() ?: $image;
 });
-
-// Yoast skips the width/height tags for a filtered URL; without them some
-// platforms render the card small on first fetch.
-add_action('wpseo_opengraph', function () {
-    if (snel_seo_share_card()) {
-        echo '<meta property="og:image:width" content="1200" />' . "\n";
-        echo '<meta property="og:image:height" content="630" />' . "\n";
-    }
-}, 30);
