@@ -5,3 +5,15 @@
 
 .snel-cf-status.text-green-600 { color: #16a34a; }
 .snel-cf-status.text-red-600   { color: #dc2626; }
+
+/* ── Service select ───────────────────────────────────────────────────────
+   Native <select> (keyboard + screen reader for free), styled like the other
+   inputs; the chevron is an overlaid SVG since appearance-none hides the arrow. */
+
+.snel-cf-select {
+    background-image: none;
+}
+
+.snel-cf-select:hover {
+    border-color: #cbd5e1;               /* slate-300 */
+}

@@ -58,6 +58,7 @@ add_filter('snel_block_text_attrs', function ($map) {
     $map['snel/thumbnail']       = ['backLabel'];
     $map['snel/case-slider']     = ['backLabel'];
     $map['snel/case-slide']      = ['label', 'value'];
+    $map['snel/thank-you']       = ['heading', 'paragraph'];
     return $map;
 });
 
@@ -84,6 +85,16 @@ add_filter('snel_theme_string_defaults', function ($groups) {
         'Naam', 'E-mailadres', 'Telefoonnummer', '(optioneel)', 'Bericht',
         'Jan de Vries', 'jan@bedrijf.nl', '+31 6 12 34 56 78',
         'Vertel ons over jouw project, idee of vraag...', 'Verstuur bericht',
+        'Waar gaat het over?', 'Weet ik nog niet', 'Versturen…',
+        'Liever direct een gesprek inplannen?', 'Klik hier',
+        'Bedankt! We nemen zo snel mogelijk contact op.',
+        'Er is iets misgegaan. Probeer het opnieuw.',
+    ]);
+    $add($groups, 'Bedankpagina', [
+        'Bedankt voor je bericht.',
+        'Je bericht is binnen. Je hebt binnen één werkdag antwoord.',
+        'Liever niet wachten? Plan meteen een kennismaking van 30 minuten.',
+        'Plan een gesprek', 'Terug naar de homepage',
     ]);
     $add($groups, 'Stack showcase', ['Verken de stack', 'Klik om te verkennen']);
     $add($groups, 'Navigatie', ['Home', 'Terug naar %s', 'Meer info', 'Bekijk alle %s', 'Toggle menu', 'Set up a menu in Appearance > Menus']);

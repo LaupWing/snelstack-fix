@@ -2,12 +2,12 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "snel/contact-form",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"title": "Snel Contact Form",
 	"category": "snel",
 	"icon": "email",
-	"description": "Contact form (name, email, phone, message) that posts to a configurable webhook URL.",
-	"keywords": ["contact", "form", "webhook"],
+	"description": "Contact form (name, email, phone, service, message) that stores the lead and posts it to a configurable webhook URL.",
+	"keywords": ["contact", "form", "webhook", "service"],
 	"textdomain": "snel",
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
@@ -16,6 +16,7 @@
 		"align": ["full", "wide"]
 	},
 	"attributes": {
-		"align": { "type": "string", "default": "full" }
+		"align": { "type": "string", "default": "full" },
+		"redirect": { "type": "boolean", "default": true }
 	}
 }
