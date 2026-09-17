@@ -17,6 +17,25 @@ import roughUrl from './plastic011-rough.jpg';
 
 const COLORS = ['#0ea5e9', '#8b5cf6', '#db2777']; // darker brand: sky-500 → violet-500 → pink-600
 
+// ─── Device budget ─────────────────────────────────────────────────────────
+// This scene never idles: the twinkling background calls invalidate() every
+// frame, so frameloop="demand" still runs at the display refresh rate for as
+// long as the canvas is mounted. On a thin laptop that is the whole frame
+// budget gone. Scale the work to the machine instead of assuming a desktop GPU.
+const REDUCED_MOTION =
+	typeof window !== 'undefined' &&
+	window.matchMedia &&
+	window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const LOW_POWER =
+	typeof navigator !== 'undefined' &&
+	((navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4);
+
+// Cap the render resolution. dpr 2 on a retina panel quadruples the fragment
+// work for a background that is mostly flat colour — 1.5 is indistinguishable
+// here and roughly halves it.
+const MAX_DPR = LOW_POWER ? 1 : 1.5;
+
 // Initial plate geometry. The height is animated by rebuilding the rounded box
 // per frame during a transition (keeps corners uniform — a Y-scale would stretch
 // them). Shared constants:
@@ -26,6 +45,20 @@ const H_NORMAL = 0.7;
 const H_TALL = 1.3;
 const GAP = 0.16; // gap between plate surfaces (tight, like the original)
 const PLATE_GEO = new RoundedBoxGeometry(PLATE_W, H_NORMAL, PLATE_W, 5, PLATE_RADIUS);
+
+// Rounded boxes keyed by height, quantised to 0.02. The height animation only
+// ever walks between H_NORMAL and H_TALL, so this tops out at ~31 geometries
+// that are then reused for every open/close instead of rebuilt per frame.
+const _plateGeos = new Map([[Math.round(H_NORMAL * 50), PLATE_GEO]]);
+function plateGeometry(h) {
+	const key = Math.round(h * 50);
+	let geo = _plateGeos.get(key);
+	if (!geo) {
+		geo = new RoundedBoxGeometry(PLATE_W, key / 50, PLATE_W, 5, PLATE_RADIUS);
+		_plateGeos.set(key, geo);
+	}
+	return geo;
+}
 
 // Shared plastic surface maps (loaded once; colour stays per-plate).
 const _texLoader = new THREE.TextureLoader();
@@ -38,7 +71,14 @@ const ROUGH_MAP = _texLoader.load(roughUrl);
 });
 
 // ─── Background grid of boxes that randomly twinkle brand colors ───────────
+// One instanced draw call, so the count itself is cheap — the cost was the
+// per-frame instanceColor re-upload plus the invalidate() that pinned the whole
+// canvas at display refresh rate. Both are throttled below instead.
 const GRID = { cols: 62, rows: 40, step: 0.82 };
+
+// Twinkle repaint interval. 60 fps of full instanceColor re-uploads is wasted
+// on an effect that reads identically at 30.
+const TWINKLE_STEP = LOW_POWER ? 1 / 20 : 1 / 30;
 const BG_BASE = new THREE.Color('#0b1220');
 const BG_ACCENTS = ['#0ea5e9', '#8b5cf6', '#db2777', '#22d3ee', '#f472b6'].map((c) => new THREE.Color(c));
 const BG_GEO = new THREE.BoxGeometry(0.7, 0.7, 0.06);
@@ -51,6 +91,10 @@ function BackgroundBoxes() {
 		() => ({
 			intensity: new Float32Array(count),
 			target: Array.from({ length: count }, () => new THREE.Color()),
+			// Only cells that are currently fading. Scanning all ~2500 every
+			// frame did the same work whether 3 cells were lit or none.
+			live: new Set(),
+			acc: 0,
 		}),
 		[count]
 	);
@@ -77,25 +121,40 @@ function BackgroundBoxes() {
 		if (m.instanceColor) m.instanceColor.needsUpdate = true;
 	}, [count]);
 
-	// Ignite random cells and fade them back to the base color.
+	// Ignite random cells and fade them back to the base color. Skipped entirely
+	// when the visitor asked for reduced motion — the grid then stays flat and
+	// frameloop="demand" can actually idle instead of running forever.
 	useFrame((s, delta) => {
 		const m = mesh.current;
-		if (!m) return;
+		if (!m || REDUCED_MOTION) return;
+
+		// Throttle to TWINKLE_STEP; carry the leftover so the fade keeps its
+		// real-time speed regardless of the display refresh rate.
+		state.acc += delta;
+		if (state.acc < TWINKLE_STEP) {
+			s.invalidate();
+			return;
+		}
+		const step = state.acc;
+		state.acc = 0;
+
 		for (let k = 0; k < 2; k++) {
 			if (Math.random() < 0.5) {
 				const idx = Math.floor(Math.random() * count);
 				state.intensity[idx] = 1;
 				state.target[idx].copy(BG_ACCENTS[Math.floor(Math.random() * BG_ACCENTS.length)]);
+				state.live.add(idx);
 			}
 		}
+
 		let changed = false;
-		for (let i = 0; i < count; i++) {
-			if (state.intensity[i] > 0.001) {
-				state.intensity[i] = Math.max(0, state.intensity[i] - delta * 0.7);
-				_bgTmp.copy(BG_BASE).lerp(state.target[i], state.intensity[i]);
-				m.setColorAt(i, _bgTmp);
-				changed = true;
-			}
+		for (const i of state.live) {
+			const next = Math.max(0, state.intensity[i] - step * 0.7);
+			state.intensity[i] = next;
+			_bgTmp.copy(BG_BASE).lerp(state.target[i], next);
+			m.setColorAt(i, _bgTmp);
+			changed = true;
+			if (next <= 0.001) state.live.delete(i);
 		}
 		if (changed && m.instanceColor) m.instanceColor.needsUpdate = true;
 		s.invalidate();
@@ -195,19 +254,22 @@ function StackGroup({ active, selected, onOver, onOut, onSelect, colors = COLORS
 	const heights = useRef(colors.map(() => H_NORMAL));
 	const inited = useRef(false);
 
-	useFrame(() => {
+	useFrame((s) => {
 		const n = colors.length;
+		let animating = false;
 
-		// 1) Animate each plate's height; rebuild its rounded geometry while moving.
+		// 1) Animate each plate's height; swap in the rounded geometry for that
+		//    height. Building a fresh RoundedBoxGeometry per frame and disposing
+		//    the old one churned a VBO every 16 ms; heights are quantised to
+		//    0.02 so the same ~30 geometries get reused for every transition.
 		for (let i = 0; i < n; i++) {
 			const m = meshes.current[i];
 			if (!m) continue;
 			const targetH = i === selected ? H_TALL : H_NORMAL;
 			if (Math.abs(targetH - heights.current[i]) > 0.002) {
 				heights.current[i] += (targetH - heights.current[i]) * 0.16;
-				const old = m.geometry;
-				m.geometry = new RoundedBoxGeometry(PLATE_W, heights.current[i], PLATE_W, 5, PLATE_RADIUS);
-				old.dispose();
+				m.geometry = plateGeometry(heights.current[i]);
+				animating = true;
 			}
 		}
 
@@ -226,9 +288,16 @@ function StackGroup({ active, selected, onOver, onOut, onSelect, colors = COLORS
 		for (let i = 0; i < n; i++) {
 			const m = meshes.current[i];
 			if (!m) continue;
-			m.position.y = inited.current ? m.position.y + (ys[i] - m.position.y) * 0.18 : ys[i];
+			const next = inited.current ? m.position.y + (ys[i] - m.position.y) * 0.18 : ys[i];
+			if (Math.abs(next - m.position.y) > 0.0005) animating = true;
+			m.position.y = next;
 		}
 		inited.current = true;
+
+		// Keep the on-demand loop alive while something is actually moving. The
+		// background twinkle used to do this unconditionally, which is why the
+		// canvas never idled; with reduced motion it no longer does.
+		if (animating) s.invalidate();
 	});
 
 	return (
@@ -291,7 +360,7 @@ export default function StackShowcase({ slides = [] }) {
 			<Canvas
 				className="absolute inset-0"
 				camera={{ position: [7.58, 3.15, 5.31], fov: 34 }}
-				dpr={[1, 2]}
+				dpr={[1, MAX_DPR]}
 				frameloop="demand"
 			>
 				<CameraRig />
@@ -357,9 +426,14 @@ export default function StackShowcase({ slides = [] }) {
 								{s.title}
 							</span>
 							<p className="mt-5 text-2xl font-semibold leading-tight">{s.text}</p>
-							<a href={s.url} className="mt-6 inline-flex rounded-md bg-white px-3 py-1.5 text-sm font-medium text-slate-950 transition hover:bg-brand-primary hover:text-white">
-								{s.cta}
-							</a>
+							{/* An empty or "#" url renders a button that jumps back to the
+							    top of the page it is already on, which reads as a broken
+							    link. Leave the button out instead. */}
+							{s.cta && s.url && s.url.trim() !== '#' && (
+								<a href={s.url} className="mt-6 inline-flex rounded-md bg-white px-3 py-1.5 text-sm font-medium text-slate-950 transition hover:bg-brand-primary hover:text-white">
+									{s.cta}
+								</a>
+							)}
 						</div>
 					))}
 				</div>

@@ -12,11 +12,22 @@ $slides = array_values(array_map(function ($s) {
 		'url'   => $s['url']   ?? '#',
 	];
 }, $slides_raw));
+
+// Webpack resolves its lazy chunks from document.currentScript.src, which breaks
+// as soon as a plugin concatenates the theme scripts into one file elsewhere on
+// the domain (SiteGround Optimizer does exactly that). Hand view.js the real
+// build directory so it can pin __webpack_public_path__ instead of guessing.
+$build_url = trailingslashit(get_theme_file_uri('build/blocks'));
 ?>
 <section class="snel-stack-showcase-section <?php echo snel_section_class($attributes); ?> <?php echo snel_section_padding($attributes); ?>"<?php echo snel_section_style($attributes); ?>>
 	<div class="px-4 md:px-8">
 		<div class="mx-auto w-full max-w-5xl">
-			<div class="snel-stack-showcase" data-slides="<?php echo esc_attr(wp_json_encode($slides)); ?>">
+			<div class="snel-stack-showcase"
+				data-slides="<?php echo esc_attr(wp_json_encode($slides)); ?>"
+				data-build="<?php echo esc_url($build_url); ?>"
+				data-loading-label="<?php echo esc_attr(snel__('3D wordt geladen…')); ?>"
+				data-error-label="<?php echo esc_attr(snel__('Laden mislukt. Ververs de pagina.')); ?>"
+				data-no-webgl="<?php echo esc_attr(snel__('Je browser ondersteunt geen 3D.')); ?>">
 				<div class="snel-stack-placeholder group relative flex w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl bg-slate-950 aspect-[3/5] md:aspect-[3/2]">
 					<div class="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-950"></div>
 					<div class="relative flex flex-col items-center gap-4 px-4 text-center">
@@ -27,7 +38,7 @@ $slides = array_values(array_map(function ($s) {
 						</div>
 						<p class="text-xl font-semibold text-white"><?php echo esc_html(snel__('Verken de stack')); ?></p>
 						<span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/70 ring-1 ring-white/20 transition group-hover:bg-white/20">
-							<?php echo esc_html(snel__('Klik om te verkennen')); ?>
+							<span class="snel-stack-cta-label"><?php echo esc_html(snel__('Klik om te verkennen')); ?></span>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z" clip-rule="evenodd"/></svg>
 						</span>
 					</div>
