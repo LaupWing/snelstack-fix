@@ -85,7 +85,11 @@
 
     $contact_href = snel_url('/contact/');
 
-    $chevron_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5 transition-transform duration-200"><path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>';
+    // Same outline chevron as the sliders/category nav, so the icon language stays consistent.
+    $chevron_svg = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
+    // Paging arrows in the dropdown footer, same outline family as the sliders.
+    $chevron_prev_svg = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+    $chevron_next_svg = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
     $arrow_svg   = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 transition-transform duration-200 group-hover:-rotate-45"><path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd" /></svg>';
     ?>
 
@@ -125,7 +129,7 @@
                     </a>
 
                     <!-- Desktop nav -->
-                    <nav id="snel-nav" class="relative hidden items-center gap-1 md:flex">
+                    <nav id="snel-nav" class="relative hidden h-8 items-center gap-1 md:flex">
                         <?php foreach ($menu_tree as $item) :
                             $resolved     = snel_nav_item($item);
                             $url          = $resolved['url'];
@@ -146,18 +150,25 @@
                             }
                         ?>
                             <?php if ($has_children) : ?>
+                                <?php /* h-8 locks the row height; the after:* bridge fills the dead zone
+                                         between the link and the panel so hover never drops out. */ ?>
                                 <a href="<?php echo esc_url($url); ?>"
                                     data-dropdown-trigger="item-<?php echo esc_attr($item->ID); ?>"
-                                    class="flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-all <?php echo $is_active ? $nav_active_classes : $nav_inactive_classes; ?>"
+                                    class="relative flex h-8 cursor-pointer items-center gap-1 rounded-full px-3 text-sm transition-colors after:absolute after:inset-x-0 after:top-full after:h-5 after:content-[''] <?php echo $is_active ? $nav_active_classes : $nav_inactive_classes; ?>"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    aria-controls="snel-dropdown-item-<?php echo esc_attr($item->ID); ?>"
                                     <?php if ($is_active) echo 'aria-current="page"'; ?>>
                                     <?php echo esc_html($title); ?>
-                                    <span id="snel-chevron-item-<?php echo esc_attr($item->ID); ?>" class="mt-px text-slate-400 transition-transform duration-200">
+                                    <span id="snel-chevron-item-<?php echo esc_attr($item->ID); ?>"
+                                          aria-hidden="true"
+                                          class="flex shrink-0 text-slate-400 transition-transform duration-200 will-change-transform">
                                         <?php echo $chevron_svg; ?>
                                     </span>
                                 </a>
                             <?php else : ?>
                                 <a href="<?php echo esc_url($url); ?>"
-                                    class="rounded-full px-3 py-1.5 text-sm transition-all <?php echo $is_active ? $nav_active_classes : $nav_inactive_classes; ?>"
+                                    class="flex h-8 items-center rounded-full px-3 text-sm transition-colors <?php echo $is_active ? $nav_active_classes : $nav_inactive_classes; ?>"
                                     <?php if ($is_active) echo 'aria-current="page"'; ?>>
                                     <?php echo esc_html($title); ?>
                                 </a>
@@ -247,11 +258,22 @@
                 $resolved     = snel_nav_item($item);
                 $archive_url  = get_post_type_archive_link($item->object) ?: $resolved['url'];
             ?>
+            <?php /* pt-2 instead of mt-2: the 8px below the header is part of the panel's own
+                     hover area, so moving from the trigger to the panel never crosses a gap. */ ?>
             <div id="snel-dropdown-item-<?php echo esc_attr($item->ID); ?>"
-                 class="pointer-events-none invisible absolute left-0 right-0 top-full z-40 mt-2 origin-top scale-95 opacity-0 transition-all duration-200 ease-out">
+                 class="pointer-events-none invisible absolute left-0 right-0 top-full z-40 origin-top scale-95 pt-2 opacity-0 transition-[scale,opacity,visibility] duration-200 ease-out">
                 <div class="overflow-hidden rounded-2xl bg-white/90 backdrop-blur-xl shadow-[0px_4px_8px_rgba(34,42,53,0.05),0px_0px_0px_1px_rgba(34,42,53,0.04),0px_1px_5px_-4px_rgba(19,19,22,0.7)]">
-                    <div class="grid grid-cols-2">
-                        <?php foreach ($item->children as $child) :
+                    <?php
+                    // More than 4 items: pages of 4, switched with the bars in the footer row.
+                    $dd_pages = array_chunk($item->children, 4);
+                    $dd_paged = count($dd_pages) > 1;
+                    ?>
+                    <div class="<?php echo $dd_paged ? 'snel-dd-viewport overflow-hidden' : ''; ?>">
+                    <?php // items-stretch: every page is as tall as the tallest, so paging never resizes the panel. ?>
+                    <div class="<?php echo $dd_paged ? 'snel-dd-track flex items-stretch transition-transform duration-500 ease-out' : ''; ?>">
+                    <?php foreach ($dd_pages as $dd_page) : ?>
+                    <div class="grid grid-cols-2 <?php echo $dd_paged ? 'w-full shrink-0 auto-rows-fr content-start' : ''; ?>">
+                        <?php foreach ($dd_page as $child) :
                             $ch      = snel_nav_item($child);
                             $icon    = get_post_meta($child->object_id, '_service_icon', true);
                             $excerpt = get_the_excerpt($child->object_id);
@@ -276,20 +298,53 @@
                         </a>
                         <?php endforeach; ?>
                     </div>
+                    <?php endforeach; ?>
+                    </div>
+                    </div>
 
+                    <?php
+                    // Lowercase the menu title but keep acronyms ("AI Diensten" → "AI diensten").
+                    $archive_label = preg_replace_callback(
+                        '/\pL+/u',
+                        fn($m) => (mb_strlen($m[0]) > 1 && $m[0] === mb_strtoupper($m[0])) ? $m[0] : mb_strtolower($m[0]),
+                        $resolved['title']
+                    );
+                    ?>
+                    <?php if ($dd_paged) : ?>
+                    <div class="flex items-center justify-between gap-4 pl-5 pr-2">
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" class="snel-dd-prev flex size-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:cursor-default disabled:opacity-35 disabled:hover:bg-transparent disabled:hover:text-slate-500"
+                                    aria-label="<?php echo esc_attr(snel__('Vorige')); ?>">
+                                <?php echo $chevron_prev_svg; ?>
+                            </button>
+                            <div class="mx-1 flex items-center gap-1">
+                                <?php foreach ($dd_pages as $dd_i => $_) : ?>
+                                <button type="button" class="snel-dd-bar flex h-8 cursor-pointer items-center px-1"
+                                        aria-label="<?php echo esc_attr(sprintf(snel__('Pagina %d'), $dd_i + 1)); ?>">
+                                    <span class="relative block h-1 w-8 overflow-hidden rounded-full bg-slate-200">
+                                        <span class="snel-dd-bar-fill absolute inset-0 origin-left scale-x-0 rounded-full bg-violet-500 transition-transform duration-300"></span>
+                                    </span>
+                                </button>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="snel-dd-next flex size-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:cursor-default disabled:opacity-35 disabled:hover:bg-transparent disabled:hover:text-slate-500"
+                                    aria-label="<?php echo esc_attr(snel__('Volgende')); ?>">
+                                <?php echo $chevron_next_svg; ?>
+                            </button>
+                        </div>
+                        <a href="<?php echo esc_url($archive_url); ?>"
+                           class="group flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-brand-primary/5 hover:text-brand-primary">
+                            <?php printf(esc_html(snel__('Bekijk alle %s')), esc_html($archive_label)); ?>
+                            <?php echo $arrow_svg; ?>
+                        </a>
+                    </div>
+                    <?php else : ?>
                     <a href="<?php echo esc_url($archive_url); ?>"
                        class="group flex w-full items-center justify-center gap-2 p-4 text-sm font-medium text-slate-600 transition hover:bg-brand-primary/5 hover:text-brand-primary">
-                        <?php
-                        // Lowercase the menu title but keep acronyms ("AI Diensten" → "AI diensten").
-                        $archive_label = preg_replace_callback(
-                            '/\pL+/u',
-                            fn($m) => (mb_strlen($m[0]) > 1 && $m[0] === mb_strtoupper($m[0])) ? $m[0] : mb_strtolower($m[0]),
-                            $resolved['title']
-                        );
-                        printf(esc_html(snel__('Bekijk alle %s')), esc_html($archive_label));
-                        ?>
+                        <?php printf(esc_html(snel__('Bekijk alle %s')), esc_html($archive_label)); ?>
                         <?php echo $arrow_svg; ?>
                     </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -426,6 +481,45 @@
                     });
                 });
 
+                // ── Paged dropdown (4 per page, chevrons in the footer row) ──
+                document.querySelectorAll('[id^="snel-dropdown-"]').forEach(function (panel) {
+                    var track = panel.querySelector('.snel-dd-track');
+                    if (!track) return;
+                    var viewport = track.parentElement;
+                    var prev     = panel.querySelector('.snel-dd-prev');
+                    var next     = panel.querySelector('.snel-dd-next');
+                    var bars     = panel.querySelectorAll('.snel-dd-bar');
+                    var last     = track.children.length - 1;
+                    var current  = 0;
+
+                    // One fixed height: the tallest page. Paging then only slides,
+                    // so the panel never resizes and the hover target stays put.
+                    var tallest = 0;
+                    for (var i = 0; i <= last; i++) {
+                        tallest = Math.max(tallest, track.children[i].offsetHeight);
+                    }
+                    viewport.style.height = tallest + 'px';
+
+                    panel.snelGoToPage = function (page) {
+                        current = Math.max(0, Math.min(last, page));
+                        track.style.transform = 'translateX(' + (-100 * current) + '%)';
+                        if (prev) prev.disabled = current === 0;
+                        if (next) next.disabled = current === last;
+                        bars.forEach(function (bar, i) {
+                            bar.setAttribute('aria-current', i === current ? 'true' : 'false');
+                            // Tailwind v4 scales via the standalone `scale` property, not `transform`.
+                            bar.querySelector('.snel-dd-bar-fill').style.scale = (i === current ? '1' : '0') + ' 1';
+                        });
+                    };
+
+                    if (prev) prev.addEventListener('click', function () { panel.snelGoToPage(current - 1); });
+                    if (next) next.addEventListener('click', function () { panel.snelGoToPage(current + 1); });
+                    bars.forEach(function (bar, i) {
+                        bar.addEventListener('click', function () { panel.snelGoToPage(i); });
+                    });
+                    panel.snelGoToPage(0);
+                });
+
                 // ── Mega dropdown ────────────────────────────────────────────
                 var triggers = document.querySelectorAll('[data-dropdown-trigger]');
                 triggers.forEach(function (trigger) {
@@ -437,14 +531,17 @@
 
                     function show() {
                         clearTimeout(timer);
+                        if (panel.classList.contains('invisible') && panel.snelGoToPage) panel.snelGoToPage(0);
                         panel.classList.remove('invisible', 'opacity-0', 'scale-95', 'pointer-events-none');
                         panel.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+                        trigger.setAttribute('aria-expanded', 'true');
                         if (chevron) chevron.style.transform = 'rotate(180deg)';
                     }
                     function hide() {
                         timer = setTimeout(function () {
                             panel.classList.add('invisible', 'opacity-0', 'scale-95', 'pointer-events-none');
                             panel.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+                            trigger.setAttribute('aria-expanded', 'false');
                             if (chevron) chevron.style.transform = '';
                         }, 150);
                     }
