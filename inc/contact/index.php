@@ -243,6 +243,12 @@ function snel_contact_submit(WP_REST_Request $request): WP_REST_Response
     $redirect = snel_contact_thankyou_url($lang);
     $webhook  = get_option('snel_contact_webhook', '');
 
+    // The lead-demo buttons each run their own n8n workflow (email / whatsapp).
+    // Without a channel-specific webhook set, they fall back to the contact one.
+    if ($data['source_block'] === 'lead-demo' && in_array($data['channel'], ['email', 'whatsapp'], true)) {
+        $webhook = get_option('snel_leaddemo_webhook_' . $data['channel'], '') ?: $webhook;
+    }
+
     if (! $webhook) {
         return new WP_REST_Response(
             ['message' => 'Contactformulier is nog niet geconfigureerd. Stel een webhook in via Snelstack → Contact.'],

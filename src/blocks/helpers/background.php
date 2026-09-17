@@ -17,6 +17,7 @@ if (! function_exists('snel_background_open')) {
 
         $show_beams    = $args['beams']    ?? true;
         $show_gradient = $args['gradient'] ?? true;
+        $bottom_beams  = ! empty($args['bottom_beams']);
 
         $band_class = $position === 'relative'
             ? 'pointer-events-none relative z-0 h-96 w-full overflow-hidden'
@@ -27,6 +28,7 @@ if (! function_exists('snel_background_open')) {
                 <?php if ($show_beams)    echo snel_beams_svg(); ?>
                 <?php if ($show_gradient) echo snel_mesh($fade); ?>
             </div>
+            <?php if ($bottom_beams) get_template_part('template-parts/beams-bottom'); ?>
             <div class="relative z-10">
         <?php
     }

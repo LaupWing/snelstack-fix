@@ -7,6 +7,25 @@ defined('ABSPATH') || exit;
 
 $cards = $attributes['cards'] ?? [];
 
+// Cards were built for a dark section; on a white one every white/* class
+// disappears. Light variant only kicks in for bg=white, dark stays as it was.
+$is_dark = in_array($attributes['bg'] ?? 'white', ['dark', 'canvas'], true);
+$cls = $is_dark
+	? [
+		'card'    => 'bg-gradient-to-br from-white/5 to-white/[0.02] ring-white/5',
+		'icon'    => 'text-teal-300',
+		'divider' => 'from-white/10',
+		'heading' => 'text-white',
+		'body'    => 'text-white/80',
+	]
+	: [
+		'card'    => 'bg-slate-50 ring-slate-200',
+		'icon'    => 'text-teal-600',
+		'divider' => 'from-slate-200',
+		'heading' => 'text-slate-900',
+		'body'    => 'text-slate-600',
+	];
+
 $icon_paths = [
 	// ── Default / fallback ────────────────────────────────────────────────────
 	'eye'              => ['M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z'],
@@ -68,21 +87,21 @@ $icon_paths = [
 		<div class="absolute -top-2.5 -right-2.5 z-10 size-5">
 			<?php echo snel_stack_icon(0); ?>
 		</div>
-		<div class="rounded-lg w-full p-6 lg:p-8 bg-gradient-to-br from-white/5 to-white/[0.02] flex flex-col overflow-hidden relative ring-1 ring-inset ring-white/5">
+		<div class="rounded-lg w-full p-6 lg:p-8 <?php echo esc_attr($cls['card']); ?> flex flex-col overflow-hidden relative ring-1 ring-inset">
 
 			<div class="relative z-10">
-				<span class="mb-4 text-teal-300 flex"><?php echo $icon_svg; ?></span>
+				<span class="mb-4 <?php echo esc_attr($cls['icon']); ?> flex"><?php echo $icon_svg; ?></span>
 
 				<div class="relative mb-24">
-					<div class="absolute left-0 right-4 bottom-0 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
+					<div class="absolute left-0 right-4 bottom-0 h-px bg-gradient-to-r <?php echo esc_attr($cls['divider']); ?> to-transparent"></div>
 				</div>
 
 				<?php if ($heading) : ?>
-				<span class="block mb-4 text-white text-2xl/snug font-semibold"><?php echo wp_kses_post($heading); ?></span>
+				<span class="block mb-4 <?php echo esc_attr($cls['heading']); ?> text-2xl/snug font-semibold"><?php echo wp_kses_post($heading); ?></span>
 				<?php endif; ?>
 
 				<?php if ($body) : ?>
-				<p class="text-white/80 text-base antialiased leading-relaxed"><?php echo wp_kses_post($body); ?></p>
+				<p class="<?php echo esc_attr($cls['body']); ?> text-base antialiased leading-relaxed"><?php echo wp_kses_post($body); ?></p>
 				<?php endif; ?>
 			</div>
 		</div>

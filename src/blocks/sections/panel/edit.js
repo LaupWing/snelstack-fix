@@ -21,7 +21,7 @@ const TEMPLATE = [
 ];
 
 export default function Edit({ attributes, setAttributes }) {
-	const { theme, rounded, justify, contentWidth, size, showBeams, showGradient } = attributes;
+	const { theme, rounded, justify, contentWidth, size, showBeams, showGradient, bottomBeams } = attributes;
 	const isDark   = theme === 'dark' || theme === 'canvas';
 	const panelBg  = theme === 'canvas' ? '#020617' : '#2e1065';
 	const fade     = theme === 'canvas' ? 'from-[#020617]' : isDark ? 'from-[#2e1065]' : 'from-white';
@@ -99,6 +99,13 @@ export default function Edit({ attributes, setAttributes }) {
 						label={__('Rounded corners', 'snel')}
 						checked={rounded}
 						onChange={(v) => setAttributes({ rounded: v })}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={__('Beams onderin', 'snel')}
+						help={__('Dezelfde beams als onderaan de site-footer. Werkt het mooist op een donkere sectie.', 'snel')}
+						checked={!! bottomBeams}
+						onChange={(v) => setAttributes({ bottomBeams: v })}
 						__nextHasNoMarginBottom
 					/>
 				</SectionControl>

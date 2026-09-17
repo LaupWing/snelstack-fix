@@ -46,7 +46,10 @@ if ($snel_rounded) {
 	<?php if ($snel_rounded) : ?>
 	<div class="<?php echo esc_attr($inner_class); ?>" style="<?php echo esc_attr($inner_style); ?>">
 	<?php endif; ?>
-		<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'transparent', 'fade' => $snel_panel_fade, 'beams' => $snel_beams, 'gradient' => $snel_gradient]); ?>
+		<?php snel_background_open(['position' => 'absolute', 'backdrop' => 'transparent', 'fade' => $snel_panel_fade, 'beams' => $snel_beams, 'gradient' => $snel_gradient, 'bottom_beams' => ! empty($attributes['bottomBeams']),
+			// Bottom beams are sized to the section (70% high); like the site footer the
+			// section needs full viewport height, or they never reach the top.
+			'class' => ! empty($attributes['bottomBeams']) ? 'flex min-h-[100dvh] flex-col justify-center' : '']); ?>
 			<div class="px-4 md:px-8 <?php echo snel_section_padding($attributes); ?>">
 				<?php
 			$cw = ($attributes['contentWidth'] ?? 'none') !== 'none' ? ' snel-cw-' . esc_attr($attributes['contentWidth']) : '';

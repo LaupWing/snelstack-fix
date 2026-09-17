@@ -139,21 +139,38 @@ $make_track = function (int $pitch, string $id_sfx, string $svg_w, string $ol_le
 		$chips .= '<text class="snel-flow-num fill-violet-500 text-[13px] font-bold tracking-[0.04em] in-[.is-active]:fill-white" x="' . ($chip_x + $chip_w / 2) . '" y="' . ($cy + 5) . '" text-anchor="middle">' . esc_html($s['n']) . '</text>';
 		$chips .= '</g>';
 
+		// A step only links somewhere when its button URL is a real URL.
+		$has_link = ! in_array(trim((string) $s['btn_url']), ['', '#'], true);
+		$href     = $has_link ? esc_url($s['btn_url']) : '';
+
+		// The step title and the numbered heading read as the label of the step,
+		// so people click them before they reach the button. Make them the same
+		// link instead of dead text.
+		$title_html = esc_html($s['title']);
+		if ($has_link) {
+			$title_html = '<a href="' . $href . '" class="transition-colors hover:text-teal-400">' . $title_html . '</a>';
+		}
+
+		$heading_html = '<span class="text-pink-400">' . esc_html($s['n']) . '</span> ' . esc_html($s['heading']);
+		if ($has_link) {
+			$heading_html = '<a href="' . $href . '" class="transition-colors hover:text-teal-400">' . $heading_html . '</a>';
+		}
+
 		if ($mobile) {
 			// Normal flow, full container width (the SVG is a background here).
 			$rows .= '<div class="grid grid-cols-1 gap-1">';
-			$rows .= '<h3 class="snel-heading snel-h-sm">' . esc_html($s['title']) . '</h3>';
+			$rows .= '<h3 class="snel-heading snel-h-sm">' . $title_html . '</h3>';
 			$rows .= '<div class="snel-proc-reveal w-full rounded-2xl border border-violet-500/20 bg-white/70 px-4 py-4 backdrop-blur-sm in-[.is-dark]:border-violet-400/25 in-[.is-dark]:bg-white/5">';
 		} else {
 			$pct   = round($cy / $vb_h * 100, 3);
 			$rows .= '<div data-cy="' . $cy . '" class="absolute left-0 right-0 grid -translate-y-1/2 grid-cols-1 items-start gap-1 md:grid-cols-[150px_1fr] md:items-center md:gap-6" style="top:' . $pct . '%">';
-			$rows .= '<h3 class="snel-heading snel-h-sm md:snel-h-md">' . esc_html($s['title']) . '</h3>';
+			$rows .= '<h3 class="snel-heading snel-h-sm md:snel-h-md">' . $title_html . '</h3>';
 			$rows .= '<div class="snel-proc-reveal max-w-lg rounded-2xl border border-violet-500/20 bg-white/60 px-4 py-4 md:justify-self-end md:px-6 md:py-6 in-[.is-dark]:border-violet-400/25 in-[.is-dark]:bg-white/5">';
 		}
-		$rows .= '<h4 class="snel-heading snel-h-md"><span class="text-pink-400">' . esc_html($s['n']) . '</span> ' . esc_html($s['heading']) . '</h4>';
+		$rows .= '<h4 class="snel-heading snel-h-md">' . $heading_html . '</h4>';
 		$rows .= '<p class="snel-text snel-text-md mt-3">' . esc_html($s['body']) . '</p>';
-		if (! in_array(trim((string) $s['btn_url']), ['', '#'], true))
-		$rows .= '<a href="' . esc_url($s['btn_url']) . '" class="group mt-4 inline-flex md:mt-8 h-8 items-center gap-2 rounded-md border-2 border-teal-400 bg-teal-400 px-3 text-xs font-medium text-violet-950 transition-all duration-300 hover:bg-teal-400/90"><span class="whitespace-nowrap">' . esc_html($s['btn_label']) . '</span><span class="relative block size-3 overflow-hidden">' . $arrow_svg . '</span></a>';
+		if ($has_link)
+		$rows .= '<a href="' . $href . '" class="group mt-4 inline-flex md:mt-8 h-8 items-center gap-2 rounded-md border-2 border-teal-400 bg-teal-400 px-3 text-xs font-medium text-violet-950 transition-all duration-300 hover:bg-teal-400/90"><span class="whitespace-nowrap">' . esc_html($s['btn_label']) . '</span><span class="relative block size-3 overflow-hidden">' . $arrow_svg . '</span></a>';
 		$rows .= '</div>';
 		$rows .= '</div>';
 	}

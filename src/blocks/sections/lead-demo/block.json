@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "snel/lead-demo",
+	"version": "1.0.0",
+	"title": "Snel Lead Demo",
+	"category": "snel",
+	"icon": "email-alt",
+	"description": "Demo-CTA: de bezoeker kiest e-mail of WhatsApp, laat zijn gegevens achter en ervaart de automatische opvolging zelf. Post naar hetzelfde contact-endpoint.",
+	"keywords": ["lead", "demo", "cta", "whatsapp", "email", "formulier"],
+	"textdomain": "snel",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"supports": {
+		"html": false,
+		"align": ["full", "wide"]
+	},
+	"attributes": {
+		"align":         { "type": "string",  "default": "full" },
+		"heading":       { "type": "string",  "default": "Zelf ervaren hoe snel het werkt?" },
+		"body":          { "type": "string",  "default": "Laat je gegevens achter en ervaar hoe jouw leads automatisch worden opgevolgd." },
+		"emailLabel":    { "type": "string",  "default": "Via Email" },
+		"whatsappLabel": { "type": "string",  "default": "Via WhatsApp" },
+		"bg":            { "type": "string",  "default": "dark" },
+		"size":          { "type": "string",  "default": "md" },
+		"disableTop":    { "type": "boolean", "default": false },
+		"disableBottom": { "type": "boolean", "default": false }
+	}
+}
