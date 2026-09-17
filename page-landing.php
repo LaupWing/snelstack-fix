@@ -20,6 +20,20 @@ defined('ABSPATH') || exit;
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php wp_head(); ?>
+    <style>
+        /* Where the colour flips (white <-> dark), the next section gets rounded top
+           corners and slides up over the previous one, so that section's colour shows
+           in the corners. Same-colour neighbours are left flat: nothing to see there. */
+        .snel-landing main > :is(.snel-hero, .bg-white) + .is-dark,
+        .snel-landing main > .is-dark + .bg-white {
+            position: relative;
+            z-index: 1;
+            margin-top: -1rem;
+            overflow: hidden;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+    </style>
 </head>
 
 <body <?php body_class('antialiased snel-landing'); ?>>
